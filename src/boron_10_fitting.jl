@@ -93,7 +93,7 @@ function estimate_powder_pattern(p::nmr_params, N::Int64, ν0::Float64, I::Int64
         )
         i += to_add
     end
-    powder_pattern[current_index:end] = estimate_powder_pattern(
+    powder_pattern[i:end] = estimate_powder_pattern(
         p.qcc[length(p.weights)],
         p.η[length(p.weights)],
         N - i + 1,
