@@ -1,5 +1,7 @@
 module SpectraFit
 
-greet() = print("Hello World!")
+include("boron_10_fitting.jl")
+
+export get_experimental, fit_nmr, generate_theoretical_spectrum
 
 end # module
