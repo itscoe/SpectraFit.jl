@@ -5,9 +5,7 @@ using Distributions
 
 Compute the value of ν with the third order perturbation described in
 
->Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns
-for integer spin nuclei in the presence of asymmetric quadrupole effects.
-Journal of Magnetic Resonance (1969), 27(1), 121-132.
+>Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns for integer spin nuclei in the presence of asymmetric quadrupole effects. Journal of Magnetic Resonance (1969), 27(1), 121-132.
 
 # Arguments
 - `qcc::Float64`: the quantum coupling constant
@@ -112,8 +110,7 @@ and asymmetry parameter (η), and constant Larmor frequency (ν0) and spin (I).
 
 # Examples
 ```julia-repl
-julia> estimate_powder_pattern(Normal(5.5, 0.1), Normal(0.12, 0.3),
-    1000, 32.239, 3)
+julia> estimate_powder_pattern(Normal(5.5, 0.1), Normal(0.12, 0.3), 1000, 32.239, 3)
 1000-element Array{Float64,1}:
  32.32953183983512
  31.0703288812469
@@ -155,12 +152,11 @@ frequency (ν0) and spin (I).
 
 # Examples
 ```julia-repl
-julia> estimate_powder_pattern(nmr_params([5.5, 0.1, 0.12, 0.03, 1.0]), 1000,
-    32.239, 3)
+julia> estimate_powder_pattern(nmr_params([5.5, 0.1, 0.12, 0.03, 1.0]), 1000, 32.239, 3)
 1000-element Array{Float64,1}:
  32.18456766333233
  32.2091872593358
- 32.32362143777174 
+ 32.32362143777174
  32.33050236817988
  31.950161601754655
  32.338682082979666
