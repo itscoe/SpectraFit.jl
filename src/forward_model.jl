@@ -10,8 +10,8 @@ Compute the value of ν with the third order perturbation described in
 # Arguments
 - `qcc::Float64`: the quantum coupling constant
 - `η::Float64`: the asymmetry parameter (between 0 and 1 inclusive)
-- `μ::Float64`:
-- `λ::Float64`:
+- `μ::Float64`: cos(θ), where θ is the spherical coordinate angle
+- `λ::Float64`: cos(2ϕ), where ϕ is the spherical coordinate angle
 - `m::Int64`: the quantum number m, which can be integers from -I to I - 1
 - `I::Int64`: spin (3 in the case of Boron-10)
 - `ν0::Float64`: the Larmor frequency
@@ -22,6 +22,7 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
+
 function get_ν(
     qcc::Float64,
     η::Float64,
