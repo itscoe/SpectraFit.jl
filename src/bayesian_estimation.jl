@@ -1,5 +1,19 @@
 using ProgressMeter
 
+"""
+    likelihood(yhat, experimental_ecdf, experimental, I, ν0)
+
+Find the likelihood of a specific set of parameters (yhat), which is based on
+the ordinary least squares of the experimental vs. theoretical CDFs
+
+# Arguments
+- `yhat`: an array containing parameters for qcc, η, and the standard deviation
+- `experimental_ecdf`: the estimated ECDF of the experimental data
+- `experimental`: the experimental data
+- `I`: spin (3 in the case of Boron-10)
+- `ν0`: the Larmor frequency
+
+"""
 function likelihood(yhat, experimental_ecdf, experimental, I, ν0)
     # We must choose a distribution for the error!
     likelihood_dist = Normal(0, max(0, yhat[3]))
@@ -12,6 +26,15 @@ function likelihood(yhat, experimental_ecdf, experimental, I, ν0)
     return sum(logpdf.(likelihood_dist, experimental_ecdf .- theoretical_ecdf))
 end
 
+"""
+    metropolis_hastings(experimental)
+
+An implementation of the Metropolis-Hastings algorithm for Monte Carlo Markov
+Chain (MCMC) Bayesian estimates, with optional keyword arguments for the number
+of samples (default 1,000,000) and tolerances for each parameter (default 0.1
+for qcc, 0.1 for η, 0.05 for σ)
+    
+"""
 function metropolis_hastings(
     experimental;
     N = 1_000_000,

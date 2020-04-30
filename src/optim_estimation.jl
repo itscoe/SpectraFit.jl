@@ -1,5 +1,13 @@
 using Optim, StatsBase
 
+"""
+    ols_cdf(parameters, experimental, experimental_ecdf, ν0, I)
+
+Compute ordinary least squares comparing the experimental ecdf with the
+theoretical cdf, calculated with the nmr parameters, the spin (I), and the
+Larmor frequency (ν0) at each x-value in the experimental data
+
+"""
 function ols_cdf(
     parameters::nmr_params,
     experimental,
@@ -12,6 +20,15 @@ function ols_cdf(
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
 
+"""
+    fit_nmr(experimental, sites, iters)
+
+Fit the NMR parameters, assuming a normal distribution and using the Nelder-Mead
+optimization method for a specific number of iterations (iters) with the loss
+function of ordinary least squares of the CDFs, assuming a specified number of
+sites (sites)
+
+"""
 function fit_nmr(experimental, sites::Int64, iters::Int64)
     experimental_ecdf = cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
     riemann_sum = 0
