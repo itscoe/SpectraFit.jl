@@ -24,12 +24,16 @@ end
     fit_nmr(experimental, sites, iters)
 
 Fit the NMR parameters, assuming a normal distribution and using the Nelder-Mead
-optimization method for a specific number of iterations (iters) with the loss
-function of ordinary least squares of the CDFs, assuming a specified number of
-sites (sites)
+optimization method for with Optim options (options) for iterations,
+optimization method, timeout, etc, with the loss function of ordinary least
+squares of the CDFs, assuming a specified number of sites (sites, defaults to 1)
 
 """
-function fit_nmr(experimental, sites::Int64, iters::Int64)
+function fit_nmr(
+    experimental;
+    sites::Int64 = 1,
+    options = Optim.Options(iterations = 1000),
+)
     experimental_ecdf = cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
     riemann_sum = 0
     for i = 2:length(experimental_ecdf)
@@ -47,7 +51,7 @@ function fit_nmr(experimental, sites::Int64, iters::Int64)
     result = optimize(
         x -> ols_cdf(nmr_params(x), experimental, experimental_ecdf, ν0, I),
         starting_values,
-        Optim.Options(iterations = iters),
+        options,
     )
     return result
 end
