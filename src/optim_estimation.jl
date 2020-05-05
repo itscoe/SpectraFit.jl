@@ -33,6 +33,7 @@ function fit_nmr(
     experimental;
     sites::Int64 = 1,
     options = Optim.Options(iterations = 1000),
+    method = NelderMead(),
 )
     experimental_ecdf = cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
     riemann_sum = 0
@@ -48,10 +49,26 @@ function fit_nmr(
     starting_values[4:5:end] = rand(Uniform(0, 1), sites)
     starting_values[5:5:end] = rand(Uniform(0, 1), sites)
     I = 3
-    result = optimize(
-        x -> ols_cdf(nmr_params(x), experimental, experimental_ecdf, ν0, I),
-        starting_values,
-        options,
-    )
+    if method = SAMIN()
+        result = optimize(
+            x -> SpectraFit.ols_cdf(
+                nmr_params(x),
+                experimental,
+                experimental_ecdf,
+                ν0,
+                I,
+            ),
+            [0.0 0.0 0.0 0.0 0.0],
+            [9.0 1.0 1.0 1.0 1.0],
+            starting_values,
+            SAMIN(),
+        )
+    else
+        result = optimize(
+            x -> ols_cdf(nmr_params(x), experimental, experimental_ecdf, ν0, I),
+            starting_values,
+            options,
+        )
+    end
     return result
 end
