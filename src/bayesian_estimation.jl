@@ -33,57 +33,43 @@ An implementation of the Metropolis-Hastings algorithm for Monte Carlo Markov
 Chain (MCMC) Bayesian estimates, with optional keyword arguments for the number
 of samples (default 1,000,000) and tolerances for each parameter (default 0.1
 for qcc, 0.1 for η, 0.05 for σ)
-    
+
 """
 function metropolis_hastings(
     experimental;
     N = 1_000_000,
     tol = [0.1, 0.1, 0.05],
+    I = 3,
 )
-    I = 3
-    experimental_ecdf = cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
-    riemann_sum = 0
-    for i = 2:length(experimental_ecdf)
-        riemann_sum += (experimental_ecdf[i]) *
-                       (experimental[i, 1] - experimental[i-1, 1])
-    end
-    ν0 = experimental[end, 1] - riemann_sum
-    samples = zeros(N, 3)
+    experimental_ecdf = get_experimental_ecdf(experimental)
+    ν0 = get_ν0(experimental_ecdf)
+
+    samples = zeros(N, 3)  # initialize zero array for samples
 
     #We need to define prior distributions for each parameter
     prior_dist_qcc = Uniform(0, 9)
     prior_dist_η = Uniform(0, 1)
     prior_dist_σ = Uniform(0, 1)
 
-    # Assume variables are independent
     prior(x) = logpdf(prior_dist_qcc, x[1]) + logpdf(prior_dist_η, x[2]) +
-    logpdf(prior_dist_σ, x[3])
+    logpdf(prior_dist_σ, x[3]) # Assume variables are independent
 
     a = [rand(prior_dist_qcc), rand(prior_dist_η), rand(prior_dist_σ)]
     samples[1, :] = a
 
     # Repeat N times
     @showprogress for i = 2:N
-
-        # Compute new state randomly
-        b = a + tol .* (rand(3) .- 0.5)
-
+        b = a + tol .* (rand(3) .- 0.5)  # Compute new state randomly
         # Calculate density
         prob_old = likelihood(a, experimental_ecdf, experimental, I, ν0) +
                    prior(a)
         prob_new = likelihood(b, experimental_ecdf, experimental, I, ν0) +
                    prior(b)
-
-        # Compute acceptance ratio
-        r = prob_new - prob_old
-
+        r = prob_new - prob_old # Compute acceptance ratio
         if log(rand()) < r
-        #Accept new state and update
-            a = b
+            a = b  # Accept new state and update
         end
-
-        # Update state
-        samples[i, :] = a
+        samples[i, :] = a  # Update state
     end
 
     return samples

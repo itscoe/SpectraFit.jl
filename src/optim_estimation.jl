@@ -20,6 +20,19 @@ function ols_cdf(
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
 
+function get_experimental_ecdf(experimental)
+    return cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
+end
+
+function get_ν0(experimental_ecdf)
+    riemann_sum = 0
+    for i = 2:length(experimental_ecdf)
+        riemann_sum += (experimental_ecdf[i]) *
+                       (experimental[i, 1] - experimental[i-1, 1])
+    end
+    return experimental[end, 1] - riemann_sum
+end
+
 """
     fit_nmr(experimental, sites, iters)
 
@@ -34,32 +47,29 @@ function fit_nmr(
     sites::Int64 = 1,
     options = Optim.Options(iterations = 1000),
     method = NelderMead(),
+    I = 3,
 )
-    experimental_ecdf = cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
-    riemann_sum = 0
-    for i = 2:length(experimental_ecdf)
-        riemann_sum += (experimental_ecdf[i]) *
-                       (experimental[i, 1] - experimental[i-1, 1])
-    end
-    ν0 = experimental[end, 1] - riemann_sum
+    experimental_ecdf = get_experimental_ecdf(experimental)
+    ν0 =  get_ν0(experimental_ecdf)
+
     starting_values = zeros(5 * sites)
-    starting_values[1:5:end] = rand(Uniform(0, 9), sites)
-    starting_values[2:5:end] = rand(Uniform(0, 1), sites)
-    starting_values[3:5:end] = rand(Uniform(0, 1), sites)
-    starting_values[4:5:end] = rand(Uniform(0, 1), sites)
-    starting_values[5:5:end] = rand(Uniform(0, 1), sites)
-    I = 3
+    starting_values[1:5:end] = rand(Uniform(0, 9), sites)  # Qcc
+    starting_values[2:5:end] = rand(Uniform(0, 1), sites)  # σQcc
+    starting_values[3:5:end] = rand(Uniform(0, 1), sites)  # η
+    starting_values[4:5:end] = rand(Uniform(0, 1), sites)  # ση
+    starting_values[5:5:end] = rand(Uniform(0, 1), sites)  # weights
+
     if method = SAMIN()
         result = optimize(
-            x -> SpectraFit.ols_cdf(
+            x -> SpectraFit.ols_cdf(  # objective function
                 nmr_params(x),
                 experimental,
                 experimental_ecdf,
                 ν0,
                 I,
             ),
-            [0.0 0.0 0.0 0.0 0.0],
-            [9.0 1.0 1.0 1.0 1.0],
+            [0.0 0.0 0.0 0.0 0.0],  # lower bounds
+            [9.0 1.0 1.0 1.0 1.0],  # upper bounds
             starting_values,
             SAMIN(),
         )
