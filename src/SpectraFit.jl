@@ -6,7 +6,6 @@ include("optim_estimation.jl")
 include("bayesian_estimation.jl")
 
 export get_experimental,
-       generate_theoretical_spectrum,
        nmr_params,
        fit_nmr,
        metropolis_hastings,
