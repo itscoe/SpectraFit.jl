@@ -1,4 +1,4 @@
-using CSV, KernelDensity, Distributions
+using CSV, KernelDensity, Distributions, Plots
 
 struct nmr_params
     qcc::Array{Distribution}
@@ -42,4 +42,20 @@ function generate_theoretical_spectrum(experimental, nmr_params)
     ik = InterpKDE(k)
     theoretical = pdf(ik, x)
     return (mean(experimental[:, 2]) / mean(theoretical)) .* theoretical
+end
+
+function compare_theoreticals(experimental, old_nmr_params, new_nmr_params)
+    plot(experimental[:, 1], experimental[:, 2], label = "experimental")
+    theoretical = generate_theoretical_spectrum(experimental, old_nmr_params)
+    plot!(experimental[:, 1], theoretical, width = 2, label = "old theoretical")
+    theoretical = generate_theoretical_spectrum(experimental, new_nmr_params)
+    plot!(
+        experimental[:, 1],
+        theoretical,
+        width = 2,
+        label = "new theoretical",
+        title = "Theoretical vs. Experimental",
+        xlabel = "Frequency (MHz)",
+        ylabel = "Intensity",
+    )
 end
