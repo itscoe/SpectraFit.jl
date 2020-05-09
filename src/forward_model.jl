@@ -10,7 +10,9 @@ const λ_dist = Uniform(-1, 1)
 
 Compute the value of ν with the third order perturbation described in
 
->Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns for integer spin nuclei in the presence of asymmetric quadrupole effects. Journal of Magnetic Resonance (1969), 27(1), 121-132.
+>Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns
+>for integer spin nuclei in the presence of asymmetric quadrupole effects.
+>Journal of Magnetic Resonance (1969), 27(1), 121-132.
 
 # Arguments
 - `qcc::Float64`: the quantum coupling constant
@@ -27,7 +29,6 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-
 function get_ν(
     qcc::Float64,
     η::Float64,
