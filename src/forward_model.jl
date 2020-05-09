@@ -1,5 +1,10 @@
 using Distributions
 
+const m_dist = Categorical([3, 5, 6, 6, 5, 3] ./ 28)
+const μ_dist = Uniform(0, 1)
+const λ_dist = Uniform(-1, 1)
+
+
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
 
@@ -96,10 +101,18 @@ function estimate_powder_pattern(
     ν0::Float64,
     I::Int64,
 )
-    m = rand(Categorical([3, 5, 6, 6, 5, 3] ./ 28), N) .- I
-    μ = rand(Uniform(0, 1), N)
-    λ = rand(Uniform(-1, 1), N)
-    return filter(isfinite, filter(!isnan, get_ν.(qcc, η, μ, λ, m, I, ν0)))
+    return filter(
+        isfinite && !isnan,
+        get_ν.(
+            qcc,
+            η,
+            rand(μ_dist, N),
+            rand(λ_dist, N),
+            rand(m_dist, N) .- I,
+            I,
+            ν0,
+        ),
+    )
 end
 
 """
@@ -134,12 +147,18 @@ function estimate_powder_pattern(
     ν0::Float64,
     I::Int64,
 )
-    qcc = rand(qcc_dist, N)
-    η = rand(η_dist, N)
-    m = rand(Categorical([3, 5, 6, 6, 5, 3] ./ 28), N) .- I
-    μ = rand(Uniform(0, 1), N)
-    λ = rand(Uniform(-1, 1), N)
-    return filter(isfinite, filter(!isnan, get_ν.(qcc, η, μ, λ, m, I, ν0)))
+    return filter(
+        isfinite && !isnan,
+        get_ν.(
+            rand(qcc_dist, N),
+            rand(η_dist, N),
+            rand(μ_dist, N),
+            rand(λ_dist, N),
+            rand(m_dist, N) .- I,
+            I,
+            ν0,
+        ),
+    )
 end
 
 
