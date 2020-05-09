@@ -59,7 +59,7 @@ function fit_nmr(
     starting_values[4:5:end] = rand(Uniform(0, 1), sites)  # ση
     starting_values[5:5:end] = rand(Uniform(0, 1), sites)  # weights
 
-    if method = SAMIN()
+    if method == SAMIN()
         result = optimize(
             x -> SpectraFit.ols_cdf(  # objective function
                 nmr_params(x),
