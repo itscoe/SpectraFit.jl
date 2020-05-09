@@ -24,7 +24,7 @@ function get_experimental_ecdf(experimental)
     return cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
 end
 
-function get_ν0(experimental_ecdf)
+function get_ν0(experimental, experimental_ecdf)
     riemann_sum = 0
     for i = 2:length(experimental_ecdf)
         riemann_sum += (experimental_ecdf[i]) *
@@ -50,7 +50,7 @@ function fit_nmr(
     I = 3,
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
-    ν0 =  get_ν0(experimental_ecdf)
+    ν0 =  get_ν0(experimental, experimental_ecdf)
 
     starting_values = zeros(5 * sites)
     starting_values[1:5:end] = rand(Uniform(0, 9), sites)  # Qcc
