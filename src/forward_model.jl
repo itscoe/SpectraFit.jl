@@ -102,17 +102,14 @@ function estimate_powder_pattern(
     ν0::Float64,
     I::Int64,
 )
-    return filter(
-        isfinite && !isnan,
-        get_ν.(
-            qcc,
-            η,
-            rand(μ_dist, N),
-            rand(λ_dist, N),
-            rand(m_dist, N) .- I,
-            I,
-            ν0,
-        ),
+    get_ν.(
+        qcc,
+        η,
+        rand(μ_dist, N),
+        rand(λ_dist, N),
+        rand(m_dist, N) .- I,
+        I,
+        ν0,
     )
 end
 
@@ -148,17 +145,14 @@ function estimate_powder_pattern(
     ν0::Float64,
     I::Int64,
 )
-    return filter(
-        isfinite && !isnan,
-        get_ν.(
-            rand(qcc_dist, N),
-            rand(η_dist, N),
-            rand(μ_dist, N),
-            rand(λ_dist, N),
-            rand(m_dist, N) .- I,
-            I,
-            ν0,
-        ),
+    get_ν.(
+        rand(qcc_dist, N),
+        rand(η_dist, N),
+        rand(μ_dist, N),
+        rand(λ_dist, N),
+        rand(m_dist, N) .- I,
+        I,
+        ν0,
     )
 end
 
