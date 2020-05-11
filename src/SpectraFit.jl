@@ -1,5 +1,6 @@
 module SpectraFit
 
+include("nmr_params.jl")
 include("utility_functions.jl")
 include("forward_model.jl")
 include("optim_estimation.jl")
