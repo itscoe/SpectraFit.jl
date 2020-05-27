@@ -30,9 +30,8 @@ Order is qcc, σqcc, η, ση, weight, and repeat for each site.
 ```julia-repl
 julia> nmr_params([5.5, 0.1, 0.12, 0.03, 1.0])
 nmr_params(Distributions.Distribution[Truncated(Distributions.Normal{Float64}
-(μ=5.5, σ=0.1), range=(0.0, Inf))],
-Distributions.Distribution[Truncated(Distributions.Normal{Float64}(μ=0.12,
-σ=0.03), range=(0.0, 1.0))], [1.0])
+(μ=5.5, σ=0.1), range=(0.0, Inf))],Distributions.Distribution[Truncated(
+Distributions.Normal{Float64}(μ=0.12, σ=0.03), range=(0.0, 1.0))], [1.0])
 ```
 """
 function nmr_params(p::Array{Float64})
