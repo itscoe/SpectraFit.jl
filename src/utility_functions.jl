@@ -45,7 +45,7 @@ function get_experimental(
     delim::String = "  ",
     header::Bool = false
 )
-    experimental = CSV.read(filename, delim = delim, header = false)
+    experimental = CSV.read(filename, delim = delim, header = header)
     experimental[!, 1] = (parse.(Float64, experimental[:, 1]) .* ν0_guess) /
                          (10^6) .+ ν0_guess
     return [reverse(experimental[:, 1]) reverse(experimental[:, 2])]
