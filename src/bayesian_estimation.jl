@@ -42,7 +42,7 @@ function metropolis_hastings(
     I = 3,
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
-    ν0 = get_ν0(experimental_ecdf)
+    ν0 = get_ν0(experimental, experimental_ecdf)
 
     samples = zeros(N, 3)  # initialize zero array for samples
 

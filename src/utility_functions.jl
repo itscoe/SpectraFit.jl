@@ -147,3 +147,16 @@ function compare_theoreticals(
         ylabel = "Intensity",
     )
 end
+
+function get_experimental_ecdf(experimental::Array{Float64,2})
+    return cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
+end
+
+function get_ν0(experimental::Array{Float64,2}, experimental_ecdf)
+    riemann_sum = 0
+    for i = 2:length(experimental_ecdf)
+        riemann_sum += (experimental_ecdf[i]) *
+                       (experimental[i, 1] - experimental[i-1, 1])
+    end
+    return experimental[end, 1] - riemann_sum
+end

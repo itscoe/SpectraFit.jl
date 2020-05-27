@@ -20,19 +20,6 @@ function ols_cdf(
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
 
-function get_experimental_ecdf(experimental)
-    return cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
-end
-
-function get_ν0(experimental, experimental_ecdf)
-    riemann_sum = 0
-    for i = 2:length(experimental_ecdf)
-        riemann_sum += (experimental_ecdf[i]) *
-                       (experimental[i, 1] - experimental[i-1, 1])
-    end
-    return experimental[end, 1] - riemann_sum
-end
-
 """
     fit_nmr(experimental; sites, iters, options, method)
 
