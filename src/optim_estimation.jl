@@ -34,18 +34,20 @@ function get_ν0(experimental, experimental_ecdf)
 end
 
 """
-    fit_nmr(experimental, sites, iters)
+    fit_nmr(experimental; sites, iters, options, method)
 
-Fit the NMR parameters, assuming a normal distribution and using the Nelder-Mead
-optimization method for with Optim options (options) for iterations,
-optimization method, timeout, etc, with the loss function of ordinary least
-squares of the CDFs, assuming a specified number of sites (sites, defaults to 1)
+Fit the NMR parameters, assuming a normal distribution and using the specified
+optimization method (currently implementer are Nelder-Mead and Simulated
+Annealing) for with Optim options (options) for iterations, timeout, etc, with
+the loss function of ordinary least squares of the CDFs, assuming a specified
+number of sites (sites, defaults to 1)
 
 """
 function fit_nmr(
     experimental;
     sites::Int64 = 1,
-    options = Optim.Options(iterations = 1000),
+    iters::Int64 = 1000,
+    options = Optim.Options(iterations = iters),
     method = NelderMead(),
     I = 3,
 )
