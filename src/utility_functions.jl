@@ -39,8 +39,12 @@ julia> experimental = get_experimental("B2O3FastCool.txt", 32.239)
  33.43    10764.6
 ```
 """
-function get_experimental(filename::String, ν0_guess::Float64)
-    experimental = CSV.read(filename, delim = "  ", header = false)
+function get_experimental(
+    filename::String,
+    ν0_guess::Float64;
+    delim::String = "  ",
+)
+    experimental = CSV.read(filename, delim = delim, header = false)
     experimental[!, 1] = (parse.(Float64, experimental[:, 1]) .* ν0_guess) /
                          (10^6) .+ ν0_guess
     return [reverse(experimental[:, 1]) reverse(experimental[:, 2])]
@@ -110,7 +114,7 @@ end
 """
     compare_theoreticals(experimental, old_nmr_params, new_nmr_params)
 
-Plots the experimental data along with two theoretical powder patterns, for the 
+Plots the experimental data along with two theoretical powder patterns, for the
 sake of comparison
 
 """
