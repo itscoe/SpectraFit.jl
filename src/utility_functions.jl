@@ -45,13 +45,19 @@ function get_experimental(
     delim::String = "  ",
     header::Bool = false,
     convert_ppm_to_mhz::Bool = true,
+    reverse::Bool = true,
 )
     experimental = CSV.read(filename, delim = delim, header = header)
     if convert_ppm_to_mhz
         experimental[!, 1] = (parse.(Float64, experimental[:, 1]) .* ν0_guess) /
             (10^6) .+ ν0_guess
     end
-    return [reverse(experimental[:, 1]) reverse(experimental[:, 2])]
+    if reverse
+        experimental = [reverse(experimental[:, 1]) reverse(experimental[:, 2])]
+    else
+        experimental = [experimental[:, 1] experimental[:, 2]]
+    end
+    return experimental
 end
 
 """
