@@ -43,6 +43,7 @@ function get_experimental(
     filename::String,
     ν0_guess::Float64;
     delim::String = "  ",
+    header::Bool = false
 )
     experimental = CSV.read(filename, delim = delim, header = false)
     experimental[!, 1] = (parse.(Float64, experimental[:, 1]) .* ν0_guess) /
