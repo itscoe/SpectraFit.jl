@@ -142,10 +142,25 @@ function compare_theoreticals(
     )
 end
 
+"""
+    get_experimental_ecdf(experimental)
+
+Returns the ecdf of the experimental data over the range of the experimental
+data
+
+"""
 function get_experimental_ecdf(experimental::Array{Float64,2})
     return cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
 end
 
+"""
+    get_ν0(experimental, experimental_ecdf)
+
+Calculates the Larmor frequency by finding the approximate mean of the
+distribution. Should be passed into the forward model to get theoretical data
+that lines up with the experimental
+
+"""
 function get_ν0(experimental::Array{Float64,2}, experimental_ecdf)
     riemann_sum = 0
     for i = 2:length(experimental_ecdf)
