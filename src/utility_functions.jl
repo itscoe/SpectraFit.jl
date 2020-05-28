@@ -45,14 +45,14 @@ function get_experimental(
     delim::String = "  ",
     header::Bool = false,
     convert_ppm_to_mhz::Bool = true,
-    reverse::Bool = true,
+    reverse_data::Bool = true,
 )
     experimental = CSV.read(filename, delim = delim, header = header)
     if convert_ppm_to_mhz
         experimental[!, 1] = (parse.(Float64, experimental[:, 1]) .* ν0_guess) /
             (10^6) .+ ν0_guess
     end
-    if reverse
+    if reverse_data
         experimental = [reverse(experimental[:, 1]) reverse(experimental[:, 2])]
     else
         experimental = [experimental[:, 1] experimental[:, 2]]
@@ -105,13 +105,7 @@ function generate_theoretical_spectrum(
     experimental::Array{Float64,2},
     nmr_params::nmr_params,
 )
-    experimental_ecdf = cumsum(experimental[:, 2]) ./ sum(experimental[:, 2])
-    riemann_sum = 0
-    for i = 2:length(experimental_ecdf)
-        riemann_sum += (experimental_ecdf[i]) *
-                       (experimental[i, 1] - experimental[i-1, 1])
-    end
-    ν0 = experimental[end, 1] - riemann_sum
+    ν0 = get_ν0(experimental, get_experimental_ecdf(experimental))
     I = 3
     powder_pattern = estimate_powder_pattern(nmr_params, 1_000_000, ν0, I)
     k = kde(powder_pattern)
