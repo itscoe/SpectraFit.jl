@@ -41,16 +41,16 @@ function nmr_params(p::Array{Float64})
     weights = zeros(sites)
     for i = 1:sites
         qcc[i] = truncated(
-            Normal(p[sites*(i-1)+1], max(0, p[sites*(i-1)+2])),
+            Normal(p[5*(i-1)+1], max(0, p[5*(i-1)+2])),
             0.0,
             Inf,
         )
         η[i] = truncated(
-            Normal(p[sites*(i-1)+3], max(0, p[sites*(i-1)+4])),
+            Normal(p[5*(i-1)+3], max(0, p[5*(i-1)+4])),
             0.0,
             1.0,
         )
-        weights[i] = p[sites*(i-1)+5]
+        weights[i] = p[5*i]
     end
     weights ./= sum(weights)
     return nmr_params(qcc, η, weights)
