@@ -55,3 +55,24 @@ function nmr_params(p::Array{Float64})
     weights ./= sum(weights)
     return nmr_params(qcc, η, weights)
 end
+
+function nmr_params(; sites = 1)
+    qcc = Array{Distribution}(undef, sites)
+    η = Array{Distribution}(undef, sites)
+    weights = zeros(sites)
+    for i = 1:sites
+        qcc[i] = truncated(
+            Normal(rand(Uniform(0, 9)), rand(Uniform(0, 1))),
+            0.0,
+            Inf,
+        )
+        η[i] = truncated(
+            Normal(rand(Uniform(0, 1)), rand(Uniform(0, 1))),
+            0.0,
+            Inf,
+        )
+        weights[i] = rand(Uniform(0, 1))
+    end
+    weights ./= sum(weights)
+    return nmr_params(qcc, η, weights)
+end
