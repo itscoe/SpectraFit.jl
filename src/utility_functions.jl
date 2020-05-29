@@ -103,10 +103,10 @@ julia>     nmr_params([5.5, 0.1, 0.12, 0.03, 1.0])
 """
 function generate_theoretical_spectrum(
     experimental::Array{Float64,2},
-    nmr_params::nmr_params,
+    nmr_params::nmr_params;
+    I::Int64 = 3,
 )
     ν0 = get_ν0(experimental, get_experimental_ecdf(experimental))
-    I = 3
     powder_pattern = estimate_powder_pattern(nmr_params, 1_000_000, ν0, I)
     k = kde(powder_pattern)
     x = experimental[:, 1]
