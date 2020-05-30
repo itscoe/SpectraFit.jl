@@ -42,15 +42,14 @@ julia> experimental = get_experimental("B2O3FastCool.txt", 32.239)
 function get_experimental(
     filename::String,
     ν0_guess::Float64;
-    delim::String = "  ",
     header::Bool = false,
     convert_ppm_to_mhz::Bool = true,
     reverse_data::Bool = true,
 )
-    experimental = CSV.read(filename, delim = delim, header = header)
+    experimental = CSV.read(filename, header = header)
     if convert_ppm_to_mhz
-        experimental[!, 1] = (parse.(Float64, experimental[:, 1]) .* ν0_guess) /
-            (10^6) .+ ν0_guess
+        experimental[!, 1] = experimental[:, 1] .* (ν0_guess /
+            (10^6)) .+ ν0_guess
     end
     if reverse_data
         experimental = [reverse(experimental[:, 1]) reverse(experimental[:, 2])]
