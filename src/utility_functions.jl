@@ -114,6 +114,42 @@ function generate_theoretical_spectrum(
     return (mean(experimental[:, 2]) / mean(theoretical)) .* theoretical
 end
 
+function plot_experimental(experimental::Array{Float64,2}; relative_ν = false)
+    ENV["GKS_ENCODING"] = "utf-8"
+    to_plot = relative_ν ?
+        experimental[:, 1] .- get_ν(experimental) :
+        experimental[:, 1]
+    x_label = relative_ν ? "Δν (MHz)" : "ν (MHz)"
+    plot(
+        to_plot,
+        experimental[:, 2],
+        label = "experimental",
+        xlabel = x_label,
+        ylabel = "Intensity",
+    )
+end
+
+function plot_theoretical(
+    experimental::Array{Float64,2},
+    params::nmr_params;
+    relative_ν = false,
+)
+    ENV["GKS_ENCODING"] = "utf-8"
+    to_plot = relative_ν ?
+        experimental[:, 1] .- get_ν(experimental) :
+        experimental[:, 1]
+    x_label = relative_ν ? "Δν (MHz)" : "ν (MHz)"
+    theoretical = generate_theoretical_spectrum(experimental, params)
+    plot(
+        to_plot,
+        theoretical,
+        width = 2,
+        label = "theoretical",
+        xlabel = x_label,
+        ylabel = "Intensity",
+    )
+end
+
 """
     compare_theoreticals(experimental, old_nmr_params, new_nmr_params)
 
@@ -167,6 +203,10 @@ function get_ν0(experimental::Array{Float64,2}, experimental_ecdf)
                        (experimental[i, 1] - experimental[i-1, 1])
     end
     return experimental[end, 1] - riemann_sum
+end
+
+function get_ν0(experimental::Array{Float64,2})
+    return get_ν0(experimental, get_experimental_ecdf(experimental))
 end
 
 function get_data(filename::String)
