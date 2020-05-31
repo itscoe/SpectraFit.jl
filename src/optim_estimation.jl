@@ -49,6 +49,12 @@ function fit_nmr(
     starting_values[5:5:end] = rand(Uniform(0, 1), sites)  # weights
 
     if method == SAMIN()
+        upper_bounds, lower_bounds = zeros(5 * sites)
+        upper_bounds[1:5:end] = 9  # Qcc
+        upper_bounds[2:5:end] = 1  # σQcc
+        upper_bounds[3:5:end] = 1  # η
+        upper_bounds[4:5:end] = 1  # ση
+        upper_bounds[5:5:end] = 1  # weights
         result = optimize(
             x -> SpectraFit.ols_cdf(  # objective function
                 nmr_params(x),
@@ -57,8 +63,8 @@ function fit_nmr(
                 ν0,
                 I,
             ),
-            [0.0 0.0 0.0 0.0 0.0],  # lower bounds
-            [9.0 1.0 1.0 1.0 1.0],  # upper bounds
+            lower_bounds,
+            upper_bounds,
             starting_values,
             SAMIN(),
         )
