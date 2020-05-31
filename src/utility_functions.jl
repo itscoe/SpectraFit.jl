@@ -53,7 +53,7 @@ function get_experimental(
         experimental = CSV.read(filename, header = header, delim = delim)
     end
     if typeof(experimental[1, 1]) != Float64
-        experimental[!, 1] = (parse.(Float64, experimental[:, 1])
+        experimental[!, 1] = parse.(Float64, experimental[:, 1])
     end
     if convert_ppm_to_mhz
         experimental[!, 1] = experimental[:, 1] .* (ν0_guess /
