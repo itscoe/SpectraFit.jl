@@ -10,6 +10,7 @@ export get_experimental,
        nmr_params,
        fit_nmr,
        metropolis_hastings,
-       compare_theoreticals
+       compare_theoreticals,
+       get_data
 
 end # module
