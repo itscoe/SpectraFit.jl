@@ -168,3 +168,7 @@ function get_ν0(experimental::Array{Float64,2}, experimental_ecdf)
     end
     return experimental[end, 1] - riemann_sum
 end
+
+function get_data(filename::String)
+    return joinpath(dirname(pathof(SpectraFit)), "..", "data", filename)
+end
