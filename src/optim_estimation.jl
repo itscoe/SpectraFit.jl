@@ -58,7 +58,7 @@ function fit_nmr(
         upper_bounds[4:5:end] .= 1  # ση
         upper_bounds[5:5:end] .= 1  # weights
         result = optimize(
-            x -> SpectraFit.ols_cdf(  # objective function
+            x -> ols_cdf(  # objective function
                 nmr_params(x),
                 experimental,
                 experimental_ecdf,
@@ -73,7 +73,14 @@ function fit_nmr(
         )
     else
         result = optimize(
-            x -> ols_cdf(nmr_params(x), experimental, experimental_ecdf, ν0, I),
+            x -> ols_cdf(
+                nmr_params(x),
+                experimental,
+                experimental_ecdf,
+                ν0,
+                I = I,
+                samples = samples
+            ),
             starting_values,
             options,
         )
