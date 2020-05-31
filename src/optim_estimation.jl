@@ -12,10 +12,11 @@ function ols_cdf(
     parameters::nmr_params,
     experimental,
     experimental_ecdf,
-    ν0::Float64,
-    I::Int64,
+    ν0::Float64;
+    I::Int64 = 3,
+    samples = 1_000_000,
 )
-    powder_pattern = estimate_powder_pattern(parameters, 1_000_000, ν0, I)
+    powder_pattern = estimate_powder_pattern(parameters, samples, ν0, I)
     theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
@@ -37,6 +38,7 @@ function fit_nmr(
     options = Optim.Options(iterations = iters),
     method = NelderMead(),
     I = 3,
+    samples = 1_000_000,
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
@@ -61,7 +63,8 @@ function fit_nmr(
                 experimental,
                 experimental_ecdf,
                 ν0,
-                I,
+                I = I,
+                samples = samples,
             ),
             lower_bounds,
             upper_bounds,
