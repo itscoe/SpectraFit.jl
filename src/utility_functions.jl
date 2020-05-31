@@ -43,7 +43,7 @@ function get_experimental(
     filename::String,
     ν0_guess::Float64;
     header::Bool = false,
-    delim = ","
+    delim = ",",
     convert_ppm_to_mhz::Bool = true,
     reverse_data::Bool = true,
 )
