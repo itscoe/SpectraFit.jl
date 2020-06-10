@@ -39,17 +39,11 @@ function fit_nmr(
     method = NelderMead(),
     I = 3,
     samples = 1_000_000,
+    starting_values = get_random_starting_values(sites),
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
-
-    starting_values = zeros(5 * sites)
-    starting_values[1:5:end] = rand(Uniform(0, 9), sites)  # Qcc
-    starting_values[2:5:end] = rand(Uniform(0, 1), sites)  # σQcc
-    starting_values[3:5:end] = rand(Uniform(0, 1), sites)  # η
-    starting_values[4:5:end] = rand(Uniform(0, 1), sites)  # ση
-    starting_values[5:5:end] = rand(Uniform(0, 1), sites)  # weights
-
+    
     if method == SAMIN()
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
         upper_bounds[1:5:end] .= 9  # Qcc
