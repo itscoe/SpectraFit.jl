@@ -15,8 +15,9 @@ function ols_cdf(
     ν0::Float64;
     I::Int64 = 3,
     samples = 1_000_000,
+    transitions::UnitRange{Int64} = 1:(2*I)
 )
-    powder_pattern = estimate_powder_pattern(parameters, samples, ν0, I)
+    powder_pattern = estimate_powder_pattern(parameters, samples, ν0, I, transitions = transitions)
     theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
@@ -40,10 +41,11 @@ function fit_nmr(
     I = 3,
     samples = 1_000_000,
     starting_values = get_random_starting_values(sites),
+    transitions::UnitRange{Int64} = 1:(2*I),
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
-    
+
     if method == SAMIN()
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
         upper_bounds[1:5:end] .= 9  # Qcc
@@ -59,6 +61,7 @@ function fit_nmr(
                 ν0,
                 I = I,
                 samples = samples,
+                transitions = transitions,
             ),
             lower_bounds,
             upper_bounds,
@@ -73,7 +76,8 @@ function fit_nmr(
                 experimental_ecdf,
                 ν0,
                 I = I,
-                samples = samples
+                samples = samples,
+                transitions = transitions,
             ),
             starting_values,
             options,

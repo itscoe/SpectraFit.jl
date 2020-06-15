@@ -1,6 +1,6 @@
 using Distributions
 
-const m_dist = Categorical([3, 5, 6, 6, 5, 3] ./ 28)
+const m_arr = [3, 5, 6, 6, 5, 3]
 const μ_dist = Uniform(0, 1)
 const λ_dist = Uniform(-1, 1)
 
@@ -100,14 +100,15 @@ function estimate_powder_pattern(
     η::Float64,
     N::Int64,
     ν0::Float64,
-    I::Int64,
+    I::Int64;
+    transitions::UnitRange{Int64} = 1:(2*I),
 )
     get_ν.(
         qcc,
         η,
         rand(μ_dist, N),
         rand(λ_dist, N),
-        rand(m_dist, N) .- I,
+        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
         I,
         ν0,
     )
@@ -143,14 +144,15 @@ function estimate_powder_pattern(
     η_dist::Distribution,
     N::Int64,
     ν0::Float64,
-    I::Int64,
+    I::Int64;
+    transitions::UnitRange{Int64} = 1:(2*I),
 )
     get_ν.(
         rand(qcc_dist, N),
         rand(η_dist, N),
         rand(μ_dist, N),
         rand(λ_dist, N),
-        rand(m_dist, N) .- I,
+        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
         I,
         ν0,
     )
@@ -183,7 +185,7 @@ julia> estimate_powder_pattern(nmr_params([5.5, 0.1, 0.12, 0.03, 1.0]), 1000, 32
  32.15411486178574
 ```
 """
-function estimate_powder_pattern(p::nmr_params, N::Int64, ν0::Float64, I::Int64)
+function estimate_powder_pattern(p::nmr_params, N::Int64, ν0::Float64, I::Int64; transitions::UnitRange{Int64} = 1:(2*I))
     powder_pattern = zeros(N)
     i = 1
     for j = 1:(length(p.weights)-1)
@@ -194,6 +196,7 @@ function estimate_powder_pattern(p::nmr_params, N::Int64, ν0::Float64, I::Int64
             to_add,
             ν0,
             I,
+            transitions = transitions
         )
         i += to_add
     end
@@ -203,6 +206,7 @@ function estimate_powder_pattern(p::nmr_params, N::Int64, ν0::Float64, I::Int64
         N - i + 1,
         ν0,
         I,
+        transitions = transitions
     )
     return powder_pattern
 end
