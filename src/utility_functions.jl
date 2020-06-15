@@ -168,12 +168,13 @@ sake of comparison
 function compare_theoreticals(
     experimental::Array{Float64,2},
     old_nmr_params::nmr_params,
-    new_nmr_params::nmr_params,
+    new_nmr_params::nmr_params;
+    transitions::UnitRange{Int64},
 )
     plot(experimental[:, 1], experimental[:, 2], label = "experimental")
-    theoretical = generate_theoretical_spectrum(experimental, old_nmr_params)
+    theoretical = generate_theoretical_spectrum(experimental, old_nmr_params, transitions = transitions)
     plot!(experimental[:, 1], theoretical, width = 2, label = "old theoretical")
-    theoretical = generate_theoretical_spectrum(experimental, new_nmr_params)
+    theoretical = generate_theoretical_spectrum(experimental, new_nmr_params, transitions = transitions)
     plot!(
         experimental[:, 1],
         theoretical,
