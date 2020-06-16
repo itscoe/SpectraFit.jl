@@ -52,6 +52,7 @@ function nmr_params(p::Array{Float64})
         )
         weights[i] = p[5*i]
     end
+    weights .= max(weights, 0)
     weights ./= sum(weights)
     return nmr_params(qcc, η, weights)
 end
