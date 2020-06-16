@@ -195,7 +195,7 @@ Returns the ecdf of the experimental data over the range of the experimental
 data
 
 """
-function get_experimental_ecdf(experimental::Array{Float64,2}, range::Tuple{Int64,Int64} = (1, length(experimental) ÷ 2))
+function get_experimental_ecdf(experimental::Array{Float64,2}; range::Tuple{Int64,Int64} = (1, length(experimental) ÷ 2))
     return cumsum(experimental[range[1]:range[2], 2]) ./ sum(experimental[range[1]:range[2], 2])
 end
 

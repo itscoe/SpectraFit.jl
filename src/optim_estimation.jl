@@ -46,7 +46,7 @@ function fit_nmr(
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
     range = (findfirst(x -> range[1] < x, experimental[:, 1]),
-        findfirst(x -> range[2] > x, experimental[:, 1]) - 1)
+        findlast(x -> range[2] > x, experimental[:, 1]) - 1)
 
     experimental_ecdf = get_experimental_ecdf(experimental, range = range)
     ν0 =  get_ν0(experimental, experimental_ecdf)
