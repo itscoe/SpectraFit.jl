@@ -188,6 +188,7 @@ julia> estimate_powder_pattern(nmr_params([5.5, 0.1, 0.12, 0.03, 1.0]), 1000, 32
 function estimate_powder_pattern(p::nmr_params, N::Int64, ν0::Float64, I::Int64; transitions::UnitRange{Int64} = 1:(2*I))
     powder_pattern = zeros(N)
     i = 1
+    println(p.weights)
     for j = 1:(length(p.weights)-1)
         to_add = floor(Int, p.weights[j] * N)
         powder_pattern[i:(i+to_add-1)] = estimate_powder_pattern(
