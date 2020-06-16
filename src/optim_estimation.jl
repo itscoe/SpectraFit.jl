@@ -15,10 +15,11 @@ function ols_cdf(
     ν0::Float64;
     I::Int64 = 3,
     samples = 1_000_000,
-    transitions::UnitRange{Int64} = 1:(2*I)
+    transitions::UnitRange{Int64} = 1:(2*I),
+    range::Tuple{Int64,Int64} = (1, length(experimental) ÷ 2)
 )
     powder_pattern = estimate_powder_pattern(parameters, samples, ν0, I, transitions = transitions)
-    theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
+    theoretical_ecdf = ecdf(powder_pattern).(experimental[range[1]:range[2], 1])
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
 
@@ -42,8 +43,12 @@ function fit_nmr(
     samples = 1_000_000,
     starting_values = get_random_starting_values(sites),
     transitions::UnitRange{Int64} = 1:(2*I),
+    range::Tuple(Float64,Float64) = (experimental[1, 1], experimental[end, 1]),
 )
-    experimental_ecdf = get_experimental_ecdf(experimental)
+    range = (findfirst(x -> range[1] < x, experimental[:, 1]),
+        findfirst(x -> range[2] > x, experimental[:, 1]) - 1)
+
+    experimental_ecdf = get_experimental_ecdf(experimental, range = range)
     ν0 =  get_ν0(experimental, experimental_ecdf)
 
     if method == SAMIN()
@@ -62,6 +67,7 @@ function fit_nmr(
                 I = I,
                 samples = samples,
                 transitions = transitions,
+                range = range,
             ),
             lower_bounds,
             upper_bounds,
@@ -78,6 +84,7 @@ function fit_nmr(
                 I = I,
                 samples = samples,
                 transitions = transitions,
+                range = range,
             ),
             starting_values,
             options,
