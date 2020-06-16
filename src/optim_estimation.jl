@@ -43,7 +43,7 @@ function fit_nmr(
     samples = 1_000_000,
     starting_values = get_random_starting_values(sites),
     transitions::UnitRange{Int64} = 1:(2*I),
-    range::Tuple(Float64,Float64) = (experimental[1, 1], experimental[end, 1]),
+    range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
     range = (findfirst(x -> range[1] < x, experimental[:, 1]),
         findfirst(x -> range[2] > x, experimental[:, 1]) - 1)
