@@ -73,6 +73,7 @@ function fit_nmr(
             upper_bounds,
             starting_values,
             SAMIN(),
+            options,
         )
     else
         result = optimize(
