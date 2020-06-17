@@ -53,7 +53,7 @@ function fit_nmr(
 
     if method == SAMIN()
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
-        upper_bounds[1:5:end] .= 9  # Qcc
+        upper_bounds[1:5:end] .= 7  # Qcc
         upper_bounds[2:5:end] .= 1  # σQcc
         upper_bounds[3:5:end] .= 1  # η
         upper_bounds[4:5:end] .= 1  # ση
