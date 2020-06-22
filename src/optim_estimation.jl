@@ -17,7 +17,7 @@ function ols_cdf(
     samples = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
+    theoretical_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I, transitions = transitions))).(experimental[:, 1])
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
 
