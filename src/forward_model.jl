@@ -3,6 +3,8 @@ using Distributions
 const m_arr = [3, 5, 6, 6, 5, 3]
 const μ_dist = Uniform(0, 1)
 const λ_dist = Uniform(-1, 1)
+const cos2α_dist = Uniform(-1, 1)
+const sinβ_dist = Uniform(-1, 1)
 
 
 """
@@ -69,6 +71,19 @@ function get_ν(
     return ν0 + (νQ / 2) * (m - 1 / 2) * a + (νQ * β / 72) * c +
            (νQ * β^2 / 144) * e * (m - 1 / 2)
 end
+
+function get_ν(α::Float64, β::Float64, σᵢₛₒ::Normal, Δσ::Normal, ησ::Truncated{Normal{Float64},Continuous,Float64})
+    Δσ_sample = rand(Δσ)
+    σᵢₛₒ_sample = rand(σᵢₛₒ)
+    ησ_sample = rand(ησ)
+    σᵢₛₒ_sample - (Δσ_sample / 3) * (3 * (1 - β^2) - 1 - ησ_sample * β^2 * α);
+end
+
+function get_powder_pattern(params::chemical_shift_params, N::Int64)
+    α = rand(cos2α_dist, N)
+    β = rand(sinβ_dist, N)
+    return get_ν.(α, β, params.σᵢₛₒ, params.Δσ, params.ησ)
+end;
 
 """
     estimate_powder_pattern(qcc, η, N, ν0, I)
