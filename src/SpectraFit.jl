@@ -3,6 +3,7 @@ module SpectraFit
 ENV["GKS_ENCODING"] = "utf-8"
 
 include("nmr_params.jl")
+include("chemical_shift_params.jl")
 include("utility_functions.jl")
 include("forward_model.jl")
 include("optim_estimation.jl")
