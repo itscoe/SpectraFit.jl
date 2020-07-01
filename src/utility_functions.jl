@@ -123,12 +123,28 @@ function generate_theoretical_spectrum(
     return (mean(experimental[:, 2]) / mean(theoretical)) .* theoretical
 end
 
-function plot_experimental(experimental::Array{Float64,2}; relative_ν = false)
+function generate_theoretical_spectrum(
+    experimental::Array{Float64,2},
+    nmr_params::chemical_shift_params,
+)
+    powder_pattern = estimate_powder_pattern(chemical_shift_params, 1_000_000)
+    k = kde(powder_pattern)
+    x = experimental[:, 1]
+    ik = InterpKDE(k)
+    theoretical = pdf(ik, x)
+    return (mean(experimental[:, 2]) / mean(theoretical)) .* theoretical
+end
+
+function plot_experimental(
+    experimental::Array{Float64,2};
+    relative_ν = false,
+    unit = "MHz",
+)
     ENV["GKS_ENCODING"] = "utf-8"
     to_plot = relative_ν ?
         experimental[:, 1] .- get_ν(experimental) :
         experimental[:, 1]
-    x_label = relative_ν ? "Δν (MHz)" : "ν (MHz)"
+    x_label = relative_ν ? "Δν ($(unit))" : "ν ($(unit))"
     plot(
         to_plot,
         experimental[:, 2],
@@ -148,6 +164,28 @@ function plot_theoretical(
         experimental[:, 1] .- get_ν(experimental) :
         experimental[:, 1]
     x_label = relative_ν ? "Δν (MHz)" : "ν (MHz)"
+    theoretical = generate_theoretical_spectrum(experimental, params)
+    plot(
+        to_plot,
+        theoretical,
+        width = 2,
+        label = "theoretical",
+        xlabel = x_label,
+        ylabel = "Intensity",
+    )
+end
+
+function plot_theoretical(
+    experimental::Array{Float64,2},
+    params::chemical_shift_params;
+    relative_ν = false,
+    unit = "MHz",
+)
+    ENV["GKS_ENCODING"] = "utf-8"
+    to_plot = relative_ν ?
+        experimental[:, 1] .- get_ν(experimental) :
+        experimental[:, 1]
+    x_label = relative_ν ? "Δν ($(unit))" : "ν ($(unit))"
     theoretical = generate_theoretical_spectrum(experimental, params)
     plot(
         to_plot,
