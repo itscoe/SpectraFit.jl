@@ -41,7 +41,7 @@ julia> experimental = get_experimental("B2O3FastCool.txt", 32.239)
 """
 function get_experimental(
     filename::String;
-    ν0_guess::Float64 = 0,
+    ν0_guess::Float64 = 0.0,
     header::Bool = false,
     delim = ",",
     convert_ppm_to_mhz::Bool = ν0_guess != 0,
