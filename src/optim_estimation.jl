@@ -111,7 +111,9 @@ function fit_chemical_shift(
     options = Optim.Options(iterations = iters),
     method = NelderMead(),
     samples = 1_000_000,
-    starting_values = zeros(sites * 6),
+    starting_values = [rand(Uniform(-1000, 1000)), rand(Uniform(-100, 100)),
+        rand(Uniform(-500, 500)), rand(Uniform(-50, 50)),
+        rand(Uniform(0, 1)), rand(Uniform(0, 1))],
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
     range = (findfirst(x -> range[1] < x, experimental[:, 1]),
