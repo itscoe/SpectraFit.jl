@@ -23,6 +23,16 @@ function ols_cdf(
     return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
 end
 
+function ols_cdf(
+    parameters::chemical_shift_params,
+    experimental::Array{Float64, 2},
+    experimental_ecdf::Array{Float64, 1};
+    samples = 1_000_000,
+)
+    th_ecdf = ecdf(get_powder_pattern(parameters, samples)).(experimental[:, 1])
+    return sum((experimental_ecdf .- th_ecdf) .^ 2)
+end
+
 """
     fit_nmr(experimental; sites, iters, options, method)
 
@@ -86,6 +96,58 @@ function fit_nmr(
                 I = I,
                 samples = samples,
                 transitions = transitions,
+            ),
+            starting_values,
+            options,
+        )
+    end
+    return result
+end
+
+function fit_chemical_shift(
+    experimental;
+    sites::Int64 = 1,
+    iters::Int64 = 1000,
+    options = Optim.Options(iterations = iters),
+    method = NelderMead(),
+    samples = 1_000_000,
+    starting_values = zeros(sites * 6),
+    range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
+)
+    range = (findfirst(x -> range[1] < x, experimental[:, 1]),
+        findlast(x -> range[2] > x, experimental[:, 1]) - 1)
+    experimental = experimental[range[1]:range[2], :]
+
+    experimental_ecdf = get_experimental_ecdf(experimental)
+
+    if method == SAMIN()
+        upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
+        upper_bounds[1:end] .= Inf
+        upper_bounds[5:6:end] = 1
+        lower_bounds[1:end] .= -Inf
+        lower_bounds[2:6:end] .= 0
+        lower_bounds[4:6:end] .= 0
+        lower_bounds[6:6:end] .= 0
+        result = optimize(
+            x -> ols_cdf(  # objective function
+                chemical_shift_params(x),
+                experimental,
+                experimental_ecdf,
+                samples = samples,
+            ),
+            lower_bounds,
+            upper_bounds,
+            starting_values,
+            SAMIN(),
+            options,
+        )
+    else
+        result = optimize(
+            x -> ols_cdf(
+                chemical_shift_params(x),
+                experimental,
+                experimental_ecdf,
+                samples = samples,
             ),
             starting_values,
             options,
