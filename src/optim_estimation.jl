@@ -9,7 +9,7 @@ Larmor frequency (ν0) at each x-value in the experimental data
 
 """
 function ols_cdf(
-    parameters::nmr_params,
+    parameters::Quadrupolar,
     experimental,
     experimental_ecdf,
     ν0::Float64;
@@ -72,7 +72,7 @@ function fit_nmr(
         upper_bounds[5:5:end] .= 1  # weights
         result = optimize(
             x -> ols_cdf(  # objective function
-                nmr_params(x),
+                Quadrupolar(x),
                 experimental,
                 experimental_ecdf,
                 ν0,
@@ -89,7 +89,7 @@ function fit_nmr(
     else
         result = optimize(
             x -> ols_cdf(
-                nmr_params(x),
+                Quadrupolar(x),
                 experimental,
                 experimental_ecdf,
                 ν0,

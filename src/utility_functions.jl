@@ -68,7 +68,7 @@ function get_experimental(
 end
 
 """
-    generate_theoretical_spectrum(experimental, nmr_params)
+    generate_theoretical_spectrum(experimental, Quadrupolar)
 
 Given the experimental data (experimental) and a set of corresponding
 nmr parameters, constructs a powder pattern (spectrum) by interpolating the
@@ -78,7 +78,7 @@ kernel density estimate of the distribution produced by the nmr parameters
 ```julia-repl
 julia> generate_theoretical_spectrum(
 julia>     get_experimental("B2O3FastCool.txt", 32.239),
-julia>     nmr_params([5.5, 0.1, 0.12, 0.03, 1.0])
+julia>     Quadrupolar([5.5, 0.1, 0.12, 0.03, 1.0])
 9992-element Array{Float64,1}:
  20431.55828260406
  20423.94683368574
@@ -110,12 +110,12 @@ julia>     nmr_params([5.5, 0.1, 0.12, 0.03, 1.0])
 """
 function generate_theoretical_spectrum(
     experimental::Array{Float64,2},
-    nmr_params::nmr_params;
+    Quadrupolar::Quadrupolar;
     I::Int64 = 3,
     transitions = 1:(2*I),
 )
     ν0 = get_ν0(experimental, get_experimental_ecdf(experimental))
-    powder_pattern = estimate_powder_pattern(nmr_params, 1_000_000, ν0, I, transitions = transitions)
+    powder_pattern = estimate_powder_pattern(Quadrupolar, 1_000_000, ν0, I, transitions = transitions)
     k = kde(powder_pattern)
     x = experimental[:, 1]
     ik = InterpKDE(k)
@@ -125,7 +125,7 @@ end
 
 function generate_theoretical_spectrum(
     experimental::Array{Float64,2},
-    nmr_params::chemical_shift_params,
+    Quadrupolar::chemical_shift_params,
 )
     powder_pattern = estimate_powder_pattern(chemical_shift_params, 1_000_000)
     k = kde(powder_pattern)
@@ -156,7 +156,7 @@ end
 
 function plot_theoretical(
     experimental::Array{Float64,2},
-    params::nmr_params;
+    params::Quadrupolar;
     relative_ν = false,
 )
     ENV["GKS_ENCODING"] = "utf-8"
@@ -198,7 +198,7 @@ function plot_theoretical(
 end
 
 """
-    compare_theoreticals(experimental, old_nmr_params, new_nmr_params)
+    compare_theoreticals(experimental, old_Quadrupolar, new_Quadrupolar)
 
 Plots the experimental data along with two theoretical powder patterns, for the
 sake of comparison
@@ -206,15 +206,15 @@ sake of comparison
 """
 function compare_theoreticals(
     experimental::Array{Float64,2},
-    old_nmr_params::nmr_params,
-    new_nmr_params::nmr_params;
+    old_Quadrupolar::Quadrupolar,
+    new_Quadrupolar::Quadrupolar;
     I = 3,
     transitions::UnitRange{Int64} = 1:(2*I),
 )
     plot(experimental[:, 1], experimental[:, 2], label = "experimental")
-    theoretical = generate_theoretical_spectrum(experimental, old_nmr_params, transitions = transitions)
+    theoretical = generate_theoretical_spectrum(experimental, old_Quadrupolar, transitions = transitions)
     plot!(experimental[:, 1], theoretical, width = 2, label = "old theoretical")
-    theoretical = generate_theoretical_spectrum(experimental, new_nmr_params, transitions = transitions)
+    theoretical = generate_theoretical_spectrum(experimental, new_Quadrupolar, transitions = transitions)
     plot!(
         experimental[:, 1],
         theoretical,
