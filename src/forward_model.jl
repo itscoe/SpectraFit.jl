@@ -79,7 +79,7 @@ function get_ν(α::Float64, β::Float64, σᵢₛₒ::Normal, Δσ::Normal, η�
     σᵢₛₒ_sample - (Δσ_sample / 3) * (3 * (1 - β^2) - 1 - ησ_sample * β^2 * α);
 end
 
-function get_powder_pattern(params::chemical_shift_params, N::Int64)
+function get_powder_pattern(params::ChemicalShift, N::Int64)
     α = rand(cos2α_dist, N)
     β = rand(sinβ_dist, N)
     return get_ν.(α, β, params.σᵢₛₒ, params.Δσ, params.ησ)

@@ -24,7 +24,7 @@ function ols_cdf(
 end
 
 function ols_cdf(
-    parameters::chemical_shift_params,
+    parameters::ChemicalShift,
     experimental::Array{Float64, 2},
     experimental_ecdf::Array{Float64, 1};
     samples = 1_000_000,
@@ -132,7 +132,7 @@ function fit_chemical_shift(
         lower_bounds[6:6:end] .= 0
         result = optimize(
             x -> ols_cdf(  # objective function
-                chemical_shift_params(x),
+                ChemicalShift(x),
                 experimental,
                 experimental_ecdf,
                 samples = samples,
@@ -146,7 +146,7 @@ function fit_chemical_shift(
     else
         result = optimize(
             x -> ols_cdf(
-                chemical_shift_params(x),
+                ChemicalShift(x),
                 experimental,
                 experimental_ecdf,
                 samples = samples,

@@ -125,9 +125,9 @@ end
 
 function generate_theoretical_spectrum(
     experimental::Array{Float64,2},
-    Quadrupolar::chemical_shift_params,
+    Quadrupolar::ChemicalShift,
 )
-    powder_pattern = estimate_powder_pattern(chemical_shift_params, 1_000_000)
+    powder_pattern = estimate_powder_pattern(ChemicalShift, 1_000_000)
     k = kde(powder_pattern)
     x = experimental[:, 1]
     ik = InterpKDE(k)
@@ -177,7 +177,7 @@ end
 
 function plot_theoretical(
     experimental::Array{Float64,2},
-    params::chemical_shift_params;
+    params::ChemicalShift;
     relative_ν = false,
     unit = "MHz",
 )
