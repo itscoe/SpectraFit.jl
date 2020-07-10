@@ -39,21 +39,17 @@ function Quadrupolar(p::Array{Float64})
     qcc = Array{Distribution}(undef, sites)
     η = Array{Distribution}(undef, sites)
     weights = zeros(sites)
+
+    map(i -> p[i] < 0 && return missing, 1:length(p))
+    map(i -> p[5*(i-1)+3] > 1 && return missing, 1:sites)
+
     for i = 1:sites
-        qcc[i] = truncated(
-            Normal(p[5*(i-1)+1], max(0, p[5*(i-1)+2])),
-            0.0,
-            Inf,
-        )
-        η[i] = truncated(
-            Normal(p[5*(i-1)+3], max(0, p[5*(i-1)+4])),
-            0.0,
-            1.0,
-        )
+        qcc[i] = truncated(Normal(p[5*(i-1)+1], p[5*(i-1)+2]), 0.0, Inf)
+        η[i] = truncated(Normal(p[5*(i-1)+3], p[5*(i-1)+4]), 0.0, 1.0)
         weights[i] = p[5*i]
     end
-    weights .= max.(weights, 0)
     weights ./= sum(weights)
+
     return Quadrupolar(qcc, η, weights)
 end
 
@@ -61,19 +57,16 @@ function Quadrupolar(; sites = 1)
     qcc = Array{Distribution}(undef, sites)
     η = Array{Distribution}(undef, sites)
     weights = zeros(sites)
+
+    qcc_dist = Uniform(0, 9)
+    ησ_dist = Uniform(0, 1)
+
     for i = 1:sites
-        qcc[i] = truncated(
-            Normal(rand(Uniform(0, 9)), rand(Uniform(0, 1))),
-            0.0,
-            Inf,
-        )
-        η[i] = truncated(
-            Normal(rand(Uniform(0, 1)), rand(Uniform(0, 1))),
-            0.0,
-            Inf,
-        )
+        qcc[i] = truncated(Normal(qcc_dist, ησ_dist), 0.0, Inf)
+        η[i] = truncated(Normal(ησ_dist, ησ_dist), 0.0, 1.0)
         weights[i] = rand(Uniform(0, 1))
     end
     weights ./= sum(weights)
+
     return Quadrupolar(qcc, η, weights)
 end
