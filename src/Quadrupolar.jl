@@ -40,10 +40,11 @@ function Quadrupolar(p::Array{Float64})
     η = Array{Distribution}(undef, sites)
     weights = zeros(sites)
 
-    map(i -> p[i] < 0 && return missing, 1:length(p))
-    map(i -> p[5*(i-1)+3] > 1 && return missing, 1:sites)
-
+    for i in 1:length(p)
+        p[i] < 0 && return missing
+    end
     for i = 1:sites
+        p[5*(i-1)+3] > 1 && return missing
         qcc[i] = truncated(Normal(p[5*(i-1)+1], p[5*(i-1)+2]), 0.0, Inf)
         η[i] = truncated(Normal(p[5*(i-1)+3], p[5*(i-1)+4]), 0.0, 1.0)
         weights[i] = p[5*i]
