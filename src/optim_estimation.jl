@@ -141,7 +141,7 @@ function fit_chemical_shift(
     experimental_ecdf = get_experimental_ecdf(experimental)
 
     if method == SAMIN()
-        upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
+        upper_bounds, lower_bounds = zeros(7 * sites), zeros(7 * sites)
         upper_bounds[1:end] .= Inf
         upper_bounds[5:7:end] .= 1
         upper_bounds[7:7:end] .= 1
