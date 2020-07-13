@@ -17,7 +17,7 @@ function ChemicalShift(p::Array{Float64})
     ησ = Array{Distribution}(undef, sites)
     weights = zeros(sites)
     for i in 1:length(p)
-        if i % 7 in [2, 4, 5, 6, 7]
+        if i % 7 in [0, 2, 4, 5, 6]
             p[i] < 0 && return missing
         end
         if i % 7 == 5
