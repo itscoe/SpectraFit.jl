@@ -23,6 +23,9 @@ function ChemicalShift(p::Array{Float64})
         if i % 7 == 5
             p[i] > 1 && return missing
         end
+        isnan(p[i]) && return missing
+        isnothing(p[i]) && return missing
+        ismissing(p[i]) && return missing
     end
     for i = 1:sites
         σᵢₛₒ[i] = Normal(p[7*(i-1)+1], p[7*(i-1)+2])
