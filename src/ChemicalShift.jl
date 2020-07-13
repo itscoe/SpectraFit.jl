@@ -31,7 +31,7 @@ function ChemicalShift(p::Array{Float64})
         weights[i] = p[7*i]
     end
     weights ./= sum(weights)
-    return chemical_shift_params(σᵢₛₒ, Δσ, ησ, weights)
+    return ChemicalShift(σᵢₛₒ, Δσ, ησ, weights)
 end
 
 function get_ν(
