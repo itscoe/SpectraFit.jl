@@ -11,7 +11,7 @@ include("bayesian_estimation.jl")
 export get_experimental,
        Quadrupolar,
        ChemicalShift,
-       fit_nmr,
+       fit_quadrupolar,
        metropolis_hastings,
        compare_theoreticals,
        get_data

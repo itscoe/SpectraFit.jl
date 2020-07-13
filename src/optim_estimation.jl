@@ -24,6 +24,18 @@ function ols_cdf(
 end
 
 function ols_cdf(
+    parameters::Missing,
+    experimental,
+    experimental_ecdf,
+    ν0::Float64;
+    I::Int64 = 3,
+    samples = 1_000_000,
+    transitions::UnitRange{Int64} = 1:(2*I),
+)
+    return Inf
+end
+
+function ols_cdf(
     parameters::ChemicalShift,
     experimental::Array{Float64, 2},
     experimental_ecdf::Array{Float64, 1};
@@ -33,8 +45,17 @@ function ols_cdf(
     return sum((experimental_ecdf .- th_ecdf) .^ 2)
 end
 
+function ols_cdf(
+    parameters::Missing,
+    experimental::Array{Float64, 2},
+    experimental_ecdf::Array{Float64, 1};
+    samples = 1_000_000,
+)
+    return Inf
+end
+
 """
-    fit_nmr(experimental; sites, iters, options, method)
+    fit_quadrupolar(experimental; sites, iters, options, method)
 
 Fit the NMR parameters, assuming a normal distribution and using the specified
 optimization method (currently implementer are Nelder-Mead and Simulated
@@ -43,7 +64,7 @@ the loss function of ordinary least squares of the CDFs, assuming a specified
 number of sites (sites, defaults to 1)
 
 """
-function fit_nmr(
+function fit_quadrupolar(
     experimental;
     sites::Int64 = 1,
     iters::Int64 = 1000,
@@ -51,14 +72,13 @@ function fit_nmr(
     method = NelderMead(),
     I = 3,
     samples = 1_000_000,
-    starting_values = get_random_starting_values(sites),
+    starting_values = get_quadrupolar_starting_values(sites),
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
     range = (findfirst(x -> range[1] < x, experimental[:, 1]),
         findlast(x -> range[2] > x, experimental[:, 1]) - 1)
     experimental = experimental[range[1]:range[2], :]
-
 
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
@@ -111,9 +131,7 @@ function fit_chemical_shift(
     options = Optim.Options(iterations = iters),
     method = NelderMead(),
     samples = 1_000_000,
-    starting_values = [rand(Uniform(-1000, 1000)), rand(Uniform(-100, 100)),
-        rand(Uniform(-500, 500)), rand(Uniform(-50, 50)),
-        rand(Uniform(0, 1)), rand(Uniform(0, 1))],
+    starting_values = get_chemical_shift_starting_values(sites),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
     range = (findfirst(x -> range[1] < x, experimental[:, 1]),

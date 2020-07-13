@@ -262,12 +262,27 @@ function get_data(filename::String)
     return joinpath(dirname(pathof(SpectraFit)), "..", "data", filename)
 end
 
-function get_random_starting_values(sites::Int64)
+function get_quadrupolar_starting_values(sites::Int64)
     starting_values = zeros(5 * sites)
     starting_values[1:5:end] = rand(Uniform(0, 9), sites)  # Qcc
     starting_values[2:5:end] = rand(Uniform(0, 1), sites)  # σQcc
     starting_values[3:5:end] = rand(Uniform(0, 1), sites)  # η
     starting_values[4:5:end] = rand(Uniform(0, 1), sites)  # ση
     starting_values[5:5:end] = rand(Uniform(0, 1), sites)  # weights
+    return starting_values
+end
+
+function get_chemical_shift_starting_values(sites::Int64)
+    [rand(Uniform(-1000, 1000)), rand(Uniform(-100, 100)),
+        rand(Uniform(-500, 500)), rand(Uniform(-50, 50)),
+        rand(Uniform(0, 1)), rand(Uniform(0, 1))]
+    starting_values = zeros(7 * sites)
+    starting_values[1:7:end] = rand(Uniform(-1000, 1000), sites)
+    starting_values[2:7:end] = rand(Uniform(0, 100), sites)
+    starting_values[3:7:end] = rand(Uniform(-500, 500), sites)
+    starting_values[4:7:end] = rand(Uniform(0, 50), sites)
+    starting_values[5:7:end] = rand(Uniform(0, 1), sites)
+    starting_values[6:7:end] = rand(Uniform(0, 1), sites)
+    starting_values[7:7:end] = rand(Uniform(0, 1), sites)  # weights
     return starting_values
 end
