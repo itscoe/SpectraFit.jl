@@ -43,10 +43,12 @@ function ols_cdf(
 )
     try
         th_ecdf = ecdf(estimate_powder_pattern(parameters, samples)).(experimental[:, 1])
+        return sum((experimental_ecdf .- th_ecdf) .^ 2)
     catch
         println(parameters)
+        th_ecdf = ecdf(estimate_powder_pattern(parameters, samples)).(experimental[:, 1])
+        return sum((experimental_ecdf .- th_ecdf) .^ 2)
     end
-    return sum((experimental_ecdf .- th_ecdf) .^ 2)
 end
 
 function ols_cdf(
