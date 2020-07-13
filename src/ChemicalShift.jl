@@ -57,5 +57,8 @@ function estimate_powder_pattern(p::ChemicalShift, N::Int64)
     α = rand(cos2α_dist, N - i + 1)
     β = rand(sinβ_dist, N - i + 1)
     powder_pattern[i:end] = get_ν.(α, β, p.σᵢₛₒ[end], p.Δσ[end], p.ησ[end])
+    if NaN in powder_pattern
+        println(p)
+    end
     return powder_pattern
 end
