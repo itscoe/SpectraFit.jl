@@ -143,7 +143,7 @@ function fit_chemical_shift(
     if method == SAMIN()
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
         upper_bounds[1:end] .= Inf
-        upper_bounds[5:6:end] = 1
+        upper_bounds[5:6:end] .= 1
         lower_bounds[1:end] .= -Inf
         lower_bounds[2:6:end] .= 0
         lower_bounds[4:6:end] .= 0
