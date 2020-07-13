@@ -24,6 +24,7 @@ function ChemicalShift(p::Array{Float64})
             p[i] > 1 && return missing
         end
         isnan(p[i]) && return missing
+        isinf(p[i]) && return missing
         isnothing(p[i]) && return missing
         ismissing(p[i]) && return missing
     end
