@@ -12,6 +12,7 @@ export get_experimental,
        Quadrupolar,
        ChemicalShift,
        fit_quadrupolar,
+       fit_chemical_shift,
        metropolis_hastings,
        compare_theoreticals,
        get_data
