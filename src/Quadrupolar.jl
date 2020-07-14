@@ -45,6 +45,10 @@ function Quadrupolar(p::Array{Float64})
 
     for i in 1:length(p)
         p[i] < 0 && return missing
+        isnan(p[i]) && return missing
+        isinf(p[i]) && return missing
+        isnothing(p[i]) && return missing
+        ismissing(p[i]) && return missing
     end
     for i = 1:sites
         p[5*(i-1)+3] > 1 && return missing
