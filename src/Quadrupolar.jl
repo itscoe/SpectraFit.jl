@@ -182,7 +182,8 @@ function estimate_powder_pattern(
         η,
         rand(μ_dist, N),
         rand(λ_dist, N),
-        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
+        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .-
+            (length(transitions) ÷ 2),
         I,
         ν0,
     )
@@ -226,7 +227,8 @@ function estimate_powder_pattern(
         rand(η_dist, N),
         rand(μ_dist, N),
         rand(λ_dist, N),
-        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
+        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .-
+            (length(transitions) ÷ 2),
         I,
         ν0,
     )
@@ -259,7 +261,13 @@ julia> estimate_powder_pattern(Quadrupolar([5.5, 0.1, 0.12, 0.03, 1.0]), 1000, 3
  32.15411486178574
 ```
 """
-function estimate_powder_pattern(p::Quadrupolar, N::Int64, ν0::Float64, I::Int64; transitions::UnitRange{Int64} = 1:(2*I))
+function estimate_powder_pattern(
+    p::Quadrupolar,
+    N::Int64,
+    ν0::Float64,
+    I::Int64;
+    transitions::UnitRange{Int64} = 1:(2*I),
+)
     powder_pattern = zeros(N)
     i = 1
     for j = 1:(length(p.weights)-1)

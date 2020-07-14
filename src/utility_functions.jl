@@ -115,7 +115,8 @@ function generate_theoretical_spectrum(
     transitions = 1:(2*I),
 )
     ν0 = get_ν0(experimental, get_experimental_ecdf(experimental))
-    powder_pattern = estimate_powder_pattern(Quadrupolar, 1_000_000, ν0, I, transitions = transitions)
+    powder_pattern = estimate_powder_pattern(Quadrupolar, 1_000_000, ν0, I,
+        transitions = transitions)
     k = kde(powder_pattern)
     x = experimental[:, 1]
     ik = InterpKDE(k)
@@ -212,9 +213,11 @@ function compare_theoreticals(
     transitions::UnitRange{Int64} = 1:(2*I),
 )
     plot(experimental[:, 1], experimental[:, 2], label = "experimental")
-    theoretical = generate_theoretical_spectrum(experimental, old_Quadrupolar, transitions = transitions)
+    theoretical = generate_theoretical_spectrum(experimental, old_Quadrupolar,
+        transitions = transitions)
     plot!(experimental[:, 1], theoretical, width = 2, label = "old theoretical")
-    theoretical = generate_theoretical_spectrum(experimental, new_Quadrupolar, transitions = transitions)
+    theoretical = generate_theoretical_spectrum(experimental, new_Quadrupolar,
+        transitions = transitions)
     plot!(
         experimental[:, 1],
         theoretical,

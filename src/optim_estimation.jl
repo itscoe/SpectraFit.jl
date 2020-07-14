@@ -10,27 +10,27 @@ Larmor frequency (ν0) at each x-value in the experimental data
 """
 function ols_cdf(
     parameters::Quadrupolar,
-    experimental,
-    experimental_ecdf,
+    exp::Array{Float64, 2},
+    exp_ecdf::Array{Float64, 1},
     ν0::Float64;
     I::Int64 = 3,
-    samples = 1_000_000,
+    samples::Int64 = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    theoretical_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
-        transitions = transitions)).(experimental[:, 1])
-    theoretical_ecdf .-= theoretical_ecdf[1]
-    theoretical_ecdf .*= 1 / theoretical_ecdf[end]
-    return sum((experimental_ecdf - theoretical_ecdf) .^ 2)
+    th_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
+        transitions = transitions)).(exp[:, 1])
+    th_ecdf .-= th_ecdf[1]
+    th_ecdf .*= 1 / th_ecdf[end]
+    return sum((exp_ecdf - theoretical_ecdf) .^ 2)
 end
 
 function ols_cdf(
     parameters::Missing,
-    experimental,
-    experimental_ecdf,
+    exp::Array{Float64, 2},
+    exp_ecdf::Array{Float64, 1},
     ν0::Float64;
     I::Int64 = 3,
-    samples = 1_000_000,
+    samples::Int64 = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
 )
     return 1_000_000.0
@@ -38,25 +38,21 @@ end
 
 function ols_cdf(
     parameters::ChemicalShift,
-    experimental::Array{Float64, 2},
-    experimental_ecdf::Array{Float64, 1};
-    samples = 1_000_000,
+    exp::Array{Float64, 2},
+    exp_ecdf::Array{Float64, 1};
+    samples::Int64 = 1_000_000,
 )
-    try
-        th_ecdf = ecdf(estimate_powder_pattern(parameters, samples)).(experimental[:, 1])
-        return sum((experimental_ecdf .- th_ecdf) .^ 2)
-    catch
-        println(parameters)
-        th_ecdf = ecdf(estimate_powder_pattern(parameters, samples)).(experimental[:, 1])
-        return sum((experimental_ecdf .- th_ecdf) .^ 2)
-    end
+    th_ecdf = ecdf(estimate_powder_pattern(parameters, samples)).(exp[:, 1])
+    th_ecdf .-= th_ecdf[1]
+    th_ecdf .*= 1 / th_ecdf[end]
+    return sum((exp_ecdf .- th_ecdf) .^ 2)
 end
 
 function ols_cdf(
     parameters::Missing,
-    experimental::Array{Float64, 2},
-    experimental_ecdf::Array{Float64, 1};
-    samples = 1_000_000,
+    exp::Array{Float64, 2},
+    exp_ecdf::Array{Float64, 1};
+    samples::Int64 = 1_000_000,
 )
     return 1_000_000.0
 end
@@ -72,13 +68,13 @@ number of sites (sites, defaults to 1)
 
 """
 function fit_quadrupolar(
-    experimental;
+    experimental::Array{Float64, 2};
     sites::Int64 = 1,
     iters::Int64 = 1000,
     options = Optim.Options(iterations = iters),
     method = NelderMead(),
-    I = 3,
-    samples = 1_000_000,
+    I::Int64 = 3,
+    samples::Int64 = 1_000_000,
     starting_values = get_quadrupolar_starting_values(sites),
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
@@ -132,12 +128,12 @@ function fit_quadrupolar(
 end
 
 function fit_chemical_shift(
-    experimental;
+    experimental::Array{Float64, 2};
     sites::Int64 = 1,
     iters::Int64 = 1000,
     options = Optim.Options(iterations = iters),
     method = NelderMead(),
-    samples = 1_000_000,
+    samples::Int64 = 1_000_000,
     starting_values = get_chemical_shift_starting_values(sites),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
