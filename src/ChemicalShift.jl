@@ -78,6 +78,8 @@ function get_chemical_shift_starting_values(sites::Int64)
     starting_values[4:7:end] = rand(Uniform(0, 50), sites)
     starting_values[5:7:end] = rand(Uniform(0, 1), sites)
     starting_values[6:7:end] = rand(Uniform(0, 1), sites)
-    starting_values[7:7:end] = rand(Uniform(0, 1 / sites), sites)  # weights
+    if sites > 1
+        starting_values[7:7:end] = rand(Uniform(0, 1 / sites), sites)  # weights
+    end
     return starting_values
 end
