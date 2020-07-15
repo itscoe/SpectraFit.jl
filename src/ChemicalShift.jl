@@ -18,7 +18,7 @@ function ChemicalShift(p::Array{Float64})
     Δσ = Array{Distribution}(undef, sites)
     ησ = Array{Distribution}(undef, sites)
     weights = zeros(sites)
-    weights_sum = sum(map(i -> i % 7 == 0 : p[i] ? 0.0), 1:length(p))
+    weights_sum = sum(map(i -> i % 7 == 0 ? p[i] : 0.0), 1:length(p))
     weights_sum > 1.0 && return missing
     for i in 1:length(p)
         if i % 7 in [0, 2, 4, 5, 6]
