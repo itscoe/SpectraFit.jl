@@ -12,6 +12,7 @@ end
 
 function ChemicalShift(p::Array{Float64})
     sites = length(p) ÷ 7 + 1
+    println(length(p))
     length(p) != 7 * sites - 1 && return nothing
     σᵢₛₒ = Array{Distribution}(undef, sites)
     Δσ = Array{Distribution}(undef, sites)
