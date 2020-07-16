@@ -21,7 +21,7 @@ function ols_cdf(
         transitions = transitions)).(exp[:, 1])
     th_ecdf .-= th_ecdf[1]
     th_ecdf .*= 1 / th_ecdf[end]
-    return sum((exp_ecdf - theoretical_ecdf) .^ 2)
+    return sum((exp_ecdf - th_ecdf) .^ 2)
 end
 
 function ols_cdf(
