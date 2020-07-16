@@ -38,43 +38,24 @@ Distributions.Normal{Float64}(μ=0.12, σ=0.03), range=(0.0, 1.0))], [1.0])
 ```
 """
 function Quadrupolar(p::Array{Float64})
-    sites = length(p) ÷ 5
+    sites = length(p) ÷ 5 + 1
     qcc = Array{Distribution}(undef, sites)
     η = Array{Distribution}(undef, sites)
     weights = zeros(sites)
 
+    weights_sum = sum(map(i -> i % 5 == 0 ? p[i] : 0.0, 1:length(p)))
+    weights_sum > 1.0 && return missing
     for i in 1:length(p)
         p[i] < 0 && return missing
-        isnan(p[i]) && return missing
-        isinf(p[i]) && return missing
-        isnothing(p[i]) && return missing
-        ismissing(p[i]) && return missing
+        (isnan(p[i]) || isinf(p[i])) && return missing
+        (isnothing(p[i]) || ismissing(p[i])) && return missing
     end
     for i = 1:sites
         p[5*(i-1)+3] > 1 && return missing
         qcc[i] = truncated(Normal(p[5*(i-1)+1], p[5*(i-1)+2]), 0.0, Inf)
         η[i] = truncated(Normal(p[5*(i-1)+3], p[5*(i-1)+4]), 0.0, 1.0)
-        weights[i] = p[5*i]
+        weights[i] = i != sites ? p[5*i] : 1 - weights_sum
     end
-    weights ./= sum(weights)
-
-    return Quadrupolar(qcc, η, weights)
-end
-
-function Quadrupolar(; sites = 1)
-    qcc = Array{Distribution}(undef, sites)
-    η = Array{Distribution}(undef, sites)
-    weights = zeros(sites)
-
-    qcc_dist = Uniform(0, 9)
-    ησ_dist = Uniform(0, 1)
-
-    for i = 1:sites
-        qcc[i] = truncated(Normal(qcc_dist, ησ_dist), 0.0, Inf)
-        η[i] = truncated(Normal(ησ_dist, ησ_dist), 0.0, 1.0)
-        weights[i] = rand(Uniform(0, 1))
-    end
-    weights ./= sum(weights)
 
     return Quadrupolar(qcc, η, weights)
 end
@@ -145,97 +126,6 @@ function get_ν(
 end
 
 """
-    estimate_powder_pattern(qcc, η, N, ν0, I)
-
-Compute N frequencies, whose distribution forms what is referred to as the
-powder pattern, for a given constant quantum coupling constant (qcc), asymmetry
-parameter (η), Larmor frequency (ν0), and spin (I).
-
-# Examples
-```julia-repl
-julia> estimate_powder_pattern(5.5, 0.12, 1000, 32.239, 3)
-1000-element Array{Float64,1}:
- 31.642158678615466
- 32.29007760700354
- 32.49191763034485
- 31.977470133840807
- 32.15774744485017
- 32.370129488162604
-  ⋮
- 32.207419941292166
- 32.37006059997012
- 31.8904533723238
- 31.90058799183554
- 31.923103102539272
-```
-"""
-function estimate_powder_pattern(
-    qcc::Float64,
-    η::Float64,
-    N::Int64,
-    ν0::Float64,
-    I::Int64;
-    transitions::UnitRange{Int64} = 1:(2*I),
-)
-    get_ν.(
-        qcc,
-        η,
-        rand(μ_dist, N),
-        rand(λ_dist, N),
-        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .-
-            (length(transitions) ÷ 2),
-        I,
-        ν0,
-    )
-end
-
-"""
-    estimate_powder_pattern(qcc_dist, η_dist, N, ν0, I)
-
-Compute N frequencies, whose distribution forms what is referred to as the
-powder pattern, for given distributions for the quantum coupling constant (qcc)
-and asymmetry parameter (η), and constant Larmor frequency (ν0) and spin (I).
-
-# Examples
-```julia-repl
-julia> estimate_powder_pattern(Normal(5.5, 0.1), Normal(0.12, 0.3), 1000, 32.239, 3)
-1000-element Array{Float64,1}:
- 32.32953183983512
- 31.0703288812469
- 31.439764398657402
- 31.977692464858183
- 31.56445141496665
- 32.546474670537116
-  ⋮
- 32.484127985897096
- 32.68037041257578
- 32.12144621413712
- 31.85888861925229
- 31.750349337445407
-```
-"""
-function estimate_powder_pattern(
-    qcc_dist::Distribution,
-    η_dist::Distribution,
-    N::Int64,
-    ν0::Float64,
-    I::Int64;
-    transitions::UnitRange{Int64} = 1:(2*I),
-)
-    get_ν.(
-        rand(qcc_dist, N),
-        rand(η_dist, N),
-        rand(μ_dist, N),
-        rand(λ_dist, N),
-        rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .-
-            (length(transitions) ÷ 2),
-        I,
-        ν0,
-    )
-end
-
-
-"""
     estimate_powder_pattern(p, N, ν0, I)
 
 Compute N frequencies, whose distribution forms what is referred to as the
@@ -268,27 +158,16 @@ function estimate_powder_pattern(
     I::Int64;
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    powder_pattern = zeros(N)
-    i = 1
-    for j = 1:(length(p.weights)-1)
-        to_add = floor(Int, p.weights[j] * N)
-        powder_pattern[i:(i+to_add-1)] = estimate_powder_pattern(
-            p.qcc[j],
-            p.η[j],
-            to_add,
-            ν0,
-            I,
-            transitions = transitions
-        )
-        i += to_add
-    end
-    powder_pattern[i:end] = estimate_powder_pattern(
-        p.qcc[length(p.weights)],
-        p.η[length(p.weights)],
-        N - i + 1,
-        ν0,
+    sites = rand(Categorical(p.weights), N)
+    powder_pattern = get_ν.(
+        rand.(map(i -> p.qcc[i], sites)),
+        rand.(map(i -> p.η[i], sites)),
+        rand(μ_dist, N),
+        rand(λ_dist, N),
+        rand(Categorical(m_arr[transitions] ./
+            sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
         I,
-        transitions = transitions
+        ν0,
     )
     return powder_pattern
 end
@@ -299,6 +178,8 @@ function get_quadrupolar_starting_values(sites::Int64)
     starting_values[2:5:end] = rand(Uniform(0, 1), sites)  # σQcc
     starting_values[3:5:end] = rand(Uniform(0, 1), sites)  # η
     starting_values[4:5:end] = rand(Uniform(0, 1), sites)  # ση
-    starting_values[5:5:end] = rand(Uniform(0, 1), sites)  # weights
+    if sites > 1
+        starting_values[5:5:end] = rand(Uniform(0, 1 / sites), sites - 1)
+    end
     return starting_values
 end

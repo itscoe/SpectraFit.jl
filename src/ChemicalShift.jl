@@ -16,20 +16,16 @@ function ChemicalShift(p::Array{Float64})
     Δσ = Array{Distribution}(undef, sites)
     ησ = Array{Distribution}(undef, sites)
     weights = zeros(sites)
+
     weights_sum = sum(map(i -> i % 7 == 0 ? p[i] : 0.0, 1:length(p)))
     weights_sum > 1.0 && return missing
     for i in 1:length(p)
-        if i % 7 in [0, 2, 4, 5, 6]
-            p[i] < 0 && return missing
-        end
-        if i % 7 == 5
-            p[i] > 1 && return missing
-        end
-        isnan(p[i]) && return missing
-        isinf(p[i]) && return missing
-        isnothing(p[i]) && return missing
-        ismissing(p[i]) && return missing
+        i % 7 in [0, 2, 4, 5, 6] && p[i] < 0 && return missing
+        i % 7 == 5 && p[i] > 1 && return missing
+        (isnan(p[i]) || isinf(p[i])) && return missing
+        (isnothing(p[i]) || ismissing(p[i])) && return missing
     end
+
     for i = 1:sites
         σᵢₛₒ[i] = Normal(p[7*(i-1)+1], p[7*(i-1)+2])
         Δσ[i] = Normal(p[7*(i-1)+3], p[7*(i-1)+4])
