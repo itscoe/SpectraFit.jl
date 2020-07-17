@@ -32,7 +32,7 @@ function ols_cdf(
     samples::Int64 = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    return 1_000_000.0
+    return size(exp)[1]
 end
 
 function ols_cdf(
@@ -52,7 +52,7 @@ function ols_cdf(
     exp_ecdf::Array{Float64, 1};
     samples::Int64 = 1_000_000,
 )
-    return 1_000_000.0
+    return size(exp)[1]
 end
 
 """
