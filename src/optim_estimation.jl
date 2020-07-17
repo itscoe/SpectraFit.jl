@@ -19,7 +19,7 @@ function ols_cdf(
 )
     th_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
         transitions = transitions)).(exp[:, 1])
-    exp_excf .= exp_excf * (th_ecdf[end] - th_ecdf[1]) + th_ecdf[1]
+    exp_excf .= exp_ecdf * (th_ecdf[end] - th_ecdf[1]) + th_ecdf[1]
     return sum((exp_ecdf - th_ecdf) .^ 2)
 end
 
