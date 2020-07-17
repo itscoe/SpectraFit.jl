@@ -17,7 +17,6 @@ function ols_cdf(
     samples::Int64 = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    println("legit set")
     th_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
         transitions = transitions)).(exp[:, 1])
     exp_ecdf .= exp_ecdf .* (th_ecdf[end] .- th_ecdf[1]) .+ th_ecdf[1]
