@@ -51,7 +51,6 @@ function Quadrupolar(p::Array{Float64})
         (isnothing(p[i]) || ismissing(p[i])) && return missing
     end
     for i = 1:sites
-        p[5*(i-1)+3] > 1 && return missing
         qcc[i] = truncated(Normal(p[5*(i-1)+1], p[5*(i-1)+2]), 0.0, Inf)
         η[i] = truncated(Normal(p[5*(i-1)+3], p[5*(i-1)+4]), 0.0, 1.0)
         weights[i] = i != sites ? p[5*i] : 1 - weights_sum

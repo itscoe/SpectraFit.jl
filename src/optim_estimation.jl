@@ -110,7 +110,7 @@ function fit_quadrupolar(
     else
         result = optimize(
             x -> ols_cdf(
-                Quadrupolar(x),
+                Quadrupolar(x .^ 2),
                 experimental,
                 experimental_ecdf,
                 ν0,
