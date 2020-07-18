@@ -22,7 +22,7 @@ function likelihood(yhat, experimental_ecdf, experimental, I, ν0)
     # Here we're generating the theoretical sample and converting it to a CDF
     quad = Quadrupolar(yhat[1:4])
     ismissing(quad) && return 0
-    powder_pattern = estimate_powder_pattern(quad(yhat[1:4]), 100_000, ν0, I)
+    powder_pattern = estimate_powder_pattern(quad, 100_000, ν0, I)
     theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
 
     # Then we return the likelihood, based on two CDFs' differences
