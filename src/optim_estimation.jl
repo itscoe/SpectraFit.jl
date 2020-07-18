@@ -18,8 +18,8 @@ function ols_cdf(
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
-    range = (findfirst(x -> range[1] < x, experimental[:, 1]),
-        findlast(x -> range[2] > x, experimental[:, 1]) - 1)
+    range = (findfirst(x -> range[1] < x, exp[:, 1]),
+        findlast(x -> range[2] > x, exp[:, 1]) - 1)
     th_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
         transitions = transitions)).(exp[:, 1])
     return sum((exp_ecdf[range[1]:range[2]] .- th_ecdf[range[1]:range[2]]) .^ 2)
