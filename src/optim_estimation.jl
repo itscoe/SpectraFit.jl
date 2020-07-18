@@ -16,12 +16,13 @@ function ols_cdf(
     I::Int64 = 3,
     samples::Int64 = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
+    range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
+    range = (findfirst(x -> range[1] < x, experimental[:, 1]),
+        findlast(x -> range[2] > x, experimental[:, 1]) - 1)
     th_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
         transitions = transitions)).(exp[:, 1])
-    th_ecdf .-= th_ecdf[1]
-    th_ecdf ./= (th_ecdf[end] .- th_ecdf[1])
-    return sum((exp_ecdf - th_ecdf) .^ 2)
+    return sum((exp_ecdf[range[1]:range[2]] .- th_ecdf[range[1]:range[2]]) .^ 2)
 end
 
 function ols_cdf(
@@ -78,10 +79,6 @@ function fit_quadrupolar(
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
-    range = (findfirst(x -> range[1] < x, experimental[:, 1]),
-        findlast(x -> range[2] > x, experimental[:, 1]) - 1)
-    experimental = experimental[range[1]:range[2], :]
-
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
 
@@ -101,6 +98,7 @@ function fit_quadrupolar(
                 I = I,
                 samples = samples,
                 transitions = transitions,
+                range = range,
             ),
             lower_bounds,
             upper_bounds,
@@ -118,6 +116,7 @@ function fit_quadrupolar(
                 I = I,
                 samples = samples,
                 transitions = transitions,
+                range = range,
             ),
             starting_values,
             options,
