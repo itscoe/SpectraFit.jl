@@ -16,10 +16,11 @@ the ordinary least squares of the experimental vs. theoretical CDFs
 """
 function likelihood(yhat, experimental_ecdf, experimental, I, ν0)
     # We must choose a distribution for the error!
-    likelihood_dist = Normal(0, max(0, yhat[3]))
+    likelihood_dist = Normal(0, yhat[5])
 
     # Here we're generating the theoretical sample and converting it to a CDF
-    powder_pattern = estimate_powder_pattern(yhat[1], yhat[2], 100_000, ν0, I)
+    powder_pattern = estimate_powder_pattern(Quadrupolar(yhat[1], yhat[2],
+        yhat[3], yhat[4]), 100_000, ν0, I)
     theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
 
     # Then we return the likelihood, based on two CDFs' differences
@@ -38,28 +39,32 @@ for qcc, 0.1 for η, 0.05 for σ)
 function metropolis_hastings(
     experimental;
     N = 1_000_000,
-    tol = [0.1, 0.1, 0.05],
+    tol = [0.1, 0.1, 0.1, 0.1, 0.05],
     I = 3,
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 = get_ν0(experimental, experimental_ecdf)
 
-    samples = zeros(N, 3)  # initialize zero array for samples
+    samples = zeros(N, 5)  # initialize zero array for samples
 
     #We need to define prior distributions for each parameter
     prior_dist_qcc = Uniform(0, 9)
+    prior_dist_σqcc = Uniform(0, 3)
     prior_dist_η = Uniform(0, 1)
+    prior_dist_ση = Uniform(0, 1)
     prior_dist_σ = Uniform(0, 1)
 
-    prior(x) = logpdf(prior_dist_qcc, x[1]) + logpdf(prior_dist_η, x[2]) +
-    logpdf(prior_dist_σ, x[3]) # Assume variables are independent
+    prior(x) = logpdf(prior_dist_qcc, x[1]) + logpdf(prior_dist_σqcc, x[2]) +
+        logpdf(prior_dist_η, x[3]) + logpdf(prior_dist_ση, x[4]) +
+        logpdf(prior_dist_σ, x[5]) # Assume variables are independent
 
-    a = [rand(prior_dist_qcc), rand(prior_dist_η), rand(prior_dist_σ)]
+    a = [rand(prior_dist_qcc), rand(prior_dist_σqcc), rand(prior_dist_η),
+        rand(prior_dist_ση),rand(prior_dist_σ)]
     samples[1, :] = a
 
     # Repeat N times
     @showprogress for i = 2:N
-        b = a + tol .* (rand(3) .- 0.5)  # Compute new state randomly
+        b = a + tol .* (rand(5) .- 0.5)  # Compute new state randomly
         # Calculate density
         prob_old = likelihood(a, experimental_ecdf, experimental, I, ν0) +
                    prior(a)
