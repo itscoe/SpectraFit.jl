@@ -16,10 +16,13 @@ the ordinary least squares of the experimental vs. theoretical CDFs
 """
 function likelihood(yhat, experimental_ecdf, experimental, I, ν0)
     # We must choose a distribution for the error!
+    yhat[5] < 0 && return 0
     likelihood_dist = Normal(0, yhat[5])
 
     # Here we're generating the theoretical sample and converting it to a CDF
-    powder_pattern = estimate_powder_pattern(Quadrupolar(yhat[1:4]), 100_000, ν0, I)
+    quad = Quadrupolar(yhat[1:4])
+    ismissing(quad) && return 0
+    powder_pattern = estimate_powder_pattern(quad(yhat[1:4]), 100_000, ν0, I)
     theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
 
     # Then we return the likelihood, based on two CDFs' differences
