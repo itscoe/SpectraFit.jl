@@ -141,7 +141,6 @@ function plot_experimental(
     relative_ν = false,
     unit = "MHz",
 )
-    ENV["GKS_ENCODING"] = "utf-8"
     to_plot = relative_ν ?
         experimental[:, 1] .- get_ν(experimental) :
         experimental[:, 1]
@@ -160,7 +159,6 @@ function plot_theoretical(
     params::Quadrupolar;
     relative_ν = false,
 )
-    ENV["GKS_ENCODING"] = "utf-8"
     to_plot = relative_ν ?
         experimental[:, 1] .- get_ν(experimental) :
         experimental[:, 1]
@@ -182,7 +180,6 @@ function plot_theoretical(
     relative_ν = false,
     unit = "MHz",
 )
-    ENV["GKS_ENCODING"] = "utf-8"
     to_plot = relative_ν ?
         experimental[:, 1] .- get_ν(experimental) :
         experimental[:, 1]
