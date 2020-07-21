@@ -29,6 +29,21 @@ function likelihood(yhat, experimental_ecdf, experimental, I, ν0)
     return sum(logpdf.(likelihood_dist, experimental_ecdf .- theoretical_ecdf))
 end
 
+function likelihood(yhat, experimental_ecdf, experimental)
+    # We must choose a distribution for the error!
+    yhat[7] < 0 && return 0
+    likelihood_dist = Normal(0, yhat[7])
+
+    # Here we're generating the theoretical sample and converting it to a CDF
+    csa = ChemicalShift(yhat[1:6])
+    ismissing(quad) && return 0
+    powder_pattern = estimate_powder_pattern(csa, 100_000)
+    theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
+
+    # Then we return the likelihood, based on two CDFs' differences
+    return sum(logpdf.(likelihood_dist, experimental_ecdf .- theoretical_ecdf))
+end
+
 """
     metropolis_hastings(experimental)
 
@@ -40,43 +55,80 @@ for qcc, 0.1 for η, 0.05 for σ)
 """
 function metropolis_hastings(
     experimental;
+    interaction = "quadrupolar",
     N = 1_000_000,
-    tol = [0.1, 0.1, 0.1, 0.1, 0.05],
+    tol = interaction == "quadrupolar" ? [0.1, 0.1, 0.1, 0.1, 0.05] : [10.0, 5.0, 10.0, 5.0, 0.1, 0.05, 0.05],
     I = 3,
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
-    ν0 = get_ν0(experimental, experimental_ecdf)
+    if interaction == "quadrupolar"
+        ν0 = get_ν0(experimental, experimental_ecdf)
 
-    samples = zeros(N, 5)  # initialize zero array for samples
+        samples = zeros(N, 5)  # initialize zero array for samples
 
-    #We need to define prior distributions for each parameter
-    prior_dist_qcc = Uniform(0, 9)
-    prior_dist_σqcc = Uniform(0, 3)
-    prior_dist_η = Uniform(0, 1)
-    prior_dist_ση = Uniform(0, 1)
-    prior_dist_σ = Uniform(0, 1)
+        #We need to define prior distributions for each parameter
+        prior_dist_qcc = Uniform(0, 9)
+        prior_dist_σqcc = Uniform(0, 3)
+        prior_dist_η = Uniform(0, 1)
+        prior_dist_ση = Uniform(0, 1)
+        prior_dist_σ = Uniform(0, 1)
 
-    prior(x) = logpdf(prior_dist_qcc, x[1]) + logpdf(prior_dist_σqcc, x[2]) +
-        logpdf(prior_dist_η, x[3]) + logpdf(prior_dist_ση, x[4]) +
-        logpdf(prior_dist_σ, x[5]) # Assume variables are independent
+        prior(x) = logpdf(prior_dist_qcc, x[1]) + logpdf(prior_dist_σqcc, x[2]) +
+            logpdf(prior_dist_η, x[3]) + logpdf(prior_dist_ση, x[4]) +
+            logpdf(prior_dist_σ, x[5]) # Assume variables are independent
 
-    a = [rand(prior_dist_qcc), rand(prior_dist_σqcc), rand(prior_dist_η),
-        rand(prior_dist_ση),rand(prior_dist_σ)]
-    samples[1, :] = a
+        a = [rand(prior_dist_qcc), rand(prior_dist_σqcc), rand(prior_dist_η),
+            rand(prior_dist_ση),rand(prior_dist_σ)]
+        samples[1, :] = a
 
-    # Repeat N times
-    @showprogress for i = 2:N
-        b = a + tol .* (rand(5) .- 0.5)  # Compute new state randomly
-        # Calculate density
-        prob_old = likelihood(a, experimental_ecdf, experimental, I, ν0) +
-                   prior(a)
-        prob_new = likelihood(b, experimental_ecdf, experimental, I, ν0) +
-                   prior(b)
-        r = prob_new - prob_old # Compute acceptance ratio
-        if log(rand()) < r
-            a = b  # Accept new state and update
+        # Repeat N times
+        @showprogress for i = 2:N
+            b = a + tol .* (rand(5) .- 0.5)  # Compute new state randomly
+            # Calculate density
+            prob_old = likelihood(a, experimental_ecdf, experimental, I, ν0) +
+                       prior(a)
+            prob_new = likelihood(b, experimental_ecdf, experimental, I, ν0) +
+                       prior(b)
+            r = prob_new - prob_old # Compute acceptance ratio
+            if log(rand()) < r
+                a = b  # Accept new state and update
+            end
+            samples[i, :] = a  # Update state
         end
-        samples[i, :] = a  # Update state
+    else
+        samples = zeros(N, 7)  # initialize zero array for samples
+
+        #We need to define prior distributions for each parameter
+        prior_dist_σᵢₛₒ = Normal(0, 1000)
+        prior_dist_σσᵢₛₒ = truncated(Normal(100, 50), 0.0, Inf)
+        prior_dist_Δσ = Normal(0, 100)
+        prior_dist_σΔσ = truncated(Normal(50, 50), 0.0, Inf)
+        prior_dist_ησ = Uniform(0, 1)
+        prior_dist_σησ = truncated(Normal(0, 1), 0.0, Inf)
+        prior_dist_σ = truncated(Normal(0, 0.5), 0.0, Inf)
+
+        prior(x) = logpdf(prior_dist_σᵢₛₒ, x[1]) + logpdf(prior_dist_σσᵢₛₒ, x[2]) +
+            logpdf(prior_dist_Δσ, x[3]) + logpdf(prior_dist_σΔσ, x[4]) +
+            logpdf(prior_dist_ησ, x[5]) + logpdf(prior_dist_σησ, x[6]) +
+            logpdf(prior_dist_σ, x[7]) # Assume variables are independent
+
+        a = [rand(prior_dist_σᵢₛₒ), rand(prior_dist_σσᵢₛₒ), rand(prior_dist_Δσ),
+            rand(prior_dist_σΔσ), rand(prior_dist_ησ), rand(prior_dist_σησ),
+            rand(prior_dist_σ)]
+        samples[1, :] = a
+
+        # Repeat N times
+        @showprogress for i = 2:N
+            b = a + tol .* (rand(5) .- 0.5)  # Compute new state randomly
+            # Calculate density
+            prob_old = likelihood(a, experimental_ecdf, experimental) + prior(a)
+            prob_new = likelihood(b, experimental_ecdf, experimental) + prior(b)
+            r = prob_new - prob_old # Compute acceptance ratio
+            if log(rand()) < r
+                a = b  # Accept new state and update
+            end
+            samples[i, :] = a  # Update state
+        end
     end
 
     return samples
