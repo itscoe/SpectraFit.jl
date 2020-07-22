@@ -73,7 +73,7 @@ function metropolis_hastings(
         prior_dist_ση = Uniform(0, 1)
         prior_dist_σ = Uniform(0, 1)
 
-        prior(x) = logpdf(prior_dist_qcc, x[1]) + logpdf(prior_dist_σqcc, x[2]) +
+        prior_quad(x) = logpdf(prior_dist_qcc, x[1]) + logpdf(prior_dist_σqcc, x[2]) +
             logpdf(prior_dist_η, x[3]) + logpdf(prior_dist_ση, x[4]) +
             logpdf(prior_dist_σ, x[5]) # Assume variables are independent
 
@@ -86,9 +86,9 @@ function metropolis_hastings(
             b = a + tol .* (rand(5) .- 0.5)  # Compute new state randomly
             # Calculate density
             prob_old = likelihood(a, experimental_ecdf, experimental, I, ν0) +
-                       prior(a)
+                       prior_quad(a)
             prob_new = likelihood(b, experimental_ecdf, experimental, I, ν0) +
-                       prior(b)
+                       prior_quad(b)
             r = prob_new - prob_old # Compute acceptance ratio
             if log(rand()) < r
                 a = b  # Accept new state and update
@@ -107,7 +107,7 @@ function metropolis_hastings(
         prior_dist_σησ = truncated(Normal(0, 1), 0.0, Inf)
         prior_dist_σ = truncated(Normal(0, 0.5), 0.0, Inf)
 
-        prior(x) = logpdf(prior_dist_σᵢₛₒ, x[1]) + logpdf(prior_dist_σσᵢₛₒ, x[2]) +
+        prior_csa(x) = logpdf(prior_dist_σᵢₛₒ, x[1]) + logpdf(prior_dist_σσᵢₛₒ, x[2]) +
             logpdf(prior_dist_Δσ, x[3]) + logpdf(prior_dist_σΔσ, x[4]) +
             logpdf(prior_dist_ησ, x[5]) + logpdf(prior_dist_σησ, x[6]) +
             logpdf(prior_dist_σ, x[7]) # Assume variables are independent
@@ -121,8 +121,8 @@ function metropolis_hastings(
         @showprogress for i = 2:N
             b = a + tol .* (rand(5) .- 0.5)  # Compute new state randomly
             # Calculate density
-            prob_old = likelihood(a, experimental_ecdf, experimental) + prior(a)
-            prob_new = likelihood(b, experimental_ecdf, experimental) + prior(b)
+            prob_old = likelihood(a, experimental_ecdf, experimental) + prior_csa(a)
+            prob_new = likelihood(b, experimental_ecdf, experimental) + prior_csa(b)
             r = prob_new - prob_old # Compute acceptance ratio
             if log(rand()) < r
                 a = b  # Accept new state and update
