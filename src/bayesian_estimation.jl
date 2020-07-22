@@ -36,7 +36,7 @@ function likelihood(yhat, experimental_ecdf, experimental)
 
     # Here we're generating the theoretical sample and converting it to a CDF
     csa = ChemicalShift(yhat[1:6])
-    ismissing(quad) && return 0
+    ismissing(csa) && return 0
     powder_pattern = estimate_powder_pattern(csa, 100_000)
     theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
 
