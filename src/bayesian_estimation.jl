@@ -119,7 +119,7 @@ function metropolis_hastings(
 
         # Repeat N times
         @showprogress for i = 2:N
-            b = a + tol .* (rand(5) .- 0.5)  # Compute new state randomly
+            b = a + tol .* (rand(7) .- 0.5)  # Compute new state randomly
             # Calculate density
             prob_old = likelihood(a, experimental_ecdf, experimental) + prior_csa(a)
             prob_new = likelihood(b, experimental_ecdf, experimental) + prior_csa(b)
