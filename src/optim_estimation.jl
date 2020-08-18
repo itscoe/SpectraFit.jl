@@ -57,6 +57,21 @@ function ols_cdf(
     return size(exp)[1] / 10
 end
 
+function transform_params(x::Array{Float64}, T::DataType)
+    if T == Quadrupolar
+        x = x .^ 2
+    elseif T == ChemicalShift
+        for i = 1:length(x) ÷ 7
+            x[7 * (i - 1) + 2] ^= 2
+            x[7 * (i - 1) + 4] ^= 2
+            x[7 * (i - 1) + 5] ^= 2
+            x[7 * (i - 1) + 6] ^= 2
+            x[7 * (i - 1) + 7] ^= 2
+        end
+    end
+    return x
+end
+
 """
     fit_quadrupolar(experimental; sites, iters, options, method)
 
@@ -109,7 +124,7 @@ function fit_quadrupolar(
     else
         result = optimize(
             x -> ols_cdf(
-                Quadrupolar(x .^ 2),
+                Quadrupolar(transform_params(x, Quadrupolar)),
                 experimental,
                 experimental_ecdf,
                 ν0,
@@ -142,7 +157,7 @@ function fit_chemical_shift(
     experimental_ecdf = get_experimental_ecdf(experimental)
 
     if method == SAMIN()
-        upper_bounds, lower_bounds = zeros(7 * sites - 1), zeros(7 * sites - 1)
+        upper_bounds, lower_bounds = zeros(7 * sites), zeros(7 * sites)
         upper_bounds[1:end] .= Inf
         upper_bounds[5:7:end] .= 1
         upper_bounds[7:7:end] .= 1
@@ -167,7 +182,7 @@ function fit_chemical_shift(
     else
         result = optimize(
             x -> ols_cdf(
-                ChemicalShift(x),
+                ChemicalShift(transform_params(x, ChemicalShift)),
                 experimental,
                 experimental_ecdf,
                 samples = samples,
