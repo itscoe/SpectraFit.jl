@@ -126,7 +126,7 @@ end
 
 function generate_theoretical_spectrum(
     experimental::Array{Float64,2},
-    Quadrupolar::ChemicalShift,
+    ChemicalShift::ChemicalShift,
 )
     powder_pattern = estimate_powder_pattern(ChemicalShift, 1_000_000)
     k = kde(powder_pattern)
@@ -222,6 +222,23 @@ function compare_theoreticals(
         label = "new theoretical",
         title = "Theoretical vs. Experimental",
         xlabel = "Frequency (MHz)",
+        ylabel = "Intensity",
+    )
+end
+
+function plot_chemical_shift(
+    experimental::Array{Float64,2},
+    params::ChemicalShift
+)
+    plot(experimental[:, 1], experimental[:, 2], label = "experimental")
+    theoretical = generate_theoretical_spectrum(experimental, params)
+    plot!(
+        experimental[:, 1],
+        theoretical,
+        width = 2,
+        label = "theoretical",
+        title = "Theoretical vs. Experimental",
+        xlabel = "Frequency (ppm)",
         ylabel = "Intensity",
     )
 end
