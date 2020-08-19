@@ -44,7 +44,7 @@ function ols_cdf(
     samples::Int64 = 1_000_000,
 )
     th_ecdf = ecdf(estimate_powder_pattern(parameters, samples)).(exp[:, 1])
-    exp_excf .= exp_excf * (th_ecdf[end] - th_ecdf[1]) + th_ecdf[1]
+    exp_ecdf .= exp_ecdf * (th_ecdf[end] - th_ecdf[1]) + th_ecdf[1]
     return sum((exp_ecdf .- th_ecdf) .^ 2)
 end
 
