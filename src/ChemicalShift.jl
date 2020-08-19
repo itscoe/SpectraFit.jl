@@ -11,7 +11,7 @@ struct ChemicalShift
 end
 
 function ChemicalShift(p::Array{Float64})
-    sites = length(p) ÷ 7 + 1
+    sites = length(p) ÷ 7
     σᵢₛₒ = Array{Distribution}(undef, sites)
     Δσ = Array{Distribution}(undef, sites)
     ησ = Array{Distribution}(undef, sites)
