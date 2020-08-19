@@ -150,10 +150,6 @@ function fit_chemical_shift(
     starting_values = get_chemical_shift_starting_values(sites),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
-    range = (findfirst(x -> range[1] < x, experimental[:, 1]),
-        findlast(x -> range[2] > x, experimental[:, 1]) - 1)
-    experimental = experimental[range[1]:range[2], :]
-
     experimental_ecdf = get_experimental_ecdf(experimental)
 
     if method == SAMIN()
