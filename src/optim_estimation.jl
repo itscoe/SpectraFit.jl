@@ -177,7 +177,8 @@ function fit_chemical_shift(
     else
         result = optimize(
             x -> ols_cdf(
-                ChemicalShift(transform_params(x, ChemicalShift)),
+                ChemicalShift([Normal(x[1], x[2] ^ 2)], [Normal(x[3], x[4] ^ 2)],
+                    [truncated(Normal(x[5] ^ 2, x[6] ^ 2), 0, 1)], [1.0]),
                 experimental,
                 experimental_ecdf,
                 samples = samples,
