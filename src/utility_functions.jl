@@ -247,7 +247,7 @@ function plot_chemical_shift(
     experimental::Array{Float64,2},
     params::Array{Float64}
 )
-    return plot_chemical_shift(experimental_data,
+    return plot_chemical_shift(experimental,
         ChemicalShift(transform_params(params, ChemicalShift)))
 end
 
