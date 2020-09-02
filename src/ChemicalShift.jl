@@ -1,4 +1,4 @@
-using Distributions
+using Distributions, DataFrames
 
 const cos2α_dist = Uniform(-1, 1)
 const sinβ_dist = Uniform(-1, 1)
@@ -74,4 +74,13 @@ function get_chemical_shift_starting_values(sites::Int64)
     starting_values[6:7:end] = rand(Uniform(0, 1), sites)
     starting_values[7:7:end] = map(x -> 1 / sites, 1:sites)
     return starting_values
+end
+
+function get_output_table(minimizer::Array{Float64})
+    minimizer = transform_params(minimizer, ChemicalShift)
+    df = DataFrame(["σᵢₛₒ" minimizer[1] minimizer[2]
+                    "Δσ" minimizer[3] minimizer[4]
+                    "ησ"  minimizer[5]  minimizer[6]])
+    rename!(df, Symbol.(["Parameter","Mean","St. Dev."]))
+    return df
 end

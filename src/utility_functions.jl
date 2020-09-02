@@ -1,4 +1,4 @@
-using CSV, KernelDensity, Plots
+using CSV, KernelDensity, Plots, DataFrames
 
 """
     get_experimental(filename, ν0_guess)
@@ -48,9 +48,9 @@ function get_experimental(
     reverse_data::Bool = true,
 )
     if delim == ","
-        experimental = CSV.read(filename, header = header)
+        experimental = CSV.read(filename, DataFrame, header = header)
     else
-        experimental = CSV.read(filename, header = header, delim = delim)
+        experimental = CSV.read(filename, DataFrame, header = header, delim = delim)
     end
     if typeof(experimental[1, 1]) != Float64
         experimental[!, 1] = parse.(Float64, experimental[:, 1])
@@ -241,6 +241,14 @@ function plot_chemical_shift(
         xlabel = "Frequency (ppm)",
         ylabel = "Intensity",
     )
+end
+
+function plot_chemical_shift(
+    experimental::Array{Float64,2},
+    params::Array{Float64}
+)
+    return plot_chemical_shift(experimental_data,
+        ChemicalShift(transform_params(params, ChemicalShift)))
 end
 
 """
