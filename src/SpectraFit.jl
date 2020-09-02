@@ -16,6 +16,7 @@ export get_experimental,
        metropolis_hastings,
        compare_theoreticals,
        get_data,
-       plot_chemical_shift
+       plot_chemical_shift,
+       get_output_table
 
 end # module
