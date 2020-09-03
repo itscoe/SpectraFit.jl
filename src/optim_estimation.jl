@@ -53,7 +53,6 @@ function ols_cdf(
     exp_ecdf::Array{Float64, 1};
     samples::Int64 = 1_000_000,
 )
-    println("oops")
     return size(exp)[1] / 10
 end
 
