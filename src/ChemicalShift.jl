@@ -77,7 +77,7 @@ function get_chemical_shift_starting_values(sites::Int64)
 end
 
 function get_output_table(minimizer::Array{Float64})
-    minimizer = transform_params(minimizer, ChemicalShift)
+    minimizer = transform_params(push!(minimizer,1.0), ChemicalShift)
     df = DataFrame(["σᵢₛₒ" minimizer[1] minimizer[2]
                     "Δσ" minimizer[3] minimizer[4]
                     "ησ"  minimizer[5]  minimizer[6]])
