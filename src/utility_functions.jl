@@ -248,7 +248,7 @@ function plot_chemical_shift(
     params::Array{Float64}
 )
     return plot_chemical_shift(experimental,
-        ChemicalShift(push!(SpectraFit.transform_params(params, ChemicalShift), 1.0)))
+        ChemicalShift(transform_params(push!(params, 1.0), ChemicalShift)))
 end
 
 """
