@@ -7,6 +7,7 @@ include("ChemicalShift.jl")
 include("utility_functions.jl")
 include("optim_estimation.jl")
 include("bayesian_estimation.jl")
+include("genetic_algorithm.jl")
 
 export get_experimental,
        Quadrupolar,
