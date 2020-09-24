@@ -16,7 +16,7 @@ function ols_cdf(
     I::Int64 = 3,
     samples::Int64 = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
-    range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
+    range::Tuple{Float64,Float64} = (exp[1, 1], exp[end, 1]),
 )
     #range = (findfirst(x -> range[1] < x, exp[:, 1]),
     #    findlast(x -> range[2] > x, exp[:, 1]) - 1)
