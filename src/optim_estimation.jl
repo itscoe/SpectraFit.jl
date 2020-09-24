@@ -121,6 +121,7 @@ function fit_quadrupolar(
             options,
         )
     elseif method == ParticleSwarm()
+        println("Particle Swarm")
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
         upper_bounds[1:5:end] .= 9  # Qcc
         upper_bounds[2:5:end] .= 1  # σQcc
