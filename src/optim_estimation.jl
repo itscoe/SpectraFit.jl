@@ -96,6 +96,8 @@ function fit_quadrupolar(
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
 
+    println(method)
+
     if method == SAMIN()
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
         upper_bounds[1:5:end] .= 9  # Qcc
