@@ -137,7 +137,6 @@ function fit_quadrupolar(
                 I = I,
                 samples = samples,
                 transitions = transitions,
-                range = range,
             ),
             lower_bounds,
             upper_bounds,
