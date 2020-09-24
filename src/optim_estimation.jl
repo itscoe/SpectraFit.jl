@@ -18,11 +18,11 @@ function ols_cdf(
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
-    range = (findfirst(x -> range[1] < x, exp[:, 1]),
-        findlast(x -> range[2] > x, exp[:, 1]) - 1)
+    #range = (findfirst(x -> range[1] < x, exp[:, 1]),
+    #    findlast(x -> range[2] > x, exp[:, 1]) - 1)
     th_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
         transitions = transitions)).(exp[:, 1])
-    return sum((exp_ecdf[range[1]:range[2]] .- th_ecdf[range[1]:range[2]]) .^ 2)
+    return sum((exp_ecdf .- th_ecdf) .^ 2)
 end
 
 function ols_cdf(
@@ -118,6 +118,30 @@ function fit_quadrupolar(
             upper_bounds,
             starting_values,
             SAMIN(),
+            options,
+        )
+    elseif method = ParticleSwarm()
+        upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
+        upper_bounds[1:5:end] .= 9  # Qcc
+        upper_bounds[2:5:end] .= 1  # σQcc
+        upper_bounds[3:5:end] .= 1  # η
+        upper_bounds[4:5:end] .= 1  # ση
+        upper_bounds[5:5:end] .= 1  # weights
+        result = optimize(
+            x -> ols_cdf(  # objective function
+                Quadrupolar(x),
+                experimental,
+                experimental_ecdf,
+                ν0,
+                I = I,
+                samples = samples,
+                transitions = transitions,
+                range = range,
+            ),
+            lower_bounds,
+            upper_bounds,
+            starting_values,
+            ParticleSwarm(),
             options,
         )
     else
