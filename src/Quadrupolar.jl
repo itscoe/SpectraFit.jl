@@ -38,6 +38,8 @@ Distributions.Normal{Float64}(μ=0.12, σ=0.03), range=(0.0, 1.0))], [1.0])
 ```
 """
 function Quadrupolar(p::Array{Float64})
+    println(p)
+
     sites = length(p) ÷ 5 + 1
     qcc = Array{Distribution}(undef, sites)
     η = Array{Distribution}(undef, sites)
