@@ -86,7 +86,7 @@ function fit_quadrupolar(
     sites::Int64 = 1,
     iters::Int64 = 1000,
     options = Optim.Options(iterations = iters),
-    method = NelderMead(),
+    method::String = "NelderMead",
     I::Int64 = 3,
     samples::Int64 = 1_000_000,
     starting_values = get_quadrupolar_starting_values(sites),
@@ -96,9 +96,7 @@ function fit_quadrupolar(
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
 
-    println(method)
-
-    if method == SAMIN()
+    if method == "SimulatedAnnealing"
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
         upper_bounds[1:5:end] .= 9  # Qcc
         upper_bounds[2:5:end] .= 1  # σQcc
@@ -122,7 +120,7 @@ function fit_quadrupolar(
             SAMIN(),
             options,
         )
-    elseif method == ParticleSwarm()
+    elseif method == "ParticleSwarm"
         println("Particle Swarm")
         upper_bounds, lower_bounds = zeros(5 * sites), zeros(5 * sites)
         upper_bounds[1:5:end] .= 9  # Qcc
@@ -147,7 +145,7 @@ function fit_quadrupolar(
             ParticleSwarm(),
             options,
         )
-    else
+    elseif method == "NelderMead"
         result = optimize(
             x -> ols_cdf(
                 Quadrupolar(transform_params(x, Quadrupolar)),
@@ -162,6 +160,8 @@ function fit_quadrupolar(
             starting_values,
             options,
         )
+    else
+        println("Unknown method $(method). Try NelderMead, SimulatedAnnealing, or ParticleSwarm")
     end
     return result
 end
