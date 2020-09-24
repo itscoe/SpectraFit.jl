@@ -1,4 +1,4 @@
-using Distributions
+using Distributions, ProgressMeter
 
 function cross_over(survivors)
     size = length(survivors) * 2
@@ -44,7 +44,7 @@ function genetic_algorithm(N, experimental; gens = 1_000)
     best = (population[1, 1], Inf)
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
-    for i = 1:gens
+    @showprogress for i = 1:gens
         population[:, 2] = ols_cdf.(Quadrupolar.(population[:, 1]),
             Ref(experimental), Ref(experimental_ecdf), ν0)
         population = sortslices(population, by=x->x[2], dims = 1, rev = false)
