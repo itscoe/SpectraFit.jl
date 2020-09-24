@@ -17,6 +17,7 @@ export get_experimental,
        compare_theoreticals,
        get_data,
        plot_chemical_shift,
-       get_output_table
+       get_output_table,
+       genetic_algorithm
 
 end # module
