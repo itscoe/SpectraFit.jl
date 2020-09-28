@@ -55,6 +55,7 @@ function genetic_algorithm(N, experimental; gens = 1_000)
         means[i] = mean(population[:, 2])
         population[:, 1] = cross_over(population[1:Int(N / 2), 1])
         population[:, 1] = mutate(population[:, 1])
+        map(x -> x[4] = max(eps(Float64), x[4]), population[:, 1])
     end
     return best, population, mins, means, maxes
 end
