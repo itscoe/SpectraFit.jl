@@ -14,7 +14,11 @@ function fit_quadrupolar_bb(
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
     search_range = [(0.0, 9.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)]
-    return bboptimize(x -> SpectraFit.ols_cdf(  # objective function
+
+    fitness_progress_history = Array{Tuple{Int, Float64},1}()
+    callback = oc -> push!(fitness_progress_history, (num_func_evals(oc), best_fitness(oc)))
+
+    res =  bboptimize(x -> SpectraFit.ols_cdf(  # objective function
                 Quadrupolar(x),
                 experimental,
                 experimental_ecdf,
@@ -23,5 +27,8 @@ function fit_quadrupolar_bb(
                 samples = 1_000_000,
                 transitions = transitions,
                 range = range,
-            ), SearchRange = search_range, MaxFuncEvals = max_func_evals)
+            ), SearchRange = search_range, MaxFuncEvals = max_func_evals,
+            CallbackFunction = callback, CallbackInterval = 0.0)
+
+    return res, fitness_progress_history
 end
