@@ -8,6 +8,7 @@ include("utility_functions.jl")
 include("optim_estimation.jl")
 include("bayesian_estimation.jl")
 include("genetic_algorithm.jl")
+include("bboptim_estimation.jl")
 
 export get_experimental,
        Quadrupolar,
@@ -19,6 +20,7 @@ export get_experimental,
        get_data,
        plot_chemical_shift,
        get_output_table,
-       genetic_algorithm
+       genetic_algorithm,
+       fit_quadrupolar_bb,
 
 end # module
