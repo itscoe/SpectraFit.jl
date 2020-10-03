@@ -21,6 +21,6 @@ export get_experimental,
        plot_chemical_shift,
        get_output_table,
        genetic_algorithm,
-       fit_quadrupolar_bb,
+       fit_quadrupolar_bb
 
 end # module
