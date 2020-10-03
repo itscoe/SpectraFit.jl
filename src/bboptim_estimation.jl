@@ -16,7 +16,7 @@ function fit_quadrupolar_bb(
     search_range = [(0.0, 9.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)]
     return bboptimize(x -> SpectraFit.ols_cdf(  # objective function
                 Quadrupolar(x),
-                fastcool_exp,
+                experimental,
                 experimental_ecdf,
                 ν0,
                 I = I,
