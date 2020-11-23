@@ -18,7 +18,7 @@ function ChemicalShift(p::Array{Float64})
     weights = zeros(sites)
 
     for i in 1:length(p)
-        i % 7 in [0, 2, 4, 5, 6] && p[i] < 0 && return missing
+        #i % 7 in [0, 2, 4, 5, 6] && p[i] < 0 && return missing
         (isnan(p[i]) || isinf(p[i])) && return missing
         (isnothing(p[i]) || ismissing(p[i])) && return missing
     end
