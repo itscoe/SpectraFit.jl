@@ -99,13 +99,13 @@ function metropolis_hastings(
         samples = zeros(N, 7)  # initialize zero array for samples
 
         #We need to define prior distributions for each parameter
-        prior_dist_σᵢₛₒ = Normal(0, 1000)
-        prior_dist_σσᵢₛₒ = truncated(Normal(100, 50), 0.0, Inf)
-        prior_dist_Δσ = Normal(0, 100)
-        prior_dist_σΔσ = truncated(Normal(50, 50), 0.0, Inf)
+        prior_dist_σᵢₛₒ = Uniform(1000, 2000)
+        prior_dist_σσᵢₛₒ = Uniform(0.00001, 200)
+        prior_dist_Δσ = Uniform(-1000, 1000)
+        prior_dist_σΔσ = Uniform(0.00001, 50)
         prior_dist_ησ = Uniform(0, 1)
-        prior_dist_σησ = truncated(Normal(0, 1), 0.0, Inf)
-        prior_dist_σ = truncated(Normal(0, 0.5), 0.0, Inf)
+        prior_dist_σησ = truncated(Normal(0.00001, 0.2), 0.0, Inf)
+        prior_dist_σ = truncated(Normal(0.00001, 0.5), 0.0, Inf)
 
         prior_csa(x) = logpdf(prior_dist_σᵢₛₒ, x[1]) + logpdf(prior_dist_σσᵢₛₒ, x[2]) +
             logpdf(prior_dist_Δσ, x[3]) + logpdf(prior_dist_σΔσ, x[4]) +
