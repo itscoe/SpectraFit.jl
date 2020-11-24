@@ -100,9 +100,9 @@ function metropolis_hastings(
 
         #We need to define prior distributions for each parameter
         prior_dist_σᵢₛₒ = Uniform(-4000, 4000)
-        prior_dist_σσᵢₛₒ = Uniform(0.00001, 400)
+        prior_dist_σσᵢₛₒ = Uniform(0.00001, 800)
         prior_dist_Δσ = Uniform(-4000, 4000)
-        prior_dist_σΔσ = Uniform(0.00001, 200)
+        prior_dist_σΔσ = Uniform(0.00001, 400)
         prior_dist_ησ = Uniform(0, 1)
         prior_dist_σησ = truncated(Normal(0.00001, 0.2), 0.0, Inf)
         prior_dist_σ = truncated(Normal(0.00001, 0.5), 0.0, Inf)
