@@ -62,16 +62,13 @@ function estimate_powder_pattern(p::ChemicalShift, N::Int64)
 end
 
 function get_chemical_shift_starting_values(sites::Int64)
-    [rand(Uniform(-1000, 1000)), rand(Uniform(-100, 100)),
-        rand(Uniform(-500, 500)), rand(Uniform(-50, 50)),
-        rand(Uniform(0, 1)), rand(Uniform(0, 1))]
     starting_values = zeros(7 * sites)
-    starting_values[1:7:end] = rand(Uniform(-1000, 1000), sites)
-    starting_values[2:7:end] = rand(Uniform(0, 10), sites)
-    starting_values[3:7:end] = rand(Uniform(-500, 500), sites)
-    starting_values[4:7:end] = rand(Uniform(0, 7), sites)
+    starting_values[1:7:end] = rand(Uniform(-4000, 4000), sites)
+    starting_values[2:7:end] = rand(Uniform(0.000001, 800), sites)
+    starting_values[3:7:end] = rand(Uniform(-4000, 4000), sites)
+    starting_values[4:7:end] = rand(Uniform(0.000001, 400), sites)
     starting_values[5:7:end] = rand(Uniform(0, 1), sites)
-    starting_values[6:7:end] = rand(Uniform(0, 1), sites)
+    starting_values[6:7:end] = rand(Uniform(0.000001, 1), sites)
     starting_values[7:7:end] = map(x -> 1 / sites, 1:sites)
     return starting_values
 end
