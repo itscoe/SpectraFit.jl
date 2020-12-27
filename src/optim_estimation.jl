@@ -169,14 +169,14 @@ function fit_chemical_shift(
     sites::Int64 = 1,
     iters::Int64 = 1000,
     options = Optim.Options(iterations = iters),
-    method = NelderMead(),
+    method::String = "NelderMead",
     samples::Int64 = 1_000_000,
     starting_values = get_chemical_shift_starting_values(sites),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
 
-    if method == SAMIN()
+    if method == "SimulatedAnnealing"
         upper_bounds, lower_bounds = zeros(7 * sites), zeros(7 * sites)
         upper_bounds[1:end] .= Inf
         upper_bounds[5:7:end] .= 1
@@ -199,7 +199,30 @@ function fit_chemical_shift(
             SAMIN(),
             options,
         )
-    else
+    elseif method == "ParticleSwarm"
+        upper_bounds, lower_bounds = zeros(7 * sites), zeros(7 * sites)
+        upper_bounds[1:end] .= Inf
+        upper_bounds[5:7:end] .= 1
+        upper_bounds[7:7:end] .= 1
+        lower_bounds[1:end] .= -Inf
+        lower_bounds[2:7:end] .= 0
+        lower_bounds[4:7:end] .= 0
+        lower_bounds[6:7:end] .= 0
+        lower_bounds[7:7:end] .= 0
+        result = optimize(
+            x -> ols_cdf(  # objective function
+                ChemicalShift(x),
+                experimental,
+                experimental_ecdf,
+                samples = samples,
+            ),
+            lower_bounds,
+            upper_bounds,
+            starting_values,
+            ParticleSwarm(),
+            options,
+        )
+    elseif method == "NelderMead"
         result = optimize(
             x -> ols_cdf(
                 ChemicalShift([Normal(x[1], x[2] ^ 2)], [Normal(x[3], x[4] ^ 2)],
