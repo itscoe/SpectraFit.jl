@@ -22,6 +22,8 @@ function ols_cdf(
     #    findlast(x -> range[2] > x, exp[:, 1]) - 1)
     th_ecdf = ecdf(estimate_powder_pattern(parameters, samples, ν0, I,
         transitions = transitions)).(exp[:, 1])
+    th_ecdf -= th_edcf[1]
+    th_ecdf /= th_ecdf[end]
     return sum((exp_ecdf .- th_ecdf) .^ 2)
 end
 
