@@ -33,3 +33,31 @@ function fit_quadrupolar_bb(
 
     return res, fitness_progress_history
 end
+
+function fit_chemicalshift_bb(
+    experimental::Array{Float64, 2};
+    sites::Int64 = 1,
+    max_func_evals::Int64 = 10000,
+    method::Symbol = :seperable_nes,
+    samples::Int64 = 1_000_000,
+    starting_values = get_chemical_shift_starting_values(sites)
+)
+    experimental_ecdf = get_experimental_ecdf(experimental)
+    ν0 =  get_ν0(experimental, experimental_ecdf)
+    search_range = [(-4000.0, 4000.0), (0.00001, 800.0), (-4000.0, 4000.0),
+        (0.00001, 400.0), (0.00001, 1.0), (0.00001, 1.0), (0.00001, 1.0)]
+
+    fitness_progress_history = Array{Tuple{Int, Float64},1}()
+    callback = oc -> push!(fitness_progress_history,
+        (BlackBoxOptim.num_func_evals(oc), best_fitness(oc)))
+
+    res =  bboptimize(x -> SpectraFit.ols_cdf(  # objective function
+                ChemicalShift(x),
+                experimental,
+                experimental_ecdf,
+                samples = 1_000_000
+            ), SearchRange = search_range, MaxFuncEvals = max_func_evals,
+            CallbackFunction = callback, CallbackInterval = 0.0)
+
+    return res, fitness_progress_history
+end
