@@ -180,14 +180,20 @@ function fit_chemical_shift(
 
     if method == "SimulatedAnnealing"
         upper_bounds, lower_bounds = zeros(7 * sites), zeros(7 * sites)
-        upper_bounds[1:end] .= Inf
+        upper_bounds[1:7:end] .= 4000
+        upper_bounds[2:7:end] .= 800
+        upper_bounds[3:7:end] .= 4000
+        upper_bounds[4:7:end] .= 400
         upper_bounds[5:7:end] .= 1
+        upper_bounds[6:7:end] .= 1
         upper_bounds[7:7:end] .= 1
-        lower_bounds[1:end] .= -Inf
-        lower_bounds[2:7:end] .= 0
-        lower_bounds[4:7:end] .= 0
-        lower_bounds[6:7:end] .= 0
-        lower_bounds[7:7:end] .= 0
+        lower_bounds[1:7:end] .= -4000
+        lower_bounds[2:7:end] .= 0.0000001
+        lower_bounds[3:7:end] .= -4000
+        lower_bounds[4:7:end] .= 0.0000001
+        lower_bounds[5:7:end] .= 0.0000001
+        lower_bounds[6:7:end] .= 0.0000001
+        lower_bounds[7:7:end] .= 0.0000001
         result = optimize(
             x -> ols_cdf(  # objective function
                 ChemicalShift(x),
@@ -203,14 +209,20 @@ function fit_chemical_shift(
         )
     elseif method == "ParticleSwarm"
         upper_bounds, lower_bounds = zeros(7 * sites), zeros(7 * sites)
-        upper_bounds[1:end] .= Inf
+        upper_bounds[1:7:end] .= 4000
+        upper_bounds[2:7:end] .= 800
+        upper_bounds[3:7:end] .= 4000
+        upper_bounds[4:7:end] .= 400
         upper_bounds[5:7:end] .= 1
+        upper_bounds[6:7:end] .= 1
         upper_bounds[7:7:end] .= 1
-        lower_bounds[1:end] .= -Inf
-        lower_bounds[2:7:end] .= 0
-        lower_bounds[4:7:end] .= 0
-        lower_bounds[6:7:end] .= 0
-        lower_bounds[7:7:end] .= 0
+        lower_bounds[1:7:end] .= -4000
+        lower_bounds[2:7:end] .= 0.0000001
+        lower_bounds[3:7:end] .= -4000
+        lower_bounds[4:7:end] .= 0.0000001
+        lower_bounds[5:7:end] .= 0.0000001
+        lower_bounds[6:7:end] .= 0.0000001
+        lower_bounds[7:7:end] .= 0.0000001
         result = optimize(
             x -> ols_cdf(  # objective function
                 ChemicalShift(x),
