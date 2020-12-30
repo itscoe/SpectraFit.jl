@@ -44,8 +44,7 @@ function fit_chemicalshift_bb(
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
-    search_range = [(-4000, 4000), (0.000001, 800), (-4000, 4000),
-        (0.000001, 400), (0.000001, 1.0), (0.000001, 1.0)]
+    search_range = [(-4000.0, 4000.0), (0.000001, 800.0), (-4000.0, 4000.0), (0.000001, 400.0), (0.000001, 1.0), (0.000001, 1.0)]
 
     fitness_progress_history = Array{Tuple{Int, Float64},1}()
     callback = oc -> push!(fitness_progress_history,
