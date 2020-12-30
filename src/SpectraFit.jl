@@ -21,6 +21,7 @@ export get_experimental,
        plot_chemical_shift,
        get_output_table,
        genetic_algorithm,
+       genetic_algorithm_csa,
        fit_quadrupolar_bb,
        fit_chemicalshift_bb
 
