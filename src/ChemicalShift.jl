@@ -17,6 +17,8 @@ function ChemicalShift(p::Array{Float64})
     ησ = Array{Distribution}(undef, sites)
     weights = zeros(sites)
 
+    println(p)
+
     for i in 1:length(p)
         i % 7 in [0, 2, 4, 5, 6] && p[i] < 0 && return missing
         (isnan(p[i]) || isinf(p[i])) && return missing
@@ -30,6 +32,8 @@ function ChemicalShift(p::Array{Float64})
         weights[i] = p[7*i]
     end
     weights /= sum(weights)
+
+    println(ChemicalShift(σᵢₛₒ, Δσ, ησ, weights))
 
     return ChemicalShift(σᵢₛₒ, Δσ, ησ, weights)
 end
