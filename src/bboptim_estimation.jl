@@ -7,7 +7,6 @@ function fit_quadrupolar_bb(
     method::Symbol = :seperable_nes,
     I::Int64 = 3,
     samples::Int64 = 1_000_000,
-    starting_values = get_quadrupolar_starting_values(sites),
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (experimental[1, 1], experimental[end, 1]),
 )
@@ -25,7 +24,7 @@ function fit_quadrupolar_bb(
                 experimental_ecdf,
                 ν0,
                 I = I,
-                samples = 1_000_000,
+                samples = samples,
                 transitions = transitions,
                 range = range,
             ), SearchRange = search_range, MaxFuncEvals = max_func_evals,
@@ -39,12 +38,11 @@ function fit_chemicalshift_bb(
     sites::Int64 = 1,
     max_func_evals::Int64 = 10000,
     method::Symbol = :seperable_nes,
-    samples::Int64 = 1_000_000,
-    starting_values = get_chemical_shift_starting_values(sites)
+    samples::Int64 = 1_000_000
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
     ν0 =  get_ν0(experimental, experimental_ecdf)
-    search_range = [(-4000.0, 4000.0), (0.000001, 800.0), (-4000.0, 4000.0), (0.000001, 400.0), (0.000001, 1.0), (0.000001, 1.0)]
+    search_range = [(-4000.0, 4000.0), (0.000001, 800.0), (-4000.0, 4000.0), (0.000001, 400.0), (0.000001, 1.0), (0.000001, 1.0),  (0.000001, 1.0)]
 
     fitness_progress_history = Array{Tuple{Int, Float64},1}()
     callback = oc -> push!(fitness_progress_history,
@@ -54,7 +52,7 @@ function fit_chemicalshift_bb(
                 ChemicalShift(x),
                 experimental,
                 experimental_ecdf,
-                samples = 1_000_000
+                samples = samples
             ), SearchRange = search_range, MaxFuncEvals = max_func_evals,
             CallbackFunction = callback, CallbackInterval = 0.0)
 
