@@ -24,7 +24,8 @@ function likelihood(yhat, experimental_ecdf, experimental, I, ν0)
     ismissing(quad) && return 0
     powder_pattern = estimate_powder_pattern(quad, 100_000, ν0, I)
     theoretical_ecdf = ecdf(powder_pattern).(experimental[:, 1])
-
+    theoretical_ecdf .-= theoretical_ecdf[1]
+    theoretical_ecdf ./= theoretical_ecdf[end]
     # Then we return the likelihood, based on two CDFs' differences
     return sum(logpdf.(likelihood_dist, experimental_ecdf .- theoretical_ecdf))
 end
