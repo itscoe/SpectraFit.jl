@@ -148,7 +148,7 @@ function metropolis_hastings(
                 samples[i, :] = a  # Update state
             end
         elseif sites == 2
-            samples = zeros(N, 13)  # initialize zero array for samples
+            samples = zeros(N, 14)  # initialize zero array for samples
 
             #We need to define prior distributions for each parameter
             prior_dist_σᵢₛₒ1 = Uniform(-4000, 4000)
