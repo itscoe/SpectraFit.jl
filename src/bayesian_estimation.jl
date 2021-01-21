@@ -178,18 +178,26 @@ function metropolis_hastings(
             @showprogress for i = 2:N
                 b = a + tol .* (rand(14) .- 0.5)  # Compute new state randomly
 
-                prior_csa(x) = logpdf(prior_dist_σᵢₛₒ1, x[1]) + logpdf(prior_dist_σσᵢₛₒ1, x[2]) +
-                    logpdf(prior_dist_Δσ1, x[3]) + logpdf(prior_dist_σΔσ1, x[4]) +
-                    logpdf(prior_dist_ησ1, x[5]) + logpdf(prior_dist_σησ1, x[6]) +
-                    logpdf(prior_dist_σᵢₛₒ2, x[7]) + logpdf(prior_dist_σσᵢₛₒ2, x[8]) +
-                    logpdf(prior_dist_Δσ2, x[9]) + logpdf(prior_dist_σΔσ2, x[10]) +
-                    logpdf(prior_dist_ησ2, x[11]) + logpdf(prior_dist_σησ2, x[12]) +
-                    logpdf(prior_dist_w, x[13]) +
-                    logpdf(prior_dist_σ, x[14]) # Assume variables are independent
-                    
+
                 # Calculate density
-                prob_old = likelihood(a, experimental_ecdf, experimental, sites = 2) + prior_csa(a)
-                prob_new = likelihood(b, experimental_ecdf, experimental, sites = 2) + prior_csa(b)
+                prob_old = likelihood(a, experimental_ecdf, experimental, sites = 2) +
+                logpdf(prior_dist_σᵢₛₒ1, a[1]) + logpdf(prior_dist_σσᵢₛₒ1, a[2]) +
+                   logpdf(prior_dist_Δσ1, a[3]) + logpdf(prior_dist_σΔσ1, a[4]) +
+                   logpdf(prior_dist_ησ1, a[5]) + logpdf(prior_dist_σησ1, a[6]) +
+                   logpdf(prior_dist_σᵢₛₒ2, a[7]) + logpdf(prior_dist_σσᵢₛₒ2, a[8]) +
+                   logpdf(prior_dist_Δσ2, a[9]) + logpdf(prior_dist_σΔσ2, a[10]) +
+                   logpdf(prior_dist_ησ2, a[11]) + logpdf(prior_dist_σησ2, a[12]) +
+                   logpdf(prior_dist_w, a[13]) +
+                   logpdf(prior_dist_σ, a[14])
+                prob_new = likelihood(b, experimental_ecdf, experimental, sites = 2) +
+                logpdf(prior_dist_σᵢₛₒ1, b[1]) + logpdf(prior_dist_σσᵢₛₒ1, b[2]) +
+                   logpdf(prior_dist_Δσ1, b[3]) + logpdf(prior_dist_σΔσ1, b[4]) +
+                   logpdf(prior_dist_ησ1, b[5]) + logpdf(prior_dist_σησ1, b[6]) +
+                   logpdf(prior_dist_σᵢₛₒ2, b[7]) + logpdf(prior_dist_σσᵢₛₒ2, b[8]) +
+                   logpdf(prior_dist_Δσ2, b[9]) + logpdf(prior_dist_σΔσ2, b[10]) +
+                   logpdf(prior_dist_ησ2, b[11]) + logpdf(prior_dist_σησ2, b[12]) +
+                   logpdf(prior_dist_w, b[13]) +
+                   logpdf(prior_dist_σ, b[14])
                 r = prob_new - prob_old # Compute acceptance ratio
                 if log(rand()) < r
                     a = b  # Accept new state and update
