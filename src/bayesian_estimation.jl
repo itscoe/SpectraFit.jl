@@ -180,7 +180,7 @@ function metropolis_hastings(
                 rand(prior_dist_σΔσ1), rand(prior_dist_ησ1), rand(prior_dist_σησ1),
                 rand(prior_dist_σᵢₛₒ2), rand(prior_dist_σσᵢₛₒ2), rand(prior_dist_Δσ2),
                 rand(prior_dist_σΔσ2), rand(prior_dist_ησ2), rand(prior_dist_σησ2),
-                rand(prior_dist_w)
+                rand(prior_dist_w),
                 rand(prior_dist_σ)]
             samples[1, :] = a
 
