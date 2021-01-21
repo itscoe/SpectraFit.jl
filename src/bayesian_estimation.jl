@@ -166,16 +166,6 @@ function metropolis_hastings(
             prior_dist_w = Uniform(0, 1)
             prior_dist_σ = truncated(Normal(0.00001, 0.5), 0.0, Inf)
 
-
-            prior_csa(x) = logpdf(prior_dist_σᵢₛₒ1, x[1]) + logpdf(prior_dist_σσᵢₛₒ1, x[2]) +
-                logpdf(prior_dist_Δσ1, x[3]) + logpdf(prior_dist_σΔσ1, x[4]) +
-                logpdf(prior_dist_ησ1, x[5]) + logpdf(prior_dist_σησ1, x[6]) +
-                logpdf(prior_dist_σᵢₛₒ2, x[7]) + logpdf(prior_dist_σσᵢₛₒ2, x[8]) +
-                logpdf(prior_dist_Δσ2, x[9]) + logpdf(prior_dist_σΔσ2, x[10]) +
-                logpdf(prior_dist_ησ2, x[11]) + logpdf(prior_dist_σησ2, x[12]) +
-                logpdf(prior_dist_w, x[13]) +
-                logpdf(prior_dist_σ, x[14]) # Assume variables are independent
-
             a = [rand(prior_dist_σᵢₛₒ1), rand(prior_dist_σσᵢₛₒ1), rand(prior_dist_Δσ1),
                 rand(prior_dist_σΔσ1), rand(prior_dist_ησ1), rand(prior_dist_σησ1),
                 rand(prior_dist_σᵢₛₒ2), rand(prior_dist_σσᵢₛₒ2), rand(prior_dist_Δσ2),
@@ -187,6 +177,16 @@ function metropolis_hastings(
             # Repeat N times
             @showprogress for i = 2:N
                 b = a + tol .* (rand(14) .- 0.5)  # Compute new state randomly
+
+                prior_csa(x) = logpdf(prior_dist_σᵢₛₒ1, x[1]) + logpdf(prior_dist_σσᵢₛₒ1, x[2]) +
+                    logpdf(prior_dist_Δσ1, x[3]) + logpdf(prior_dist_σΔσ1, x[4]) +
+                    logpdf(prior_dist_ησ1, x[5]) + logpdf(prior_dist_σησ1, x[6]) +
+                    logpdf(prior_dist_σᵢₛₒ2, x[7]) + logpdf(prior_dist_σσᵢₛₒ2, x[8]) +
+                    logpdf(prior_dist_Δσ2, x[9]) + logpdf(prior_dist_σΔσ2, x[10]) +
+                    logpdf(prior_dist_ησ2, x[11]) + logpdf(prior_dist_σησ2, x[12]) +
+                    logpdf(prior_dist_w, x[13]) +
+                    logpdf(prior_dist_σ, x[14]) # Assume variables are independent
+                    
                 # Calculate density
                 prob_old = likelihood(a, experimental_ecdf, experimental, sites = 2) + prior_csa(a)
                 prob_new = likelihood(b, experimental_ecdf, experimental, sites = 2) + prior_csa(b)
