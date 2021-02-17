@@ -48,9 +48,9 @@ function get_experimental(
     reverse_data::Bool = true,
 )
     if delim == ","
-        experimental = CSV.read(filename, header = header)
+        experimental = CSV.read(filename, DataFrame, header = header)
     else
-        experimental = CSV.read(filename, header = header, delim = delim)
+        experimental = CSV.read(filename, DataFrame, header = header, delim = delim)
     end
     if typeof(experimental[1, 1]) != Float64
         experimental[!, 1] = parse.(Float64, experimental[:, 1])
