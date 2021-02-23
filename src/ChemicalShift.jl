@@ -1,7 +1,7 @@
 using Distributions, DataFrames
 
 const θ_dist = Uniform(0, π)
-const ϕ_dist = Uniform(0, π)
+const ϕ_dist = Uniform(0, 2π)
 
 struct ChemicalShift
     σᵢₛₒ::Array{Distribution}
@@ -49,10 +49,9 @@ function estimate_powder_pattern(p::ChemicalShift, N::Int64)
     i = 1
     for j = 1:(length(p.weights) ÷ 7 - 1)
         to_add = floor(Int, p.weights[j] * N)
-        α = rand(cos2α_dist, to_add)
-        β = rand(sinβ²_dist, to_add)
-        powder_pattern[i:(i + to_add - 1)] = get_ν.(
-            α, β, p.σᵢₛₒ[j], p.Δσ[j], p.ησ[j])
+        θ = rand(θ_dist, N - i + 1)
+        ϕ = rand(ϕ_dist, N - i + 1)
+        powder_pattern[i:(i + to_add - 1)] = get_ν.(θ, ϕ, p.σᵢₛₒ[j], p.Δσ[j], p.ησ[j])
         i += to_add
     end
     θ = rand(θ_dist, N - i + 1)
