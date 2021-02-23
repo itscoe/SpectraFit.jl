@@ -41,7 +41,7 @@ function get_ν(
     Δσ::Distribution,
     ησ::Distribution,
 )
-    rand(σᵢₛₒ) - (rand(Δσ) / 3) * (3 * (1 - β^2) - 1 - rand(ησ) * β^2 * α);
+    rand(σᵢₛₒ) + (rand(Δσ) / 3) * (3 * (1 - β^2) - 1 - rand(ησ) * β^2 * α);
 end
 
 function estimate_powder_pattern(p::ChemicalShift, N::Int64)
