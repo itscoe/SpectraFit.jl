@@ -1,7 +1,7 @@
 using Distributions, DataFrames
 
 const cos2α_dist = Uniform(-1, 1)
-const sinβ_dist = Uniform(-1, 1)
+const sinβ²_dist = Uniform(0, 1)
 
 struct ChemicalShift
     σᵢₛₒ::Array{Distribution}
@@ -41,7 +41,7 @@ function get_ν(
     Δσ::Distribution,
     ησ::Distribution,
 )
-    -rand(σᵢₛₒ) - (rand(Δσ) / 2) * (3 * (1 - β^2) - 1 + rand(ησ) * β^2 * α);
+    -rand(σᵢₛₒ) - (rand(Δσ) / 2) * (3 * (1 - β) - 1 + rand(ησ) * β * α);
 end
 
 function estimate_powder_pattern(p::ChemicalShift, N::Int64)
@@ -56,7 +56,7 @@ function estimate_powder_pattern(p::ChemicalShift, N::Int64)
         i += to_add
     end
     α = rand(cos2α_dist, N - i + 1)
-    β = rand(sinβ_dist, N - i + 1)
+    β = rand(sinβ²_dist, N - i + 1)
     powder_pattern[i:end] = get_ν.(α, β, p.σᵢₛₒ[end], p.Δσ[end], p.ησ[end])
     return powder_pattern
 end
