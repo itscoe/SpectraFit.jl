@@ -1,7 +1,7 @@
 using Distributions, DataFrames
 
 const θ_dist = Uniform(0, π)
-const ϕ_dist = Uniform(0, 2 * π)
+const ϕ_dist = Uniform(0, π)
 
 struct ChemicalShift
     σᵢₛₒ::Array{Distribution}
