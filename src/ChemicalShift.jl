@@ -1,6 +1,6 @@
 using Distributions, DataFrames
 
-const θ_dist = Uniform(0, π)
+const θ_dist = Uniform(0, π/2)
 const ϕ_dist = Uniform(0, π/2)
 
 struct ChemicalShift
