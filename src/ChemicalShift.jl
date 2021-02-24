@@ -1,7 +1,7 @@
 using Distributions, DataFrames
 
-const θ_dist = Uniform(0, π)
-const ϕ_dist = Uniform(0, 2π)
+const θ_dist = Uniform(-1, 1)
+const ϕ_dist = Uniform(-1, 1)
 
 struct ChemicalShift
     σᵢₛₒ::Array{Distribution}
@@ -41,7 +41,7 @@ function get_ν(
     Δσ::Distribution,
     ησ::Distribution,
 )
-    rand(σᵢₛₒ) + (rand(Δσ) / 2) * (3 * cos(θ)^2 - 1 + rand(ησ) * sin(θ)^2 * cos(2 * ϕ));
+    rand(σᵢₛₒ) + (rand(Δσ) / 2) * (3 * θ^2 - 1 + rand(ησ) * (1-θ^2) * ϕ);
 end
 
 function estimate_powder_pattern(p::ChemicalShift, N::Int64)
