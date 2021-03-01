@@ -50,8 +50,8 @@ function estimate_powder_pattern(p::ChemicalShift, N::Int64)
     println(p.weights)
     for j = 1:(length(p.weights) - 1)
         to_add = floor(Int, p.weights[j] * N)
-        θ = rand(θ_dist, N - i + 1)
-        ϕ = rand(ϕ_dist, N - i + 1)
+        θ = rand(θ_dist, to_add)
+        ϕ = rand(ϕ_dist, to_add)
         powder_pattern[i:(i + to_add - 1)] = get_ν.(θ, ϕ, p.σᵢₛₒ[j], p.Δσ[j], p.ησ[j])
         i += to_add
     end
