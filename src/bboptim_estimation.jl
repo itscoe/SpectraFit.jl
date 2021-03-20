@@ -16,7 +16,7 @@ function fit_quadrupolar_bb(
 
     fitness_progress_history = Array{Tuple{Int, Float64, Array{Float64}},1}()
     callback = oc -> push!(fitness_progress_history,
-        (BlackBoxOptim.num_func_evals(oc), best_fitness(oc), best_candidate(res)))
+        (BlackBoxOptim.num_func_evals(oc), best_fitness(oc), best_candidate(oc)))
 
     res =  bboptimize(x -> SpectraFit.ols_cdf(  # objective function
                 Quadrupolar(x),
