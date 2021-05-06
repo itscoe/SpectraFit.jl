@@ -74,7 +74,7 @@ function metropolis_hastings(
     interaction = "quadrupolar",
     N = 1_000_000,
     sites = 1,
-    tol = interaction == "quadrupolar" ? [0.1, 0.2, 0.1, 0.1, 0.05] : sites == 1 ? [10.0, 5.0, 10.0, 5.0, 0.1, 0.05, 0.05] : [10.0, 5.0, 10.0, 5.0, 0.1, 0.05, 10.0, 5.0, 10.0, 5.0, 0.1, 0.05, 0.01, 0.05],
+    tol = interaction == "quadrupolar" ? [0.1, 0.2, 0.1, 0.1, 0.05] : sites == 1 ? [100.0, 20.0, 30.0, 5.0, 0.1, 0.05, 0.05] : [10.0, 5.0, 10.0, 5.0, 0.1, 0.05, 10.0, 5.0, 10.0, 5.0, 0.1, 0.05, 0.01, 0.05],
     I = 3
 )
     experimental_ecdf = get_experimental_ecdf(experimental)
