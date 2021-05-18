@@ -2,7 +2,7 @@ using Distributions
 
 const m_arr = [3, 5, 6, 6, 5, 3]
 const μ_dist = Uniform(0, 1)
-const λ_dist = Uniform(-1, 1)
+const ϕ_dist = Uniform(0, π)
 
 """
     Quadrupolar
@@ -162,7 +162,7 @@ function estimate_powder_pattern(
         rand.(map(i -> p.qcc[i], sites)),
         rand.(map(i -> p.η[i], sites)),
         rand(μ_dist, N),
-        rand(λ_dist, N),
+        cos.(2 .* rand(ϕ_dist, N)),
         rand(Categorical(m_arr[transitions] ./
             sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
         I,
