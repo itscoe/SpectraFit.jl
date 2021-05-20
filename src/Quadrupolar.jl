@@ -157,9 +157,7 @@ function estimate_powder_pattern(
     p::Quadrupolar,
     N::Int64,
     ν0::Float64,
-    I::Int64,
-    μ::Array{Float64},
-    ϕ::Array{Float64};
+    I::Int64;
     transitions::UnitRange{Int64} = 1:(2*I),
 )
     powder_pattern = zeros(N)
@@ -171,8 +169,8 @@ function estimate_powder_pattern(
         powder_pattern[i] = get_ν(
             rand(qcc_dist),
             rand(η_dist),
-            μ[i],
-            ϕ[i],
+            rand(μ_dist),
+            cos(2*rand(ϕ_dist)),
             rand(m_dist) - (length(transitions) ÷ 2),
             I,
             ν0,
