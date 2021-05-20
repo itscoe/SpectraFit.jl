@@ -162,7 +162,6 @@ function estimate_powder_pattern(
     ϕ::Array{Float64};
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    for i = 1:N
     powder_pattern = get_ν.(
         rand(Normal(p.qcc, p.σqcc), N),
         rand(Normal(p.η, p.ση), N),
