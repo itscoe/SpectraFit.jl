@@ -1,4 +1,4 @@
-using Distributions
+using Distributions, StaticArrays
 
 const m_arr = [3, 5, 6, 6, 5, 3]
 const μ_dist = Uniform(0, 1)
@@ -18,9 +18,10 @@ constant
 distributions
 """
 struct Quadrupolar
-    qcc::Array{Distribution}
-    η::Array{Distribution}
-    weights::Array{Float64}
+    qcc::Float64
+    σqcc::Float64
+    η::Float64
+    ση::Float64
 end
 
 """
@@ -37,6 +38,7 @@ Quadrupolar(Distributions.Distribution[Truncated(Distributions.Normal{Float64}
 Distributions.Normal{Float64}(μ=0.12, σ=0.03), range=(0.0, 1.0))], [1.0])
 ```
 """
+#=
 function Quadrupolar(p::Array{Float64})
     sites = length(p) ÷ 5 + 1
     qcc = Array{Distribution}(undef, sites)
@@ -58,6 +60,7 @@ function Quadrupolar(p::Array{Float64})
 
     return Quadrupolar(qcc, η, weights)
 end
+=#
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
@@ -154,15 +157,16 @@ function estimate_powder_pattern(
     p::Quadrupolar,
     N::Int64,
     ν0::Float64,
-    I::Int64;
+    I::Int64,
+    μ::Array{Float64},
+    ϕ::Array{Float64};
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    sites = rand(Categorical(p.weights), N)
     powder_pattern = get_ν.(
-        rand.(map(i -> p.qcc[i], sites)),
-        rand.(map(i -> p.η[i], sites)),
-        rand(μ_dist, N),
-        cos.(2 .* rand(ϕ_dist, N)),
+        rand(Normal(p.qcc, p.σqcc), @SVector{1_000_000, Float64}),
+        rand(Normal(p.η, p.ση), @SVector{1_000_000, Float64}),
+        μ,
+        ϕ,
         rand(Categorical(m_arr[transitions] ./
             sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
         I,
@@ -171,6 +175,7 @@ function estimate_powder_pattern(
     return powder_pattern
 end
 
+#=
 function get_quadrupolar_starting_values(sites::Int64)
     starting_values = zeros(5 * sites - 1)
     starting_values[1:5:end] = rand(Uniform(0, 3), sites)  # √Qcc
