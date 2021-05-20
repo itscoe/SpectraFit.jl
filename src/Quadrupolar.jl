@@ -173,7 +173,7 @@ function estimate_powder_pattern(
             rand(η_dist),
             μ[i],
             ϕ[i],
-            rand(m_dist, N) - (length(transitions) ÷ 2),
+            rand(m_dist) - (length(transitions) ÷ 2),
             I,
             ν0,
         )
