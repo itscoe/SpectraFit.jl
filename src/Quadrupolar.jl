@@ -165,7 +165,8 @@ function estimate_powder_pattern(
     η_dist = Normal(p.η, p.ση)
     m_dist = Categorical(m_arr[transitions] ./
         sum(m_arr[transitions]))
-    for i = 1:N
+
+    @simd for i = 1:N
         powder_pattern[i] = get_ν(
             rand(qcc_dist),
             rand(η_dist),
