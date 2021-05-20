@@ -162,16 +162,23 @@ function estimate_powder_pattern(
     ϕ::Array{Float64};
     transitions::UnitRange{Int64} = 1:(2*I),
 )
-    powder_pattern = get_ν.(
-        rand(Normal(p.qcc, p.σqcc), N),
-        rand(Normal(p.η, p.ση), N),
-        μ,
-        ϕ,
-        rand(Categorical(m_arr[transitions] ./
-            sum(m_arr[transitions])), N) .- (length(transitions) ÷ 2),
-        I,
-        ν0,
-    )
+    powder_pattern = zeros(N)
+    qcc_dist = Normal(p.qcc, p.σqcc)
+    η_dist = Normal(p.η, p.ση)
+    m_dist = Categorical(m_arr[transitions] ./
+        sum(m_arr[transitions]))
+    for i = 1:N
+        powder_pattern[i] = get_ν(
+            rand(qcc_dist),
+            rand(η_dist),
+            μ[i],
+            ϕ[i],
+            rand(m_dist, N) - (length(transitions) ÷ 2),
+            I,
+            ν0,
+        )
+    end
+
     return powder_pattern
 end
 
