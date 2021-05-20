@@ -1,4 +1,4 @@
-using Distributions, StaticArrays
+using Distributions
 
 const m_arr = [3, 5, 6, 6, 5, 3]
 const μ_dist = Uniform(0, 1)
@@ -162,9 +162,11 @@ function estimate_powder_pattern(
     ϕ::Array{Float64};
     transitions::UnitRange{Int64} = 1:(2*I),
 )
+    powder_pattern = zeros(N)
+    for i = 1:N
     powder_pattern = get_ν.(
-        rand(Normal(p.qcc, p.σqcc), @SVector{1_000_000, Float64}),
-        rand(Normal(p.η, p.ση), @SVector{1_000_000, Float64}),
+        rand(Normal(p.qcc, p.σqcc), N),
+        rand(Normal(p.η, p.ση), N),
         μ,
         ϕ,
         rand(Categorical(m_arr[transitions] ./
