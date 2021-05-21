@@ -24,15 +24,15 @@ function CSA_lb(sites::Int64)
     return starting_values
 end
 
-function CSA_lb(sites::Int64)
+function CSA_ub(sites::Int64)
     starting_values = zeros(7 * sites - 1)
-    starting_values[1:7:end] .= -4000
-    starting_values[2:7:end] .= 0.000001
+    starting_values[1:7:end] .= 4000.0
+    starting_values[2:7:end] .= 800.0
     starting_values[3:7:end] .= -4000
-    starting_values[4:7:end] .= 0.000001
-    starting_values[5:7:end] .= 0.000001
-    starting_values[6:7:end] .= 0.000001
-    starting_values[7:7:end] .= 0.0
+    starting_values[4:7:end] .= 400.0
+    starting_values[5:7:end] .= 1.0
+    starting_values[6:7:end] .= 1.0
+    starting_values[7:7:end] .= 1.0
     return starting_values
 end
 
