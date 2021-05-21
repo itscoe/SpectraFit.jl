@@ -58,7 +58,7 @@ function quadrupolar_opt_func(x, p)
         return ols_cdf(
             parameters,
             experimental,
-            exp_ecdf,
+            experimental_ecdf,
             ν0,
             N = p[2],
             transitions = p[3],
@@ -78,7 +78,7 @@ function quadrupolar_opt_func(x, p)
             parameters,
             weights,
             experimental,
-            exp_ecdf,
+            experimental_ecdf,
             ν0,
             N = p[2],
             transitions = p[3],
