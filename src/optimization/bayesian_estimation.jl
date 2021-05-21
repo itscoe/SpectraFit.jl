@@ -110,12 +110,10 @@ function mh_quad(experimental;
     prior_dist_qcc, prior_dist_σqcc, prior_dist_η, prior_dist_ση =
         Uniform(lb[1], ub[1]), Uniform(lb[2], ub[2]),
         Uniform(lb[3], ub[3]), Uniform(lb[4], ub[4])
-    if sites != 1
-        prior_dist_w = Uniform(lb[5], ub[5])
-        prior_dist_σ = Uniform(lb[6], ub[6])
-    else
-        prior_dist_σ = Uniform(lb[5], ub[5])
-    end
+        if sites != 1
+            prior_dist_w = Uniform(lb[5], ub[5])
+        end
+        prior_dist_σ = Uniform(0, 1)
 
     prior_quad(x, sites) = sites == 1 ? sum(map(i ->
         logpdf(prior_dist_qcc, x[5*(i-1)+1]) +
@@ -170,10 +168,8 @@ function mh_chemical_shift(experimental;
         Uniform(lb[5], ub[5]), Uniform(lb[6], ub[6])
     if sites != 1
         prior_dist_w = Uniform(lb[7], ub[7])
-        prior_dist_σ = Uniform(lb[8], ub[8])
-    else
-        prior_dist_σ = Uniform(lb[7], ub[7])
     end
+    prior_dist_σ = Uniform(0, 1)
 
     prior_quad(x, sites) = sites == 1 ?
         sum(map(i -> logpdf(prior_dist_qcc, x[7*(i-1)+1]) +
