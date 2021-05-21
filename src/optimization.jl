@@ -45,6 +45,7 @@ function ols_cdf(
     th_ecdf = ecdf(powder_pattern).(exp[:, 1])
     th_ecdf .-= th_ecdf[1]
     th_ecdf ./= th_ecdf[end]
+    println(sum((exp_ecdf .- th_ecdf) .^ 2))
     return sum((exp_ecdf .- th_ecdf) .^ 2)
 end
 
@@ -100,11 +101,12 @@ function quadrupolar_opt(
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (exp[1, 1], exp[end, 1]),
     sites::Int64 = 1,
-    starting_values = get_quadrupolar_starting_values(sites)
+    starting_values = get_quadrupolar_starting_values(sites),
+    lb = quadrupolar_lb(sites),
+    ub = quadrupolar_ub(sites)
 )
     prob = GalacticOptim.OptimizationProblem(quadrupolar_opt_func, starting_values,
-        [exp, N, transitions, range, I, sites], lb = quadrupolar_lb(sites),
-        ub = quadrupolar_lb(sites))
+        [exp, N, transitions, range, I, sites], lb = lb, ub = ub)
 
     return @match method begin
         :NelderMead              => solve(prob, NelderMead())
