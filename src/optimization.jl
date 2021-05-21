@@ -4,7 +4,7 @@ using GalacticOptim, Optim, BlackBoxOptim, StatsBase, Evolutionary, NLopt, Match
     ols_cdf(parameters, experimental, experimental_ecdf, ν0, I)
 
 Compute ordinary least squares comparing the experimental ecdf with the
-theoretical cdf, calculated with the nmr parameters, the spin (I), and the
+theoretical cdf, calculated with the NMR parameters, the spin (I), and the
 Larmor frequency (ν0) at each x-value in the experimental data
 
 """
@@ -102,7 +102,8 @@ function quadrupolar_opt(
     sites::Int64 = 1,
     starting_values = get_quadrupolar_starting_values(sites),
     lb = quadrupolar_lb(sites),
-    ub = quadrupolar_ub(sites)
+    ub = quadrupolar_ub(sites),
+    max_func_evals = 10_000,
 )
     prob = GalacticOptim.OptimizationProblem(quadrupolar_opt_func, starting_values,
         [exp, N, transitions, range, I, sites], lb = lb, ub = ub)
@@ -134,21 +135,21 @@ function quadrupolar_opt(
         :CMAES                   => solve(prob, CMAES())
         :GA                      => solve(prob, GA())
         :ES                      => solve(prob, ES())
-        :SeparableNES            => solve(prob, BBO(:separable_nes))
-        :ExponentialNES          => solve(prob, BBO(:xnes))
-        :dxNES                   => solve(prob, BBO(:dxnes))
-        :AdaptiveDERand1Bin      => solve(prob, BBO(:adaptive_de_rand_1_bin))
-        :AdaptiveDERand1BinRS    => solve(prob, BBO(:adaptive_de_rand_1_bin_radiuslimited))
-        :DERand1Bin              => solve(prob, BBO(:de_rand_1_bin))
-        :DERand1BinRS            => solve(prob, BBO(:de_rand_1_bin_radiuslimited))
-        :DERand2Bin              => solve(prob, BBO(:de_rand_2_bin))
-        :DERand2BinRS            => solve(prob, BBO(:de_rand_2_bin_radiuslimited))
-        :GeneratingSetSearch     => solve(prob, BBO(:generating_set_search))
-        :ProbabilisticDescent    => solve(prob, BBO(:probabilistic_descent))
-        :RMS                     => solve(prob, BBO(:resampling_memetic_search))
-        :RIMS                    => solve(prob, BBO(:resampling_inheritance_memetic_search))
-        :SPSA                    => solve(prob, BBO(:simultaneous_perturbation_stochastic_approximation))
-        :Random                  => solve(prob, BBO(:random_search))
-        _                        => solve(prob, BBO())
+        :SeparableNES            => solve(prob, BBO(:separable_nes, MaxFuncEvals = max_func_evals))
+        :ExponentialNES          => solve(prob, BBO(:xnes, MaxFuncEvals = max_func_evals))
+        :dxNES                   => solve(prob, BBO(:dxnes, MaxFuncEvals = max_func_evals))
+        :AdaptiveDERand1Bin      => solve(prob, BBO(:adaptive_de_rand_1_bin, MaxFuncEvals = max_func_evals))
+        :AdaptiveDERand1BinRS    => solve(prob, BBO(:adaptive_de_rand_1_bin_radiuslimited, MaxFuncEvals = max_func_evals))
+        :DERand1Bin              => solve(prob, BBO(:de_rand_1_bin, MaxFuncEvals = max_func_evals))
+        :DERand1BinRS            => solve(prob, BBO(:de_rand_1_bin_radiuslimited, MaxFuncEvals = max_func_evals))
+        :DERand2Bin              => solve(prob, BBO(:de_rand_2_bin, MaxFuncEvals = max_func_evals))
+        :DERand2BinRS            => solve(prob, BBO(:de_rand_2_bin_radiuslimited, MaxFuncEvals = max_func_evals))
+        :GeneratingSetSearch     => solve(prob, BBO(:generating_set_search, MaxFuncEvals = max_func_evals))
+        :ProbabilisticDescent    => solve(prob, BBO(:probabilistic_descent, MaxFuncEvals = max_func_evals))
+        :RMS                     => solve(prob, BBO(:resampling_memetic_search, MaxFuncEvals = max_func_evals))
+        :RIMS                    => solve(prob, BBO(:resampling_inheritance_memetic_search, MaxFuncEvals = max_func_evals))
+        :SPSA                    => solve(prob, BBO(:simultaneous_perturbation_stochastic_approximation, MaxFuncEvals = max_func_evals))
+        :Random                  => solve(prob, BBO(:random_search, MaxFuncEvals = max_func_evals))
+        _                        => solve(prob, BBO(:adaptive_de_rand_1_bin_radiuslimited, MaxFuncEvals = max_func_evals))
     end
 end
