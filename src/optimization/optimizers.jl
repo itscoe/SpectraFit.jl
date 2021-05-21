@@ -113,7 +113,6 @@ function chemical_shift_opt_func(x, p)
             parameters,
             experimental,
             experimental_ecdf,
-            ν0,
             N = p[2],
         )
     else
