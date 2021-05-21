@@ -49,7 +49,7 @@ function ols_cdf(
 end
 
 function quadrupolar_opt_func(x, p)
-    if p[7] == 1
+    if p[6] == 1
         parameters = Quadrupolar(abs(x[1]), abs(x[2]), abs(x[3]), abs(x[4]))
         experimental = p[1]
         experimental_ecdf = get_experimental_ecdf(experimental)
@@ -59,11 +59,11 @@ function quadrupolar_opt_func(x, p)
             parameters,
             experimental,
             exp_ecdf,
-            p[2],
-            N = p[3],
-            transitions = p[4],
-            range = p[5],
-            I = p[6],
+            ν0,
+            N = p[2],
+            transitions = p[3],
+            range = p[4],
+            I = p[5],
         )
     else
         parameters = map(x -> Quadrupolar(abs(x[5*(i-1)+1]), abs(x[5*(i-1)+2]), abs(x[5*(i-1)+3]), abs(x[5*(i-1)+4])), 1:p[7])
