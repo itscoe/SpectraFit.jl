@@ -221,12 +221,12 @@ end
 
 function quadrupolar_ub(sites::Int64)
     starting_values = zeros(5 * sites - 1)
-    starting_values[1:5:end] = 9  # √Qcc
-    starting_values[2:5:end] = 1  # √σQcc
-    starting_values[3:5:end] = 1  # √η
-    starting_values[4:5:end] = 1  # √ση
+    starting_values[1:5:end] .= 9  # √Qcc
+    starting_values[2:5:end] .= 1  # √σQcc
+    starting_values[3:5:end] .= 1  # √η
+    starting_values[4:5:end] .= 1  # √ση
     if sites > 1
-        starting_values[5:5:end] = 1
+        starting_values[5:5:end] .= 1
     end
     return starting_values
 end
