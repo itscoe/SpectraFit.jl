@@ -79,11 +79,11 @@ function quadrupolar_opt_func(x, p)
             weights,
             experimental,
             exp_ecdf,
-            p[2],
-            N = p[3],
-            transitions = p[4],
-            range = p[5],
-            I = p[6],
+            ν0,
+            N = p[2],
+            transitions = p[3],
+            range = p[4],
+            I = p[5],
         )
     end
 end
@@ -98,8 +98,8 @@ function quadrupolar_opt(
     sites::Int64 = 1,
     starting_values = get_quadrupolar_starting_values(sites)
 )
-    prob = OptimizationProblem(quadrupolar_opt_func, starting_values,
-        [exp, ν0, N, transitions, range, I, sites], lb = quadrupolar_lb(sites),
+    prob = GalacticOptim.OptimizationProblem(quadrupolar_opt_func, starting_values,
+        [exp, N, transitions, range, I, sites], lb = quadrupolar_lb(sites),
         ub = quadrupolar_lb(sites))
 
     return @match method begin
