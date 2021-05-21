@@ -90,7 +90,7 @@ function quadrupolar_opt(
     exp::Array{Float64, 2},
     exp_ecdf::Array{Float64, 1},
     ν0::Float64;
-    method::Symbol = :BBO
+    method::Symbol = :BBO,
     I::Int64 = 3,
     N::Int64 = 1_000_000,
     transitions::UnitRange{Int64} = 1:(2*I),
