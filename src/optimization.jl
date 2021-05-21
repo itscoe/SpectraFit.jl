@@ -36,11 +36,11 @@ function ols_cdf(
     transitions::UnitRange{Int64} = 1:(2*I),
     range::Tuple{Float64,Float64} = (exp[1, 1], exp[end, 1]),
 )
-    w = vcat([1], floor.(Int64, cumsum(weights) .* N), [N])
+    w = vcat([0], floor.(Int64, cumsum(weights) .* N), [N])
     powder_pattern = zeros(N)
     for i = 1:length(parameters)
-        powder_pattern[w[i]:w[i+1]] = estimate_powder_pattern(parameters[i],
-            w[i+1] - w[i] + 1, ν0, I, transitions = transitions)
+        powder_pattern[w[i]+1:w[i+1]] = estimate_powder_pattern(parameters[i],
+            w[i+1] - w[i], ν0, I, transitions = transitions)
     end
     th_ecdf = ecdf(powder_pattern).(exp[:, 1])
     th_ecdf .-= th_ecdf[1]
