@@ -54,9 +54,9 @@ function get_experimental(
     if convert_ppm_to_mhz
         experimental[!, 1] = experimental[:, 1] .* (ν0_guess / (10^6)) .+ ν0_guess
     end
-    sort!(experimental, [:Intensity])
+    sort!(experimental, [:Frequency])
 
-    return experimental
+    return Matrix(experimental)
 end
 
 function get_data(filename::String)
