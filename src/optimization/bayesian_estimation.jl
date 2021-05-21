@@ -119,16 +119,16 @@ function mh_quad(experimental;
 
     prior_quad(x, sites) = sites == 1 ? sum(map(i ->
         logpdf(prior_dist_qcc, x[5*(i-1)+1]) +
-        logpdf(prior_dist_σqcc, x[5*(i-1)+2]]) +
-        logpdf(prior_dist_η, x[5*(i-1)+3]]) +
-        logpdf(prior_dist_ση, x[5*(i-1)+4]]), 1:sites)) +
+        logpdf(prior_dist_σqcc, x[5*(i-1)+2]) +
+        logpdf(prior_dist_η, x[5*(i-1)+3]) +
+        logpdf(prior_dist_ση, x[5*(i-1)+4]), 1:sites)) +
         logpdf(prior_dist_σ, x[end]) :
         sum(map(i ->
         logpdf(prior_dist_qcc, x[5*(i-1)+1]) +
-        logpdf(prior_dist_σqcc, x[5*(i-1)+2]]) +
-        logpdf(prior_dist_η, x[5*(i-1)+3]]) +
-        logpdf(prior_dist_ση, x[5*(i-1)+4]]), 1:sites)) +
-        sum(map(i -> logpdf(prior_dist_w, x[5*(i-1)+5]]), 1:sites-1)) +
+        logpdf(prior_dist_σqcc, x[5*(i-1)+2]) +
+        logpdf(prior_dist_η, x[5*(i-1)+3]) +
+        logpdf(prior_dist_ση, x[5*(i-1)+4]), 1:sites)) +
+        sum(map(i -> logpdf(prior_dist_w, x[5*(i-1)+5]), 1:sites-1)) +
         logpdf(prior_dist_σ, x[end])
 
     a = quadrupolar_starting_value(sites)
@@ -163,7 +163,8 @@ function mh_chemical_shift(experimental;
 
     samples = zeros(N, 7 * sites)  # initialize zero array for samples
 
-    prior_dist_δᵢₛₒ, prior_dist_σδᵢₛₒ, prior_dist_Δδ, prior_dist_σΔδ, prior_dist_ηδ, prior_dist_σηδ =
+    prior_dist_δᵢₛₒ, prior_dist_σδᵢₛₒ, prior_dist_Δδ, prior_dist_σΔδ,
+        prior_dist_ηδ, prior_dist_σηδ =
         Uniform(lb[1], ub[1]), Uniform(lb[2], ub[2]),
         Uniform(lb[3], ub[3]), Uniform(lb[4], ub[4]),
         Uniform(lb[5], ub[5]), Uniform(lb[6], ub[6])
@@ -176,19 +177,19 @@ function mh_chemical_shift(experimental;
 
     prior_quad(x, sites) = sites == 1 ?
         sum(map(i -> logpdf(prior_dist_qcc, x[7*(i-1)+1]) +
-        logpdf(prior_dist_σqcc, x[7*(i-1)+2]]) +
-        logpdf(prior_dist_η, x[7*(i-1)+3]]) +
-        logpdf(prior_dist_ση, x[7*(i-1)+4]]) +
-        logpdf(prior_dist_ση, x[7*(i-1)+5]]) +
-        logpdf(prior_dist_ση, x[7*(i-1)+6]]), 1:sites)) +
+        logpdf(prior_dist_σqcc, x[7*(i-1)+2]) +
+        logpdf(prior_dist_η, x[7*(i-1)+3]) +
+        logpdf(prior_dist_ση, x[7*(i-1)+4]) +
+        logpdf(prior_dist_ση, x[7*(i-1)+5]) +
+        logpdf(prior_dist_ση, x[7*(i-1)+6]), 1:sites)) +
         logpdf(prior_dist_σ, x[end]) :
         sum(map(i -> logpdf(prior_dist_qcc, x[7*(i-1)+1]) +
-        logpdf(prior_dist_σqcc, x[7[5*(i-1)+2]]) +
-        logpdf(prior_dist_η, x[7*(i-1)+3]]) +
-        logpdf(prior_dist_ση, x[7*(i-1)+4]]) +
-        logpdf(prior_dist_w, x[7*(i-1)+5]]) +
-        logpdf(prior_dist_ση, x[7*(i-1)+6]]), 1:sites)) +
-        sum(map(i -> logpdf(prior_dist_w, x[7*(i-1)+7]]), 1:sites-1)) +
+        logpdf(prior_dist_σqcc, x[7[5*(i-1)+2]) +
+        logpdf(prior_dist_η, x[7*(i-1)+3]) +
+        logpdf(prior_dist_ση, x[7*(i-1)+4]) +
+        logpdf(prior_dist_w, x[7*(i-1)+5]) +
+        logpdf(prior_dist_ση, x[7*(i-1)+6]), 1:sites)) +
+        sum(map(i -> logpdf(prior_dist_w, x[7*(i-1)+7]), 1:sites-1)) +
         logpdf(prior_dist_σ, x[end])
 
     a = CSA_starting_value(sites)
