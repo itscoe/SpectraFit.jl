@@ -27,7 +27,7 @@ end
 
 function ols_cdf(
     parameters::Array{Quadrupolar},
-    weights::Array{Float64}
+    weights::Array{Float64},
     exp::Array{Float64, 2},
     exp_ecdf::Array{Float64, 1},
     ν0::Float64;
