@@ -11,11 +11,10 @@ A structure for holding information about the quadrupolar parameters of the NMR
 spectra
 
 # Fields
-- `qcc::Array{Distribution}`: an array of distributions of the quantum coupling
-constant
-- `η::Array{Distribution}`: an array of distributions of the asymmetry parameter
-- `weights::Array{Float64}`: an array of relative weights of the above
-distributions
+- `qcc`
+- `σqcc`
+- `η`
+- `ση`
 """
 struct Quadrupolar
     qcc::Float64
@@ -23,44 +22,6 @@ struct Quadrupolar
     η::Float64
     ση::Float64
 end
-
-"""
-    Quadrupolar(p)
-
-A constructor for the nmr_parameters given an array of floating point numbers.
-Order is qcc, σqcc, η, ση, weight, and repeat for each site.
-
-# Examples
-```julia-repl
-julia> Quadrupolar([5.5, 0.1, 0.12, 0.03, 1.0])
-Quadrupolar(Distributions.Distribution[Truncated(Distributions.Normal{Float64}
-(μ=5.5, σ=0.1), range=(0.0, Inf))],Distributions.Distribution[Truncated(
-Distributions.Normal{Float64}(μ=0.12, σ=0.03), range=(0.0, 1.0))], [1.0])
-```
-"""
-#=
-function Quadrupolar(p::Array{Float64})
-    sites = length(p) ÷ 5 + 1
-    qcc = Array{Distribution}(undef, sites)
-    η = Array{Distribution}(undef, sites)
-    weights = zeros(sites)
-
-    weights_sum = sum(map(i -> i % 5 == 0 ? p[i] : 0.0, 1:length(p)))
-    weights_sum > 1.0 && return missing
-    for i in 1:length(p)
-        p[i] < 0 && return missing
-        (isnan(p[i]) || isinf(p[i])) && return missing
-        (isnothing(p[i]) || ismissing(p[i])) && return missing
-    end
-    for i = 1:sites
-        qcc[i] = truncated(Normal(p[5*(i-1)+1], p[5*(i-1)+2]), 0.0, Inf)
-        η[i] = truncated(Normal(p[5*(i-1)+3], p[5*(i-1)+4]), 0.0, 1.0)
-        weights[i] = i != sites ? p[5*i] : 1 - weights_sum
-    end
-
-    return Quadrupolar(qcc, η, weights)
-end
-=#
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)

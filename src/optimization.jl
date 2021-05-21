@@ -45,7 +45,6 @@ function ols_cdf(
     th_ecdf = ecdf(powder_pattern).(exp[:, 1])
     th_ecdf .-= th_ecdf[1]
     th_ecdf ./= th_ecdf[end]
-    println(sum((exp_ecdf .- th_ecdf) .^ 2))
     return sum((exp_ecdf .- th_ecdf) .^ 2)
 end
 
