@@ -68,7 +68,9 @@ function quadrupolar_opt_func(x, p)
     else
         parameters = map(x -> Quadrupolar(abs(x[5*(i-1)+1]), abs(x[5*(i-1)+2]), abs(x[5*(i-1)+3]), abs(x[5*(i-1)+4])), 1:p[7])
         weights = x[5:5:end]
-        weights ./= sum(weights)
+        if sum(weights) > 1
+            weights ./= sum(weights)
+        end
         experimental = p[1]
         experimental_ecdf = get_experimental_ecdf(experimental)
         ν0 =  get_ν0(experimental, experimental_ecdf)
@@ -87,9 +89,7 @@ function quadrupolar_opt_func(x, p)
 end
 
 function quadrupolar_opt(
-    exp::Array{Float64, 2},
-    exp_ecdf::Array{Float64, 1},
-    ν0::Float64;
+    exp::Array{Float64, 2};
     method::Symbol = :BBO,
     I::Int64 = 3,
     N::Int64 = 1_000_000,
