@@ -184,7 +184,7 @@ function mh_chemical_shift(experimental;
         logpdf(prior_dist_ση, x[7*(i-1)+6]), 1:sites)) +
         logpdf(prior_dist_σ, x[end]) :
         sum(map(i -> logpdf(prior_dist_qcc, x[7*(i-1)+1]) +
-        logpdf(prior_dist_σqcc, x[7[5*(i-1)+2]) +
+        logpdf(prior_dist_σqcc, x[7*(i-1)+2]) +
         logpdf(prior_dist_η, x[7*(i-1)+3]) +
         logpdf(prior_dist_ση, x[7*(i-1)+4]) +
         logpdf(prior_dist_w, x[7*(i-1)+5]) +
