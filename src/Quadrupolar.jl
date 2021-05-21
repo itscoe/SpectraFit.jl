@@ -202,7 +202,6 @@ function estimate_powder_pattern(
     return powder_pattern
 end
 
-#=
 function get_quadrupolar_starting_values(sites::Int64)
     starting_values = zeros(5 * sites - 1)
     starting_values[1:5:end] = rand(Uniform(0, 3), sites)  # √Qcc
@@ -214,4 +213,20 @@ function get_quadrupolar_starting_values(sites::Int64)
     end
     return starting_values
 end
-=#
+
+function quadrupolar_lb(sites::Int64)
+    starting_values = zeros(5 * sites - 1)
+    return starting_values
+end
+
+function quadrupolar_ub(sites::Int64)
+    starting_values = zeros(5 * sites - 1)
+    starting_values[1:5:end] = 9  # √Qcc
+    starting_values[2:5:end] = 1  # √σQcc
+    starting_values[3:5:end] = 1  # √η
+    starting_values[4:5:end] = 1  # √ση
+    if sites > 1
+        starting_values[5:5:end] = 1
+    end
+    return starting_values
+end

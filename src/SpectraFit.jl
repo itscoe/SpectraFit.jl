@@ -5,10 +5,10 @@ ENV["GKS_ENCODING"] = "utf-8"
 include("Quadrupolar.jl")
 include("ChemicalShift.jl")
 include("utility_functions.jl")
-include("optim_estimation.jl")
-include("bayesian_estimation.jl")
-include("genetic_algorithm.jl")
-include("bboptim_estimation.jl")
+include("optimization.jl")
+#include("bayesian_estimation.jl")
+#include("genetic_algorithm.jl")
+#include("bboptim_estimation.jl")
 
 export get_experimental,
        Quadrupolar,
