@@ -16,7 +16,7 @@ function get_ν(
     Δδ::Float64,
     ηδ::Float64,
 )
-    σᵢₛₒ + (Δσ / 2) * (3 * μ^2 - 1 + ησ * (1-μ^2) * λ);
+    δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ);
 end
 
 function estimate_powder_pattern(p::ChemicalShift, N::Int64)
