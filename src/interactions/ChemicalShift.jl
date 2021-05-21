@@ -11,12 +11,12 @@ end
 
 function get_ν(
     μ::Float64,
-    ϕ::Float64,
+    λ::Float64,
     δᵢₛₒ::Float64,
     Δδ::Float64,
     ηδ::Float64,
 )
-    σᵢₛₒ + (Δσ / 2) * (3 * μ^2 - 1 + ησ * (1-μ^2) * cos(2 * ϕ));
+    σᵢₛₒ + (Δσ / 2) * (3 * μ^2 - 1 + ησ * (1-μ^2) * λ);
 end
 
 function estimate_powder_pattern(p::ChemicalShift, N::Int64)
@@ -30,8 +30,8 @@ function estimate_powder_pattern(p::ChemicalShift, N::Int64)
             rand(δᵢₛₒ_dist),
             rand(Δδ_dist),
             rand(ηδ_dist),
-            μ[i],
-            λ[i],
+            rand(μ_dist),
+            cos(2 * rand(ϕ_dist)),
         )
     end
 
