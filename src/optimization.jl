@@ -66,7 +66,7 @@ function quadrupolar_opt_func(x, p)
             I = p[5],
         )
     else
-        parameters = map(x -> Quadrupolar(abs(x[5*(i-1)+1]), abs(x[5*(i-1)+2]), abs(x[5*(i-1)+3]), abs(x[5*(i-1)+4])), 1:p[6])
+        parameters = map(i -> Quadrupolar(abs(x[5*(i-1)+1]), abs(x[5*(i-1)+2]), abs(x[5*(i-1)+3]), abs(x[5*(i-1)+4])), 1:p[6])
         weights = x[5:5:end]
         if sum(weights) > 1
             weights ./= sum(weights)
