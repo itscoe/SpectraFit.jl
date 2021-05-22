@@ -115,11 +115,11 @@ function mh_quad(experimental;
         end
         prior_dist_σ = Uniform(0, 1)
 
-    prior_quad(x, sites) = sites == 1 ? sum(map(i ->
-        logpdf(prior_dist_qcc, x[5*(i-1)+1]) +
-        logpdf(prior_dist_σqcc, x[5*(i-1)+2]) +
-        logpdf(prior_dist_η, x[5*(i-1)+3]) +
-        logpdf(prior_dist_ση, x[5*(i-1)+4]), 1:sites)) +
+    prior_quad(x, sites) = sites == 1 ?
+        logpdf(prior_dist_qcc, x[1]) +
+        logpdf(prior_dist_σqcc, x[2]) +
+        logpdf(prior_dist_η, x[3]) +
+        logpdf(prior_dist_ση, x[4]) +
         logpdf(prior_dist_σ, x[end]) :
         sum(map(i ->
         logpdf(prior_dist_qcc, x[5*(i-1)+1]) +
@@ -172,13 +172,13 @@ function mh_chemical_shift(experimental;
     prior_dist_σ = Uniform(0, 1)
 
     prior_quad(x, sites) = sites == 1 ?
-        sum(map(i -> logpdf(prior_dist_δᵢₛₒ, x[7*(i-1)+1]) +
-        logpdf(prior_dist_σδᵢₛₒ, x[7*(i-1)+2]) +
-        logpdf(prior_dist_Δδ, x[7*(i-1)+3]) +
-        logpdf(prior_dist_σΔδ, x[7*(i-1)+4]) +
-        logpdf(prior_dist_ηδ, x[7*(i-1)+5]) +
-        logpdf(prior_dist_σηδ, x[7*(i-1)+6]), 1:sites)) +
-        logpdf(prior_dist_σ, x[end]) :
+        logpdf(prior_dist_δᵢₛₒ, x[1]) +
+        logpdf(prior_dist_σδᵢₛₒ, x[2]) +
+        logpdf(prior_dist_Δδ, x[3]) +
+        logpdf(prior_dist_σΔδ, x[4]) +
+        logpdf(prior_dist_ηδ, x[5]) +
+        logpdf(prior_dist_σηδ, x[6]) +
+        logpdf(prior_dist_σ, x[7]) :
         sum(map(i -> logpdf(prior_dist_δᵢₛₒ, x[7*(i-1)+1]) +
         logpdf(prior_dist_σδᵢₛₒ, x[7*(i-1)+2]) +
         logpdf(prior_dist_Δδ, x[7*(i-1)+3]) +
