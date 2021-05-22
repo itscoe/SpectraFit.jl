@@ -129,7 +129,7 @@ function mh_quad(experimental;
         sum(map(i -> logpdf(prior_dist_w, x[5*(i-1)+5]), 1:sites-1)) +
         logpdf(prior_dist_σ, x[end])
 
-    a = quadrupolar_starting_value(sites)
+    a = vcat(quadrupolar_starting_value(sites), [rand(prior_dist_σ)])
     samples[1, :] = a
 
     @showprogress for i = 2:N
@@ -188,7 +188,7 @@ function mh_chemical_shift(experimental;
         sum(map(i -> logpdf(prior_dist_w, x[7*(i-1)+7]), 1:sites-1)) +
         logpdf(prior_dist_σ, x[end])
 
-    a = CSA_starting_value(sites)
+    a = vcat(CSA_starting_value(sites), [rand(prior_dist_σ)])
     samples[1, :] = a
 
     @showprogress for i = 2:N
