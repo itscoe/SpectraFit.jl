@@ -135,9 +135,9 @@ function mh_quad(experimental;
     @showprogress for i = 2:N
         b = a + tol .* (rand(5*sites) .- 0.5)  # Compute new state randomly
         # Calculate density
-        prob_old = likelihood(a, experimental_ecdf, experimental, I, ν0) +
+        prob_old = likelihood_quad(a, experimental_ecdf, experimental, I, ν0) +
                    prior_quad(a)
-        prob_new = likelihood(b, experimental_ecdf, experimental, I, ν0) +
+        prob_new = likelihood_quad(b, experimental_ecdf, experimental, I, ν0) +
                    prior_quad(b)
         r = prob_new - prob_old # Compute acceptance ratio
         if log(rand()) < r
@@ -194,9 +194,9 @@ function mh_chemical_shift(experimental;
     @showprogress for i = 2:N
         b = a + tol .* (rand(7*sites) .- 0.5)  # Compute new state randomly
         # Calculate density
-        prob_old = likelihood(a, experimental_ecdf, experimental, I, ν0) +
+        prob_old = likelihood_CSA(a, experimental_ecdf, experimental, I, ν0) +
                    prior_quad(a)
-        prob_new = likelihood(b, experimental_ecdf, experimental, I, ν0) +
+        prob_new = likelihood_CSA(b, experimental_ecdf, experimental, I, ν0) +
                    prior_quad(b)
         r = prob_new - prob_old # Compute acceptance ratio
         if log(rand()) < r
