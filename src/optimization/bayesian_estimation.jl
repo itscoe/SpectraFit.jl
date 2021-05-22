@@ -15,7 +15,7 @@ the ordinary least squares of the experimental vs. theoretical CDFs
 
 """
 function likelihood_quad(ŷ, experimental_ecdf, experimental, I, ν0)
-    sites = length(ŷ ÷ 5) - 1
+    sites = length(ŷ) ÷ 5 - 1
 
     # We must choose a distribution for the error!
     ŷ[end] < 0 && return 0
@@ -50,7 +50,7 @@ function likelihood_quad(ŷ, experimental_ecdf, experimental, I, ν0)
 end
 
 function likelihood_CSA(ŷ, experimental_ecdf, experimental)
-    sites = length(ŷ ÷ 7) - 1
+    sites = length(ŷ) ÷ 7 - 1
 
     # We must choose a distribution for the error!
     ŷ[end] < 0 && return 0
