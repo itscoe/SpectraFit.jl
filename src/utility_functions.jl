@@ -39,33 +39,31 @@ julia> experimental = get_experimental("B2O3FastCool.txt", 32.239)
  33.43    10764.6
 ```
 """
+
 function get_experimental(
     filename::String;
     ν0_guess::Float64 = 0.0,
     header::Bool = false,
     delim = ",",
     convert_ppm_to_mhz::Bool = ν0_guess != 0,
-    reverse_data::Bool = true,
 )
-    if delim == ","
-        experimental = CSV.read(filename, DataFrame, header = header)
-    else
-        experimental = CSV.read(filename, DataFrame, header = header, delim = delim)
-    end
-    if typeof(experimental[1, 1]) != Float64
+    experimental = CSV.read(filename, DataFrame, header = header, delim = delim)
+    rename!(experimental, [:Frequency, :Intensity])
+    if typeof(experimental[1, 1]) <: AbstractString
         experimental[!, 1] = parse.(Float64, experimental[:, 1])
     end
     if convert_ppm_to_mhz
-        experimental[!, 1] = experimental[:, 1] .* (ν0_guess /
-            (10^6)) .+ ν0_guess
+        experimental[!, 1] = experimental[:, 1] .* (ν0_guess / (10^6)) .+ ν0_guess
     end
-    if reverse_data
-        experimental = [reverse(experimental[:, 1]) reverse(experimental[:, 2])]
-    else
-        experimental = [experimental[:, 1] experimental[:, 2]]
-    end
-    return experimental
+    sort!(experimental, [:Frequency])
+
+    return Matrix(experimental)
 end
+
+function get_data(filename::String)
+    return joinpath(dirname(pathof(SpectraFit)), "..", "data", filename)
+end
+
 
 """
     generate_theoretical_spectrum(experimental, Quadrupolar)
@@ -281,8 +279,4 @@ end
 
 function get_ν0(experimental::Array{Float64,2})
     return get_ν0(experimental, get_experimental_ecdf(experimental))
-end
-
-function get_data(filename::String)
-    return joinpath(dirname(pathof(SpectraFit)), "..", "data", filename)
 end
