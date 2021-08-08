@@ -15,7 +15,7 @@ spectra
 - `η`
 - `ση`
 """
-struct Quadrupolar{T <: Float} <: NMRInteraction
+struct Quadrupolar{T <: Abstract} <: NMRInteraction
     position::T
     qcc::T
     σqcc::T
@@ -38,13 +38,13 @@ Compute the value of ν with the third order perturbation described in
 >Journal of Magnetic Resonance (1969), 27(1), 121-132.
 
 # Arguments
-- `qcc::Float64`: the quantum coupling constant
-- `η::Float64`: the asymmetry parameter (between 0 and 1 inclusive)
-- `μ::Float64`: cos(θ), where θ is the spherical coordinate angle
-- `λ::Float64`: cos(2ϕ), where ϕ is the spherical coordinate angle
+- `qcc::AbstractFloat`: the quantum coupling constant
+- `η::AbstractFloat`: the asymmetry parameter (between 0 and 1 inclusive)
+- `μ::AbstractFloat`: cos(θ), where θ is the spherical coordinate angle
+- `λ::AbstractFloat`: cos(2ϕ), where ϕ is the spherical coordinate angle
 - `m::Int64`: the quantum number m, which can be integers from -I to I - 1
 - `I::Int64`: spin (3 in the case of Boron-10)
-- `ν0::Float64`: the Larmor frequency
+- `ν0::AbstractFloat`: the Larmor frequency
 
 # Examples
 ```julia-repl
@@ -53,7 +53,7 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 ```
 """
 function get_ν(position::T1, qcc::T1, η::T1, μ::T1, λ::T1, 
-    m::T2, I::T2, ν0::T1) where {T1 <: Float, T2 <: Int}
+    m::T2, I::T2, ν0::T1) where {T1 <: AbstractFloat, T2 <: Int}
     νQ = 3 * qcc / (2 * I * (2 * I - 1))
     β = νQ / ν0
     a = -(3 * μ^2 - 1 + η * λ - η * λ * μ^2)
@@ -81,10 +81,10 @@ end
 
 function estimate_powder_pattern(
     p::Quadrupolar,
-    ν0::Float,
+    ν0::AbstractFloat,
     I::Int64,
-    μ::Array{Float64, N},
-    λ::Array{Float64, N};
+    μ::Array{AbstractFloat, N},
+    λ::Array{AbstractFloat, N};
     transitions::UnitRange{Int64} = 1:(2*I),
 )
     qcc = rand(Normal(p.qcc, p.σqcc), N)
@@ -120,7 +120,7 @@ julia> estimate_powder_pattern(Quadrupolar([5.5, 0.1, 0.12, 0.03, 1.0]), 1000, 3
  32.15411486178574
 ```
 """
-estimate_powder_pattern(p::Quadrupolar, N::Int, ν0::Float, I::Int; 
+estimate_powder_pattern(p::Quadrupolar, N::Int, ν0::AbstractFloat, I::Int; 
     transitions::UnitRange{Int} = 1:(2*I)) = 
     estimate_powder_pattern(p, ν0, I, μ(N), λ(N), transitions = transitions)
 
