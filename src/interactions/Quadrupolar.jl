@@ -15,7 +15,7 @@ spectra
 - `η`
 - `ση`
 """
-struct Quadrupolar{T <: Abstract} <: NMRInteraction
+struct Quadrupolar{T <: AbstractFloat} <: NMRInteraction
     position::T
     qcc::T
     σqcc::T
