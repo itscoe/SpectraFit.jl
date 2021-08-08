@@ -2,7 +2,7 @@ module SpectraFit
 
 ENV["GKS_ENCODING"] = "utf-8"
 
-include("interactions/Interaction.jl")
+include("interactions/NMRInteraction.jl")
 include("interactions/Quadrupolar.jl")
 include("interactions/ChemicalShift.jl")
 include("data.jl")
