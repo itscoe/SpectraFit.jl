@@ -1,8 +1,6 @@
 using Distributions
 
 const m_arr = [3, 5, 6, 6, 5, 3]
-const μ_dist = Uniform(0, 1)
-const ϕ_dist = Uniform(0, π)
 
 """
     Quadrupolar
@@ -11,17 +9,24 @@ A structure for holding information about the quadrupolar parameters of the NMR
 spectra
 
 # Fields
+- 'position'
 - `qcc`
 - `σqcc`
 - `η`
 - `ση`
 """
-struct Quadrupolar <: Interaction
-    qcc::Float64
-    σqcc::Float64
-    η::Float64
-    ση::Float64
+struct Quadrupolar{T <: Float} <: NMRInteraction
+    position::T
+    qcc::T
+    σqcc::T
+    η::T
+    ση::T
 end
+
+Base.size(Q::Quadrupolar) = (5,)
+
+Base.getindex(Q::Quadrupolar, i::Int) = 
+    i == 1 ? Q.qcc : i == 2 ? Q.σqcc : i == 3 ? Q.η : Q.ση
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
@@ -47,15 +52,8 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-function get_ν(
-    qcc::Float64,
-    η::Float64,
-    μ::Float64,
-    λ::Float64,
-    m::Int64,
-    I::Int64,
-    ν0::Float64,
-)
+function get_ν(position::T1, qcc::T1, η::T1, μ::T1, λ::T1, 
+    m::T2, I::T2, ν0::T1) where {T1 <: Float, T2 <: Int}
     νQ = 3 * qcc / (2 * I * (2 * I - 1))
     β = νQ / ν0
     a = -(3 * μ^2 - 1 + η * λ - η * λ * μ^2)
@@ -77,8 +75,23 @@ function get_ν(
         η^3 * λ - 15 * η^2 * λ^2 + 3 * η^3 * λ^3) + μ^2 * (27 - 6 * η^2 - 9 *
         η * λ + 4 * η^3 * λ + 3 * η^2 * λ^2 - 3 * η^3 * λ^3) + (-3 * η^2 - η^3 *
         λ + 3 * η^2 * λ^2 + η^3 * λ^3))
-    return ν0 + (νQ / 2) * (m - 1 / 2) * a + (νQ * β / 72) * c + (νQ * β^2 /
-        144) * e * (m - 1 / 2)
+    return ν0 - position + (νQ / 2) * (m - 1 / 2) * a + (νQ * β / 72) * c + 
+        (νQ * β^2 / 144) * e * (m - 1 / 2)
+end
+
+function estimate_powder_pattern(
+    p::Quadrupolar,
+    ν0::Float,
+    I::Int64,
+    μ::Array{Float64, N},
+    λ::Array{Float64, N};
+    transitions::UnitRange{Int64} = 1:(2*I),
+)
+    qcc = rand(Normal(p.qcc, p.σqcc), N)
+    η = rand(Normal(p.η, p.ση), N)
+    m = rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .-
+        (length(transitions) ÷ 2)
+    return get_ν.(Ref(p.position), qcc, η, μ, λ, m, Ref(I), Ref(ν0))
 end
 
 """
@@ -107,58 +120,8 @@ julia> estimate_powder_pattern(Quadrupolar([5.5, 0.1, 0.12, 0.03, 1.0]), 1000, 3
  32.15411486178574
 ```
 """
-function estimate_powder_pattern(
-    p::Quadrupolar,
-    N::Int64,
-    ν0::Float64,
-    I::Int64;
-    transitions::UnitRange{Int64} = 1:(2*I),
-)
-    powder_pattern = zeros(N)
-    qcc_dist = Normal(p.qcc, p.σqcc)
-    η_dist = Normal(p.η, p.ση)
-    m_dist = Categorical(m_arr[transitions] ./ sum(m_arr[transitions]))
+estimate_powder_pattern(p::Quadrupolar, N::Int, ν0::Float, I::Int; 
+    transitions::UnitRange{Int} = 1:(2*I)) = 
+    estimate_powder_pattern(p, ν0, I, μ(N), λ(N), transitions = transitions)
 
-    @simd for i = 1:N
-        powder_pattern[i] = get_ν(
-            rand(qcc_dist),
-            rand(η_dist),
-            rand(μ_dist),
-            cos(2*rand(ϕ_dist)),
-            rand(m_dist) - (length(transitions) ÷ 2),
-            I,
-            ν0,
-        )
-    end
 
-    return powder_pattern
-end
-
-function estimate_powder_pattern(
-    p::Quadrupolar,
-    N::Int64,
-    ν0::Float64,
-    I::Int64,
-    μ::Array{Float64},
-    λ::Array{Float64};
-    transitions::UnitRange{Int64} = 1:(2*I),
-)
-    powder_pattern = zeros(N)
-    qcc_dist = Normal(p.qcc, p.σqcc)
-    η_dist = Normal(p.η, p.ση)
-    m_dist = Categorical(m_arr[transitions] ./ sum(m_arr[transitions]))
-
-    @simd for i = 1:N
-        powder_pattern[i] = get_ν(
-            rand(qcc_dist),
-            rand(η_dist),
-            μ[i],
-            λ[i],
-            rand(m_dist) - (length(transitions) ÷ 2),
-            I,
-            ν0,
-        )
-    end
-
-    return powder_pattern
-end

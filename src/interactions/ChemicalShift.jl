@@ -1,63 +1,29 @@
 using Distributions
 
-struct ChemicalShift <: Interaction
-    δᵢₛₒ::Float64
-    σδᵢₛₒ::Float64
-    Δδ::Float64
-    σΔδ::Float64
-    ηδ::Float64
-    σηδ::Float64
+struct ChemicalShift{T <: Float} <: NMRInteraction
+    δᵢₛₒ::T
+    σδᵢₛₒ::T
+    Δδ::T
+    σΔδ::T
+    ηδ::T
+    σηδ::T
 end
 
-function get_ν(
-    μ::Float64,
-    λ::Float64,
-    δᵢₛₒ::Float64,
-    Δδ::Float64,
-    ηδ::Float64,
-)
-    δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ);
-end
+Base.size(C::ChemicalShift) = (6,)
 
-function estimate_powder_pattern(p::ChemicalShift, N::Int64)
-    powder_pattern = zeros(N)
-    δᵢₛₒ_dist = Normal(p.δᵢₛₒ, p.σδᵢₛₒ)
-    Δδ_dist = Normal(p.Δδ, p.σΔδ)
-    ηδ_dist = Normal(p.ηδ, p.σηδ)
+Base.getindex(C::ChemicalShift, i::Int) = 
+    i == 1 ? C.δᵢₛₒ : i == 2 ? C.σδᵢₛₒ : i == 3 ? C.Δδ : 
+    i == 4 ? C.σΔδ : i == 5 ? C.ηδ : C.σηδ
 
-    @simd for i = 1:N
-        powder_pattern[i] = get_ν(
-            rand(δᵢₛₒ_dist),
-            rand(Δδ_dist),
-            rand(ηδ_dist),
-            rand(μ_dist),
-            cos(2 * rand(ϕ_dist)),
-        )
-    end
+get_ν(μ::T, λ::T, δᵢₛₒ::T, Δδ::T, ηδ::T) where {T <: Float} = 
+    δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
 
-    return powder_pattern
-end
+estimate_powder_pattern(p::ChemicalShift, N::Int) = 
+    estimate_powder_pattern(p, rand(μ_dist, N), cos.(2 .* rand(ϕ_dist, N)))
 
-function estimate_powder_pattern(
-    p::ChemicalShift,
-    N::Int64,
-    μ::Array{Float64},
-    λ::Array{Float64},
-)
-    powder_pattern = zeros(N)
-    δᵢₛₒ_dist = Normal(p.δᵢₛₒ, p.σδᵢₛₒ)
-    Δδ_dist = Normal(p.Δδ, p.σΔδ)
-    ηδ_dist = Normal(p.ηδ, p.σηδ)
-
-    @simd for i = 1:N
-        powder_pattern[i] = get_ν(
-            rand(δᵢₛₒ_dist),
-            rand(Δδ_dist),
-            rand(ηδ_dist),
-            μ[i],
-            λ[i],
-        )
-    end
-
-    return powder_pattern
+function estimate_powder_pattern(p::ChemicalShift, μ::Array{Float, N}, λ::Array{Float, N})
+    δᵢₛₒ = rand(Normal(p.δᵢₛₒ, p.σδᵢₛₒ), N)
+    Δδ = rand(Normal(p.Δδ, p.σΔδ), N)
+    ηδ = rand(Normal(p.ηδ, p.σηδ), N)
+    return get_ν.(δᵢₛₒ, Δδ, ηδ, μ, λ)
 end
