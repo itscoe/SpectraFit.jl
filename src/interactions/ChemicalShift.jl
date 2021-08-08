@@ -18,13 +18,13 @@ Base.getindex(C::ChemicalShift, i::Int) =
 get_ν(μ::T, λ::T, δᵢₛₒ::T, Δδ::T, ηδ::T) where {T <: AbstractFloat} = 
     δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
 
-estimate_powder_pattern(p::ChemicalShift, N::Int) = 
-    estimate_powder_pattern(p, rand(μ_dist, N), cos.(2 .* rand(ϕ_dist, N)))
-
 function estimate_powder_pattern(p::ChemicalShift, 
-    μ::Array{AbstractFloat, N}, λ::Array{AbstractFloat, N})
+    μ::Array{AbstractFloat, N}, λ::Array{AbstractFloat, N}) where {N}
     δᵢₛₒ = rand(Normal(p.δᵢₛₒ, p.σδᵢₛₒ), N)
     Δδ = rand(Normal(p.Δδ, p.σΔδ), N)
     ηδ = rand(Normal(p.ηδ, p.σηδ), N)
     return get_ν.(δᵢₛₒ, Δδ, ηδ, μ, λ)
 end
+
+estimate_powder_pattern(p::ChemicalShift, N::Int) = 
+    estimate_powder_pattern(p, rand(μ_dist, N), cos.(2 .* rand(ϕ_dist, N)))

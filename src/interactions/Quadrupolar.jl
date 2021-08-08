@@ -86,7 +86,7 @@ function estimate_powder_pattern(
     μ::Array{AbstractFloat, N},
     λ::Array{AbstractFloat, N};
     transitions::UnitRange{Int64} = 1:(2*I),
-)
+) where {N}
     qcc = rand(Normal(p.qcc, p.σqcc), N)
     η = rand(Normal(p.η, p.ση), N)
     m = rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .-
