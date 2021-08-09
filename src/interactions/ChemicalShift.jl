@@ -26,5 +26,5 @@ function estimate_powder_pattern(p::ChemicalShift,
     return get_ν.(δᵢₛₒ, Δδ, ηδ, μ, λ)
 end
 
-estimate_powder_pattern(p::ChemicalShift, N::Int) = 
-    estimate_powder_pattern(p, rand(μ_dist, N), cos.(2 .* rand(ϕ_dist, N)))
+@inline estimate_powder_pattern(p::ChemicalShift, N::Int) = 
+    estimate_powder_pattern(p, μ(N), λ(N))
