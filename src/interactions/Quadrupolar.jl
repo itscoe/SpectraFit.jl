@@ -26,13 +26,15 @@ Base.size(Q::Quadrupolar) = (5,)
 Base.getindex(Q::Quadrupolar, i::Int) = 
     i == 1 ? Q.qcc : i == 2 ? Q.σqcc : i == 3 ? Q.η : Q.ση
 
-Quadrupolar() = Quadrupolar(
-    rand(Uniform(-5., 5.)),
-    rand(Uniform(0.,  9.)),
-    rand(Uniform(0.,  1.)),
-    rand(Uniform(0.,  1.)),
-    rand(Uniform(0.,  1.)),
-)
+function Quadrupolar() 
+    return Quadrupolar(
+        rand(Uniform(-5., 5.)),
+        rand(Uniform(0.,  9.)),
+        rand(Uniform(0.,  1.)),
+        rand(Uniform(0.,  1.)),
+        rand(Uniform(0.,  1.)),
+    )
+end
 
 lower_bounds(Q::Quadrupolar) = [-5., 0., 0., 0., 0.]
 upper_bounds(Q::Quadrupolar) = [5.,  9., 1., 1., 1.]
