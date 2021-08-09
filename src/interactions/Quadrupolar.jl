@@ -1,7 +1,5 @@
 using Distributions
 
-const m_arr = [3, 5, 6, 6, 5, 3]
-
 """
     Quadrupolar
 
@@ -27,6 +25,18 @@ Base.size(Q::Quadrupolar) = (5,)
 
 Base.getindex(Q::Quadrupolar, i::Int) = 
     i == 1 ? Q.qcc : i == 2 ? Q.σqcc : i == 3 ? Q.η : Q.ση
+
+Quadrupolar() = Quadrupolar(
+    rand(Uniform(-5., 5.)),
+    rand(Uniform(0.,  9.)),
+    rand(Uniform(0.,  1.)),
+    rand(Uniform(0.,  1.)),
+    rand(Uniform(0.,  1.)),
+)
+
+lower_bounds(Q::Quadrupolar) = [-5., 0., 0., 0., 0.]
+upper_bounds(Q::Quadrupolar) = [5.,  9., 1., 1., 1.]
+tolerance(Q::Quadrupolar)    = [.1,  .5, .1, .1, .1]
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
@@ -75,7 +85,7 @@ function get_ν(position::T1, qcc::T1, η::T1, μ::T1, λ::T1,
         η^3 * λ - 15 * η^2 * λ^2 + 3 * η^3 * λ^3) + μ^2 * (27 - 6 * η^2 - 9 *
         η * λ + 4 * η^3 * λ + 3 * η^2 * λ^2 - 3 * η^3 * λ^3) + (-3 * η^2 - η^3 *
         λ + 3 * η^2 * λ^2 + η^3 * λ^3))
-    return ν0 - position + (νQ / 2) * (m - 1 / 2) * a + (νQ * β / 72) * c + 
+    return ν0 + position + (νQ / 2) * (m - 1 / 2) * a + (νQ * β / 72) * c + 
         (νQ * β^2 / 144) * e * (m - 1 / 2)
 end
 
@@ -89,6 +99,7 @@ function estimate_powder_pattern(
 ) where {N}
     qcc = rand(Normal(p.qcc, p.σqcc), N)
     η = rand(Normal(p.η, p.ση), N)
+    m_arr = [3, 5, 6, 6, 5, 3]
     m = rand(Categorical(m_arr[transitions] ./ sum(m_arr[transitions])), N) .-
         (length(transitions) ÷ 2)
     return get_ν.(Ref(p.position), qcc, η, μ, λ, m, Ref(I), Ref(ν0))
