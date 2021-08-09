@@ -1,4 +1,4 @@
-struct Spectra <: AbstractArray{Float64, 1}
+struct Spectra{N} <: AbstractArray{Float64, 1}
     interactions::Tuple{Vararg{NMRInteraction, N}}
     weights::Tuple{Vararg{AbstractFloat, N}}
 end
