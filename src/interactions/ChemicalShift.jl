@@ -1,4 +1,4 @@
-using Distributions
+using Distributions, StatsBase
 
 struct ChemicalShift{T <: AbstractFloat} <: NMRInteraction
     δᵢₛₒ::T
@@ -32,12 +32,14 @@ get_ν(μ::T, λ::T, δᵢₛₒ::T, Δδ::T, ηδ::T) where {T <: AbstractFloat
     δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
 
 function estimate_powder_pattern(p::ChemicalShift, 
-    μ::Array{AbstractFloat, N}, λ::Array{AbstractFloat, N}) where {N}
+    μ::Array{AbstractFloat, N}, λ::Array{AbstractFloat, N};
+    ν0::AbstractFloat, I::Int64, transitions::UnitRange{Int64}) where {N}
     δᵢₛₒ = rand(Normal(p.δᵢₛₒ, p.σδᵢₛₒ), N)
     Δδ = rand(Normal(p.Δδ, p.σΔδ), N)
     ηδ = rand(Normal(p.ηδ, p.σηδ), N)
     return get_ν.(δᵢₛₒ, Δδ, ηδ, μ, λ)
 end
 
-@inline estimate_powder_pattern(p::ChemicalShift, N::Int) = 
+@inline estimate_powder_pattern(p::ChemicalShift, N::Int;
+    ν0::AbstractFloat, I::Int64, transitions::UnitRange{Int64}) = 
     estimate_powder_pattern(p, μ(N), λ(N))

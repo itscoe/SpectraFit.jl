@@ -1,4 +1,4 @@
-using Distributions
+using Distributions, StatsBase
 
 """
     Quadrupolar
@@ -93,10 +93,10 @@ end
 
 function estimate_powder_pattern(
     p::Quadrupolar,
-    ν0::AbstractFloat,
-    I::Int64,
     μ::Array{AbstractFloat, N},
     λ::Array{AbstractFloat, N};
+    ν0::AbstractFloat,
+    I::Int64,
     transitions::UnitRange{Int64} = 1:(2*I),
 ) where {N}
     qcc = rand(Normal(p.qcc, p.σqcc), N)
@@ -133,8 +133,6 @@ julia> estimate_powder_pattern(Quadrupolar([5.5, 0.1, 0.12, 0.03, 1.0]), 1000, 3
  32.15411486178574
 ```
 """
-estimate_powder_pattern(p::Quadrupolar, N::Int, ν0::AbstractFloat, I::Int; 
-    transitions::UnitRange{Int} = 1:(2*I)) = 
-    estimate_powder_pattern(p, ν0, I, μ(N), λ(N), transitions = transitions)
-
-
+@inline estimate_powder_pattern(p::Quadrupolar, N::Int; 
+    ν0::AbstractFloat, I::Int, transitions::UnitRange{Int} = 1:(2*I)) = 
+    estimate_powder_pattern(p, μ(N), λ(N), ν0 = ν0, I = I, transitions = transitions)
