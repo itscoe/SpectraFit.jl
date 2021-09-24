@@ -1,3 +1,5 @@
+using Unitful
+
 get_example_data(filename::String) = 
     joinpath(dirname(pathof(SpectraFit)), "..", "data", filename)
 

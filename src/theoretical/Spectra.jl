@@ -1,6 +1,6 @@
 using Distributions
 
-struct Spectra{N::Int64, I <: Vararg{NMRInteraction}} <: AbstractVector{Float64}
+struct Spectra{N, I <: Vararg{NMRInteraction}} <: AbstractVector{Float64}
     components::NTuple{Tuple{I}, N}
     weights::NTuple{Float64, N}
 end
@@ -36,4 +36,3 @@ end
 
 estimate_powder_pattern(c::Tuple{Vararg{NMRInteraction}}, N::Int) = 
     mapreduce(i -> estimate_powder_pattern(i, N), .+, c)
-    
