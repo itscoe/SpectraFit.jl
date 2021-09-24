@@ -11,8 +11,10 @@ function Spectra(N::Int64, x::Vararg{DataType, M}) where {M}
     return Spectra(components, weights)
 end
 
-Base.size(S::Spectra{N}) where {N} = 
-    ((mapreduce(length, +, S.components[1]) + 1)N, )
+Base.length(S::Spectra{N}) where {N} = 
+    (mapreduce(length, +, S.components[1]) + 1)N
+
+Base.size(S::Spectra{N}) where {N} = (length(S), )
 
 function prior(s::Spectra{N}) where {N}
     dists = Array{Distribution}(undef, length(s))

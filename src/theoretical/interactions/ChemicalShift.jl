@@ -4,6 +4,7 @@ struct ChemicalShiftI <: NMRInteraction
     δᵢₛₒ::typeof(1.0u"ppm")
 end
 
+Base.length(_::ChemicalShiftI) = 1
 Base.size(_::ChemicalShiftI) = (1,)
 
 Base.getindex(C::ChemicalShiftI, _::Int) = C.δᵢₛₒ
@@ -19,6 +20,7 @@ struct ChemicalShiftA <: NMRInteraction
     σηδ::Float64
 end
 
+Base.length(_::ChemicalShiftA) = 6
 Base.size(_::ChemicalShiftA) = (6,)
 
 Base.getindex(C::ChemicalShiftA, i::Int) = 

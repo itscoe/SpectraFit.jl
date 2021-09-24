@@ -21,6 +21,7 @@ prior(_::Quadrupolar, i::Int) = i == 1 ? Uniform(-4.5, 4.5) : Uniform(0, 1)
 
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
 
+Base.length(_::Quadrupolar) = 3
 Base.size(_::Quadrupolar) = (3,)
 
 Base.getindex(Q::Quadrupolar, i::Int) = i == 1 ? Q.Vzz : i == 2 ? Q.η : Q.ρ
