@@ -12,6 +12,7 @@ function abc_smc(
 
         s = Spectra(s₀, p)
         th_cdf = zeros(length(exp.ν))
+        weights = map(x -> x / sum(s.weights), s.weights)
 
         for i = 1:N
             powder_pattern = filter(x -> ν_stop <= x <= ν_start, 
