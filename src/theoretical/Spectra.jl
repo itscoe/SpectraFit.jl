@@ -1,8 +1,8 @@
 using Distributions
 
 struct Spectra{N} <: AbstractVector{Float64}
-    components::NTuple{Tuple{Vararg{NMRInteraction}}, N}
-    weights::NTuple{Float64, N}
+    components::NTuple{N, Tuple{Vararg{NMRInteraction}}}
+    weights::NTuple{N, Float64}
 end
 
 Base.size(S::Spectra{N}) where {N} = 
