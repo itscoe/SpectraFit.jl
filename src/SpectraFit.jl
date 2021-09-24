@@ -1,26 +1,30 @@
 module SpectraFit
 
-ENV["GKS_ENCODING"] = "utf-8"
+include("units/constants.jl")
+include("units/ppm.jl")
 
-include("data.jl")
-include("interactions/NMRInteraction.jl")
-include("interactions/Quadrupolar.jl")
-include("interactions/ChemicalShift.jl")
-include("interactions/Spectra.jl")
-include("optimization/optimizers.jl")
-include("optimization/bayesian_estimation.jl")
-include("plot.jl")
+include("experimental/isotopes.jl")
+include("experimental/data.jl")
+
+include("theoretical/interactions/NMRInteraction.jl")
+include("theoretical/interactions/Zeeman.jl")
+include("theoretical/interactions/Dipolar.jl")
+include("theoretical/interactions/Quadrupolar.jl")
+include("theoretical/interactions/ChemicalShift.jl")
+
+include("theoretical/Spectra.jl")
+
+include("ABC/prior.jl")
+include("ABC/smc.jl")
+
+include("visualization/plot.jl")
 
 export get_experimental,
-       Quadrupolar,
-       ChemicalShift,
-       upper_bounds,
-       lower_bounds,
-       tolerance,
-       quadrupolar_opt,
-       metropolis_hastings,
-       compare_theoreticals,
        get_data,
-       plot_chemical_shift
+       Zeeman,
+       Dipolar,
+       Quadrupolar,
+       ChemicalShift, 
+       Spectra
 
 end # module
