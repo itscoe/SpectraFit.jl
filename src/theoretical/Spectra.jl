@@ -1,6 +1,6 @@
 using Distributions
 
-struct Spectra{N, I <: Vararg{NMRInteraction}} <: AbstractVector{Float64}
+struct Spectra{N, I} <: AbstractVector{Float64}
     components::NTuple{Tuple{I}, N}
     weights::NTuple{Float64, N}
 end
