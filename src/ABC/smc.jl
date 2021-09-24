@@ -1,10 +1,10 @@
 using Unitful, StatsBase, KissABC
 
 function abc_smc(
-    s₀::Spectra{N, I}, 
+    s₀::Spectra{N}, 
     exp::ExperimentalSpectra{Quantity{Float64, NoDims, Unitful.FreeUnits{(ppm,), NoDims, nothing}}}; 
     parallel = false
-) where {N, I}
+) where {N}
     function wasserstein(p)
         ν_step = exp.ν[end] - exp.ν[1] / length(exp.ν)
         ν_start = exp.ν[1] - ν_step / 2

@@ -1,14 +1,14 @@
 using Distributions
 
-struct Spectra{N, I} <: AbstractVector{Float64}
-    components::NTuple{Tuple{I}, N}
+struct Spectra{N} <: AbstractVector{Float64}
+    components::NTuple{Tuple{Vararg{NMRInteraction}}, N}
     weights::NTuple{Float64, N}
 end
 
-Base.size(S::Spectra{N, I}) where {N, I} = 
+Base.size(S::Spectra{N}) where {N} = 
     ((mapreduce(length, +, S.components[1]) + 1)N, )
 
-function prior(s::Spectra{N, I}) where {N, I}
+function prior(s::Spectra{N}) where {N}
     dists = Array{Distribution}(undef, length(s))
     p = 1
     for i = 1:N
