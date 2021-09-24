@@ -19,7 +19,7 @@ function abc_smc(
                 to_ppm.(estimate_powder_pattern(s.components[c], 
                 1_000_000), exp.ν₀))
             isempty(powder_pattern) && return 1.0
-            th_cdf .+= s.weights[i] .* ((exp.ν .+ (ν_step / 2)) .|> Float64 
+            th_cdf .+= weights .* ((exp.ν .+ (ν_step / 2)) .|> Float64 
                 .|> ecdf(powder_pattern .|> Float64))
         end
 

@@ -6,8 +6,8 @@ struct Spectra{N} <: AbstractVector{Float64}
 end
 
 function Spectra(N::Int64, x::Vararg{DataType, M}) where {M}
-    components = (map(j -> (map(i -> i(), x)...), 1:N)...)
-    weights = (map(i -> 1 / N, 1:N)...)
+    components = (map(j -> (map(i -> i(), x)...,), 1:N)...,)
+    weights = (map(i -> 1 / N, 1:N)...,)
     return Spectra(components, weights)
 end
 
