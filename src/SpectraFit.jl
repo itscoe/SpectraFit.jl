@@ -14,7 +14,6 @@ include("theoretical/interactions/ChemicalShift.jl")
 
 include("theoretical/Spectra.jl")
 
-include("ABC/prior.jl")
 include("ABC/smc.jl")
 
 include("visualization/plot.jl")
