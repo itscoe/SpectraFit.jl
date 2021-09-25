@@ -9,7 +9,7 @@ function Spectra(N::Int64, x::Vararg{DataType, M}) where {M}
     return Spectra(components, weights)
 end
 
-function Spectra(s::Spectra{N, M, C}, p::NTuple{length(s), Float64}) where {N, M, C}
+function Spectra(s::Spectra{N, M, C}, p::NTuple{Nₚ, Float64}) where {N, M, C, Nₚ}
     pᵢ = 1
     components = Array{typeof(s.components[1])}(undef, N)
     for i = 1:N
