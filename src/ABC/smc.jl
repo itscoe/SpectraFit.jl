@@ -1,30 +1,53 @@
-using Unitful, StatsBase, KissABC
+using Distributions, KissABC, StatsBase, Unitful
 
-function abc_smc(
-    s₀::Spectra{N}, 
-    exp::ExperimentalSpectra{Quantity{Float64, NoDims, Unitful.FreeUnits{(ppm,), NoDims, nothing}}}; 
-    parallel = false
-) where {N}
-    function wasserstein(p)
+function prior(s::Spectra{N}) where {N}
+    dists = Array{Distribution}(undef, length(s))
+    p = 1
+    for i = 1:N, interaction in s.components[i], j = 1:length(interaction)
+        dists[p] = prior(interaction, j)
+        p += 1
+    end
+    for _ = 1:N-1
+        dists[p] = Uniform(0, 1)
+        p += 1
+    end
+    return Factored(dists...)
+end
+
+function ecdf(X::Vector{Quantity}, exp::ExperimentalSpectra)
+    function ef(v::Vector{Quantity})
+        ef_func = StatsBase.ecdf(Float64.(to_ppm.(X, exp.ν₀)))
+        return ef_func(Float64.(to_ppm.(v, exp.ν₀)))
+    end
+    return ef
+end
+
+function get_wasserstein(s₀::Spectra{N}, exp::ExperimentalSpectra) where {N}
+    function wasserstein(p::NTuple{M, Float64}) where {M}
         ν_step = exp.ν[end] - exp.ν[1] / length(exp.ν)
         ν_start = exp.ν[1] - ν_step / 2
         ν_stop = exp.ν[end] + ν_step / 2
 
         s = Spectra(s₀, p)
-        th_cdf = zeros(length(exp.ν))
-        weights = map(x -> x / sum(s.weights), s.weights)
+        weights_sum = N == 1 ? 0. : sum(s.weights)
+        weights_sum > 1.0 && return 1.0
 
-        for i = 1:N
-            powder_pattern = filter(x -> ν_stop <= x <= ν_start, 
-                to_ppm.(estimate_powder_pattern(s.components[c], 
-                1_000_000), exp.ν₀))
+        th_cdf = zeros(length(exp.ν))
+        for c = 1:N
+            weight = c == N ? 1. - weights_sum : s.weights[c]
+            powder_pattern = filter(
+                x -> min(ν_stop, ν_start) <= x <= max(ν_stop, ν_start), 
+                estimate_powder_pattern(s.components[c], 1_000_000, exp)
+            )
             isempty(powder_pattern) && return 1.0
-            th_cdf .+= weights .* ((exp.ν .+ (ν_step / 2)) .|> Float64 
-                .|> ecdf(powder_pattern .|> Float64))
+            th_cdf .+= weight .* ecdf(powder_pattern, exp)(exp.ν .+ ν_step / 2)
         end
 
         return mean(abs.(th_cdf .- exp.ecdf))
     end
 
-    return smc(prior, wasserstein, parallel = parallel)
-end
+    return wasserstein
+end 
+
+abc_smc(s₀::Spectra, exp::ExperimentalSpectra; parallel::Bool = false) = 
+    smc(prior(s₀), get_wasserstein(s₀, exp), parallel = parallel)

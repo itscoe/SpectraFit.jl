@@ -22,9 +22,6 @@ prior(_::Quadrupolar, i::Int) = i == 1 ? Uniform(-4.5, 4.5) : Uniform(0, 1)
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
 
 Base.length(_::Quadrupolar) = 3
-Base.size(_::Quadrupolar) = (3,)
-
-Base.getindex(Q::Quadrupolar, i::Int) = i == 1 ? Q.Vzz : i == 2 ? Q.η : Q.ρ
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
@@ -95,12 +92,10 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     Qccs = (e * abs(Q(isotope)) * abs.(Vzz) / h) .|> u"MHz"
     ηs = (Vyy .- Vxx) ./ Vzz
 
-    n_transitions = Int64(I(isotope) * 2)
-    m_dist = Categorical(binomial.(n_transitions - 1, 0:(n_transitions - 1)) ./ 
-        (2 ^ (n_transitions - 1)))
-    ms = rand(m_dist, N) .- (n_transitions ÷ 2)
+    I₀ = Int64(I(isotope))
+    ms = rand(Binomial(2I₀), N) .- I₀
 
-    return get_ν.(Qccs, ηs, μs, λs, ms, (isotope |> I |> Int64), ν₀)
+    return get_ν.(Qccs, ηs, μs, λs, ms, I₀, ν₀)
 end
 
 @inline estimate_powder_pattern(
@@ -118,3 +113,9 @@ end
     isotope::Isotope, 
     ν₀
 ) = estimate_powder_pattern(q, N, μ(N), λ(N), isotope, ν₀)
+
+@inline estimate_powder_pattern(
+    q::Quadrupolar, 
+    N::Int, 
+    exp::ExperimentalSpectra
+) = estimate_powder_pattern(q, N, μ(N), λ(N), exp.isotope, exp.ν₀)

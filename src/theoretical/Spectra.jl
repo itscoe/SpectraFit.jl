@@ -1,8 +1,6 @@
-using Distributions
-
-struct Spectra{N} <: AbstractVector{Float64}
+struct Spectra{N}
     components::NTuple{N, Tuple{Vararg{NMRInteraction}}}
-    weights::NTuple{N, Float64}
+    weights::NTuple{N - 1, Float64}
 end
 
 function Spectra(N::Int64, x::Vararg{DataType, M}) where {M}
@@ -11,36 +9,31 @@ function Spectra(N::Int64, x::Vararg{DataType, M}) where {M}
     return Spectra(components, weights)
 end
 
-Base.length(S::Spectra{N}) where {N} = 
-    (mapreduce(length, +, S.components[1]) + 1)N
-
-Base.size(S::Spectra{N}) where {N} = (length(S), )
-
-function prior(s::Spectra{N}) where {N}
-    dists = Array{Distribution}(undef, length(s))
-    p = 1
+function Spectra(s::Spectra{N}, p::NTuple{length(s), Float64}) where {N}
+    pᵢ = 1
+    components = Array{typeof(s.components[1])}(undef, N)
     for i = 1:N
-        for interaction in s.components[i], j = 1:length(interaction)
-            dists[p] = prior(interaction, j)
-            p += 1
+        c = s.components[i]
+        interactions = Array{NMRInteraction}(undef, length(c))
+        for i in 1:length(c)
+            nᵢ = length(c[i])
+            if !iszero(nᵢ)
+                interactions[i] = typeof(c[i])(p[pᵢ:(pᵢ + nᵢ - 1)]...)
+            else
+                interactions[i] = typeof(c[i])()
+            end
+            pᵢ += 1
         end
-        dists[p] = Uniform(0, 1)
-        p += 1
+        components[i] = (interactions...,)
     end
-    return Factored(dists...)
+    return Spectra(components, N == 1 ? () : (p[pᵢ:end]...,))
 end
 
-Base.IndexStyle(::Type{<:Spectra}) = IndexLinear()
+Base.length(S::Spectra{N}) where {N} = 
+    (mapreduce(length, +, S.components[1]) + 1)N - 1
 
-function Base.getindex(S::Spectra, i::Int)
-    j, k = 0, 1
-    while length(S.components[k]) < i - j + 1
-        j += length(S.components[k])
-        k += 1
-    end
-    return i - j <= length(S.components[k]) ? 
-        S.components[k][i - j] : weights[k]
-end
-
-estimate_powder_pattern(c::Tuple{Vararg{NMRInteraction}}, N::Int) = 
-    mapreduce(i -> estimate_powder_pattern(i, N), .+, c)
+estimate_powder_pattern(
+    c::Tuple{Vararg{NMRInteraction}}, 
+    N::Int, 
+    exp::ExperimentalSpectra) = 
+    mapreduce(i -> estimate_powder_pattern(i, N, exp), .+, c)
