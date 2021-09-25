@@ -1,15 +1,15 @@
-struct Spectra{N}
-    components::NTuple{N, Tuple{Vararg{NMRInteraction}}}
-    weights::NTuple{N - 1, Float64}
+struct Spectra{N, M, C}
+    components::NTuple{N, C}
+    weights::NTuple{M, Float64}
 end
 
 function Spectra(N::Int64, x::Vararg{DataType, M}) where {M}
     components = (map(j -> (map(i -> i(), x)...,), 1:N)...,)
-    weights = (map(i -> 1 / N, 1:N)...,)
+    weights = (map(i -> 1 / N, 1:N - 1)...,)
     return Spectra(components, weights)
 end
 
-function Spectra(s::Spectra{N}, p::NTuple{length(s), Float64}) where {N}
+function Spectra(s::Spectra{N, M, C}, p::NTuple{length(s), Float64}) where {N, M, C}
     pᵢ = 1
     components = Array{typeof(s.components[1])}(undef, N)
     for i = 1:N
@@ -24,12 +24,13 @@ function Spectra(s::Spectra{N}, p::NTuple{length(s), Float64}) where {N}
             end
             pᵢ += 1
         end
+
         components[i] = (interactions...,)
     end
     return Spectra(components, N == 1 ? () : (p[pᵢ:end]...,))
 end
 
-Base.length(S::Spectra{N}) where {N} = 
+Base.length(S::Spectra{N, M, C}) where {N, M, C} = 
     (mapreduce(length, +, S.components[1]) + 1)N - 1
 
 estimate_powder_pattern(

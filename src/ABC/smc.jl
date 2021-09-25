@@ -1,6 +1,6 @@
 using Distributions, KissABC, StatsBase, Unitful
 
-function prior(s::Spectra{N}) where {N}
+function prior(s::Spectra{N, M, C}) where {N, M, C}
     dists = Array{Distribution}(undef, length(s))
     p = 1
     for i = 1:N, interaction in s.components[i], j = 1:length(interaction)
@@ -22,8 +22,8 @@ function ecdf(X::Vector{Quantity}, exp::ExperimentalSpectra)
     return ef
 end
 
-function get_wasserstein(s₀::Spectra{N}, exp::ExperimentalSpectra) where {N}
-    function wasserstein(p::NTuple{M, Float64}) where {M}
+function get_wasserstein(s₀::Spectra{N, M, C}, exp::ExperimentalSpectra) where {N, M, C}
+    function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
         ν_step = exp.ν[end] - exp.ν[1] / length(exp.ν)
         ν_start = exp.ν[1] - ν_step / 2
         ν_stop = exp.ν[end] + ν_step / 2
