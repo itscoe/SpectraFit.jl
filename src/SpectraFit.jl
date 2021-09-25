@@ -18,7 +18,8 @@ include("ABC/smc.jl")
 
 include("visualization/plot.jl")
 
-export get_experimental,
+export ExperimentalSpectra,
+       get_example_data,
        get_data,
        Zeeman,
        Dipolar,
