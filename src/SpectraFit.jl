@@ -25,6 +25,7 @@ export ExperimentalSpectra,
        Dipolar,
        Quadrupolar,
        ChemicalShift, 
-       Spectra
+       Spectra,
+       abc_smc
 
 end # module

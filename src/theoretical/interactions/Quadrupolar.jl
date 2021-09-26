@@ -21,6 +21,9 @@ prior(_::Quadrupolar, i::Int) = i == 1 ? Uniform(-4.5, 4.5) : Uniform(0, 1)
 
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
 
+Quadrupolar(Vzz::Float64, η::Float64, ρ::Float64) = 
+    Quadrupolar(Quantity(Vzz, u"ZV/m^2"), η, ρ)
+
 Base.length(_::Quadrupolar) = 3
 
 """
