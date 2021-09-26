@@ -90,16 +90,16 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     ν₀::typeof(1.0u"MHz"))
 
     U1 = Quantity.(
-        rand(Normal((1 - q.ρ) * (q.Vzz / 2), q.ρ ^ 2 / 4), N), 
-        u"ZV/m^2"
+        rand(Normal((1 - q.ρ) * (ustrip(q.Vzz) / 2), q.ρ ^ 2 / 4), N), 
+        unit(q.Vzz)
     )
     U5 = Quantity.(
-        rand(Normal((1 - q.ρ) * (q.η * q.Vzz / 2√3), q.ρ ^ 2 / 4), N), 
-        u"ZV/m^2"
+        rand(Normal((1 - q.ρ) * (q.η * ustrip(q.Vzz) / 2√3), q.ρ ^ 2 / 4), N), 
+        unit(q.Vzz)
     )
 
     Vxx, Vyy, Vzz = -U1 .+ √3U5, -U1 .- √3U5, 2U1
-    
+
     Qccs = (e * abs(Q(isotope)) * abs.(Vzz) / h) .|> u"MHz"
     ηs = (Vyy .- Vxx) ./ Vzz
 
