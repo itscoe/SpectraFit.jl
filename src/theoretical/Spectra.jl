@@ -15,7 +15,7 @@ function Spectra(s::Spectra{N, M, C}, p::NTuple{Nₚ, Float64}) where {N, M, C, 
     for i = 1:N
         c = s.components[i]
         interactions = Array{NMRInteraction}(undef, length(c))
-        
+
         for j in 1:length(c)
             nᵢ = length(c[j])
             if !iszero(nᵢ)
@@ -23,7 +23,7 @@ function Spectra(s::Spectra{N, M, C}, p::NTuple{Nₚ, Float64}) where {N, M, C, 
             else
                 interactions[j] = typeof(c[j])()
             end
-            pᵢ += 1
+            pᵢ += nᵢ
         end
 
         components[i] = (interactions...,)
