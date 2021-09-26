@@ -15,21 +15,19 @@ struct Quadrupolar <: NMRInteraction
     Vzz::typeof(1.0u"ZV/m^2")
     η::Float64
     ρ::Float64
-    σ::Float64
 end
 
 prior(_::Quadrupolar, i::Int) = 
     i == 1 ? Uniform(0.0, 4.5) : 
     i == 2 ? Uniform(0, 1) : 
-    i == 3 ? Uniform(0, 1) :
-             Uniform(0, 3)
+             Uniform(0, 1)
 
-Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0., 0.)
+Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
 
 Quadrupolar(Vzz::Float64, η::Float64, ρ::Float64, σ::Float64) = 
-    Quadrupolar(Quantity(Vzz, u"ZV/m^2"), η, ρ, σ)
+    Quadrupolar(Quantity(Vzz, u"ZV/m^2"), η, ρ)
 
-Base.length(_::Quadrupolar) = 4
+Base.length(_::Quadrupolar) = 3
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
@@ -91,14 +89,12 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     μs::Vector{Float64}, λs::Vector{Float64}, isotope::Isotope, 
     ν₀::typeof(1.0u"MHz"))
 
-
-
     U1 = Quantity.(
-        rand(Normal((1 - q.ρ) * (ustrip(q.Vzz) / 2), q.σ * q.ρ / 2), N), 
+        rand(Normal((1 - q.ρ) * (ustrip(q.Vzz) / 2), q.ρ / 2), N), 
         unit(q.Vzz)
     )
     U5 = Quantity.(
-        rand(Normal((1 - q.ρ) * (q.η * ustrip(q.Vzz) / 2√3), q.σ * q.ρ / 2), N), 
+        rand(Normal((1 - q.ρ) * (q.η * ustrip(q.Vzz) / 2√3), q.ρ / 2), N), 
         unit(q.Vzz)
     )
 
