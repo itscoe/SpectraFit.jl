@@ -6,6 +6,7 @@ include("units/ppm.jl")
 include("experimental/isotopes.jl")
 include("experimental/data.jl")
 
+include("theoretical/euler_angles.jl")
 include("theoretical/interactions/NMRInteraction.jl")
 include("theoretical/interactions/Zeeman.jl")
 include("theoretical/interactions/Dipolar.jl")
