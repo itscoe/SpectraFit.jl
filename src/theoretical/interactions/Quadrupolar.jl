@@ -24,7 +24,7 @@ prior(_::Quadrupolar, i::Int) =
 
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
 
-Quadrupolar(Vzz::Float64, η::Float64, ρ::Float64, σ::Float64) = 
+Quadrupolar(Vzz::Float64, η::Float64, ρ::Float64) = 
     Quadrupolar(Quantity(Vzz, u"ZV/m^2"), η, ρ)
 
 Base.length(_::Quadrupolar) = 3
