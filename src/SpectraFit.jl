@@ -12,7 +12,6 @@ include("theoretical/interactions/Zeeman.jl")
 include("theoretical/interactions/Dipolar.jl")
 include("theoretical/interactions/Quadrupolar.jl")
 include("theoretical/interactions/ChemicalShift.jl")
-
 include("theoretical/Spectra.jl")
 
 include("ABC/smc.jl")
@@ -25,7 +24,7 @@ export ExperimentalSpectra,
        Zeeman,
        Dipolar,
        Quadrupolar,
-       ChemicalShift, 
+       ChemicalShiftI, 
        Spectra,
        abc_smc
 
