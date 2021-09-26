@@ -55,7 +55,7 @@ abc_smc(
     s₀::Spectra, 
     exp::ExperimentalSpectra; 
     prior = prior(s₀),
-    cost = get_wasserstein(s₀, exp)
+    cost = get_wasserstein(s₀, exp),
     parallel::Bool = false,
     nparticles::Int = 100,
     M::Int = 1,
