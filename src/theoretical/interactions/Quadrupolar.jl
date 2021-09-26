@@ -91,8 +91,8 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     μs::Vector{Float64}, λs::Vector{Float64}, isotope::Isotope, 
     ν₀::typeof(1.0u"MHz"))
 
-    Qccs = q.qcc + q.σqcc * randn(N)
-    ηs = q.η + q.ση * randn(N)
+    Qccs = q.qcc .+ q.σqcc .* randn(N)
+    ηs = q.η .+ q.ση .* randn(N)
 
     I₀ = Int64(I(isotope))
     ms = rand(Binomial(2I₀), N) .- I₀
