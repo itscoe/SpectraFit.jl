@@ -18,5 +18,5 @@ I(isotope::Isotope) =
 # Stone, N. J. "Table of nuclear electric quadrupole moments." 
 #     Atomic Data and Nuclear Data Tables 111 (2016): 1-28.
 Q(isotope::Isotope) = 
-    isotope.Z.number == 5 && isotope.A == 10 ? 0.0845e-28u"m^-2" : 
+    isotope.Z.number == 5 && isotope.A == 10 ? 0.0845e-28u"m^2" : 
     0.0u"m^-2"
