@@ -12,22 +12,24 @@ spectra utilizing the Extended Czjzek Model (ECM) for parameterization
 - `ρ`
 """
 struct Quadrupolar <: NMRInteraction
-    Vzz::typeof(1.0u"ZV/m^2")
+    qcc::typeof(1.0u"MHz")
+    σqcc::typeof(1.0u"MHz")
     η::Float64
-    ρ::Float64
+    ση::Float64
 end
 
 prior(_::Quadrupolar, i::Int) = 
-    i == 1 ? Uniform(0.0, 4.5) : 
-    i == 2 ? Uniform(0, 1) : 
+    i == 1 ? Uniform(0.0, 9.0) : 
+    i == 2 ? Uniform(0, 2) : 
+    i == 3 ? Uniform(0, 1) : 
              Uniform(0, 1)
 
-Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
+Quadrupolar() = Quadrupolar(0.0u"MHz", 0.0u"MHz", 0., 0.)
 
-Quadrupolar(Vzz::Float64, η::Float64, ρ::Float64) = 
-    Quadrupolar(Quantity(Vzz, u"ZV/m^2"), η, ρ)
+Quadrupolar(qcc::Float64, σqcc::Float64, η::Float64, ση::Float64) = 
+    Quadrupolar(Quantity(qcc, u"MHz"), Quantity(σqcc, u"MHz"), η, ση)
 
-Base.length(_::Quadrupolar) = 3
+Base.length(_::Quadrupolar) = 4
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
@@ -89,19 +91,8 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     μs::Vector{Float64}, λs::Vector{Float64}, isotope::Isotope, 
     ν₀::typeof(1.0u"MHz"))
 
-    U1 = Quantity.(
-        rand(Normal((1 - q.ρ) * (ustrip(q.Vzz) / 2), q.ρ / 2), N), 
-        unit(q.Vzz)
-    )
-    U5 = Quantity.(
-        rand(Normal((1 - q.ρ) * (q.η * ustrip(q.Vzz) / 2√3), q.ρ / 2), N), 
-        unit(q.Vzz)
-    )
-
-    Vxx, Vyy, Vzz = -U1 .+ √3U5, -U1 .- √3U5, 2U1
-
-    Qccs = (e * abs(Q(isotope)) * abs.(Vzz) / h) .|> u"MHz"
-    ηs = (Vyy .- Vxx) ./ Vzz
+    Qccs = q.qcc + q.σqcc * randn(N)
+    ηs = q.η + q.ση * randn(N)
 
     I₀ = Int64(I(isotope))
     ms = rand(Binomial(2I₀), N) .- I₀
