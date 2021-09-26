@@ -14,8 +14,8 @@ function prior(s::Spectra{N, M, C}) where {N, M, C}
     return Factored(dists...)
 end
 
-function ecdf(X::Vector{Quantity}, exp::ExperimentalSpectra)
-    function ef(v::Vector{Quantity})
+function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, exp::ExperimentalSpectra) where {Y1, Z1}
+    function ef(v::Vector{Quantity}{Float64, Y2, Z2}) where {Y2, Z2}
         ef_func = StatsBase.ecdf(Float64.(to_ppm.(X, exp.ν₀)))
         return ef_func(Float64.(to_ppm.(v, exp.ν₀)))
     end
