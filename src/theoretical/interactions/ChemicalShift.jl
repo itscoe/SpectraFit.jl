@@ -17,7 +17,7 @@ get_ν(δᵢₛₒ::Float64) = δᵢₛₒ
 @inline estimate_powder_pattern(
     c::ChemicalShiftI, 
     N::Int, 
-    exp::ExperimentalSpectra
+    _::ExperimentalSpectra
 ) = c.δᵢₛₒ .* ones(N)
 
 struct ChemicalShiftA <: NMRInteraction
