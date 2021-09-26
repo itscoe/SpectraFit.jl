@@ -36,7 +36,7 @@ function ExperimentalSpectra(
     data = map(x -> parse.(Float64, x), 
         split.(readlines(filename)[(header + 1):end], delim))
     data = sortslices(hcat(map(x -> x[1], data), map(x -> x[2], data)), 
-        dims = 1, rev = freq_unit == u"ppm")
+        dims = 1)
     start_i = findfirst(x -> 
         to_Hz(Quantity(x, freq_unit), ν₀) > to_Hz(range[1], ν₀), data[:, 1])
     stop_i = findlast(x -> 
