@@ -20,7 +20,7 @@ end
 prior(_::Quadrupolar, i::Int) = 
     i == 1 ? Uniform(0.0, 4.5) : 
     i == 2 ? Uniform(0, 1) : 
-             Uniform(0, 0.5)
+             Uniform(0, 1)
 
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
 
@@ -89,13 +89,17 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     μs::Vector{Float64}, λs::Vector{Float64}, isotope::Isotope, 
     ν₀::typeof(1.0u"MHz"))
 
-    U1 = Quantity.(randn(N), u"ZV/m^2")
-    U5 = Quantity.(√3 .* randn(N), u"ZV/m^2")
+    U1 = Quantity.(
+        rand(Normal((1 - q.ρ) * (q.Vzz / 2), q.ρ ^ 2 / 4), N), 
+        u"ZV/m^2"
+    )
+    U5 = Quantity.(
+        rand(Normal((1 - q.ρ) * (q.η * q.Vzz / 2√3), q.ρ ^ 2 / 4), N), 
+        u"ZV/m^2"
+    )
 
-    Vxx = -q.ρ .* (U1 .- U5) .+ (q.Vzz * (q.η - 1) * (1 / 2))
-    Vyy = -q.ρ .* (U1 .+ U5) .- (q.Vzz * (q.η + 1) * (1 / 2))
-    Vzz = (2 * q.ρ) .* U1 .+ q.Vzz
-
+    Vxx, Vyy, Vzz = -U1 .+ √3U5, -U1 .- √3U5, 2U1
+    
     Qccs = (e * abs(Q(isotope)) * abs.(Vzz) / h) .|> u"MHz"
     ηs = (Vyy .- Vxx) ./ Vzz
 
