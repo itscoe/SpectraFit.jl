@@ -86,7 +86,8 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     μs::Vector{Float64}, λs::Vector{Float64}, isotope::Isotope, 
     ν₀::typeof(1.0u"MHz"))
 
-    U1, U5 = randn(N), √3 .* randn(N)
+    U1 = Quantity.(randn(N), u"ZV/m^2")
+    U5 = Quantity.(√3 .* randn(N), u"ZV/m^2")
 
     Vxx = -q.ρ .* (U1 .- U5) .+ (q.Vzz * (q.η - 1) * (1 / 2))
     Vyy = -q.ρ .* (U1 .+ U5) .- (q.Vzz * (q.η + 1) * (1 / 2))
