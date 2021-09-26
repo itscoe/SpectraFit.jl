@@ -17,7 +17,10 @@ struct Quadrupolar <: NMRInteraction
     ρ::Float64
 end
 
-prior(_::Quadrupolar, i::Int) = i == 1 ? Uniform(0.0, 4.5) : Uniform(0, 1)
+prior(_::Quadrupolar, i::Int) = 
+    i == 1 ? Uniform(0.0, 4.5) : 
+    i == 2 ? Uniform(0, 1) : 
+             Uniform(0, 0.5)
 
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
 
