@@ -16,8 +16,8 @@ end
 
 function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, exp::ExperimentalSpectra) where {Y1, Z1}
     function ef(v::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
-        ef_func = StatsBase.ecdf(Float64.(to_ppm.(X, exp.ν₀)))
-        return ef_func(Float64.(to_ppm.(v, exp.ν₀)))
+        ef_func = StatsBase.ecdf(ustrip.(to_ppm.(X, exp.ν₀)))
+        return ef_func(ustrip.(to_ppm.(v, exp.ν₀)))
     end
     return ef
 end
