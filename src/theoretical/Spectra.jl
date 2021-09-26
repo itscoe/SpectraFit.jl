@@ -28,7 +28,7 @@ function Spectra(s::Spectra{N, M, C}, p::NTuple{Nₚ, Float64}) where {N, M, C, 
 
         components[i] = (interactions...,)
     end
-    return Spectra{N, M, C}(components, N == 1 ? () : (p[pᵢ:end]...,))
+    return Spectra{N, M, C}((components...,), N == 1 ? () : (p[pᵢ:end]...,))
 end
 
 Base.length(S::Spectra{N, M, C}) where {N, M, C} = 
