@@ -1,12 +1,24 @@
-using Unitful
+using Unitful, Distributions
 
 struct ChemicalShiftI <: NMRInteraction
-    δᵢₛₒ::typeof(1.0u"ppm")
+    δᵢₛₒ::typeof(1.0u"MHz")
 end
+
+ChemicalShiftI() = ChemicalShiftI(0.0u"MHz")
+
+ChemicalShiftI(c::Float64) = ChemicalShiftI(Quantity(c, u"MHz"))
+
+prior(_::ChemicalShift, _::Int) = Uniform(-1, 1)
 
 Base.length(_::ChemicalShiftI) = 1
 
 get_ν(δᵢₛₒ::Float64) = δᵢₛₒ
+
+@inline estimate_powder_pattern(
+    c::ChemicalShiftI, 
+    N::Int, 
+    exp::ExperimentalSpectra
+) = c.δᵢₛₒ .* ones(N)
 
 struct ChemicalShiftA <: NMRInteraction
     δᵢₛₒ::typeof(1.0u"ppm")

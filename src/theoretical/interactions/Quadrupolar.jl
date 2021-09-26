@@ -1,4 +1,4 @@
-using Unitful
+using Unitful, Distributions
 
 """
     Quadrupolar
