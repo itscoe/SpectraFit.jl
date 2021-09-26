@@ -8,7 +8,7 @@ ChemicalShiftI() = ChemicalShiftI(0.0u"MHz")
 
 ChemicalShiftI(c::Float64) = ChemicalShiftI(Quantity(c, u"MHz"))
 
-prior(_::ChemicalShift, _::Int) = Uniform(-1, 1)
+prior(_::ChemicalShiftI, _::Int) = Uniform(-1, 1)
 
 Base.length(_::ChemicalShiftI) = 1
 
