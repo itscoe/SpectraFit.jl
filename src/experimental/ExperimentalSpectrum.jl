@@ -12,7 +12,6 @@ data
 """
 get_exp_ecdf(intensity::Vector{Float64}) = cumsum(intensity) ./ sum(intensity)
 
-
 struct ExperimentalSpectrum{U}
     isotope::Isotope
     B::typeof(1.0u"T")

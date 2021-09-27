@@ -80,3 +80,35 @@ abc_smc(
     min_r_ess = min_r_ess,
     max_stretch = max_stretch
 )
+
+abc_smc(
+    s₀::Spectrum, 
+    exp::ExperimentalSeries; 
+    prior = prior(s₀),
+    cost = get_wasserstein(s₀, exp),
+    parallel::Bool = false,
+    nparticles::Int = 100,
+    M::Int = 1,
+    alpha::Float64 = 0.95,
+    mcmc_retrys::Int = 0,
+    mcmc_tol::Float64 = 0.015,
+    epstol::Float64 = 0.0,
+    r_epstol::Float64 = (1 - alpha)^1.5 / 50,
+    min_r_ess::Float64 = alpha^2,
+    max_stretch::Float64 = 2.0,
+) = abc_smc.(
+    s₀, 
+    exp.spectra, 
+    prior = prior,
+    cost = cost,
+    parallel = parallel,
+    nparticles = nparticles,
+    M = M,
+    alpha = alpha,
+    mcmc_retrys = mcmc_retrys,
+    mcmc_tol = mcmc_tol,
+    epstol = epstol,
+    r_epstol = r_epstol,
+    min_r_ess = min_r_ess,
+    max_stretch = max_stretch,
+)
