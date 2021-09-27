@@ -85,7 +85,6 @@ abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSeries; 
     prior = prior(s₀),
-    cost = get_wasserstein(s₀, exp),
     parallel::Bool = false,
     nparticles::Int = 100,
     M::Int = 1,
@@ -100,7 +99,7 @@ abc_smc(
     s₀, 
     exp.spectra, 
     prior = prior,
-    cost = cost,
+    cost = get_wasserstein.(s₀, exp.spectra),
     parallel = parallel,
     nparticles = nparticles,
     M = M,
