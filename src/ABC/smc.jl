@@ -96,7 +96,7 @@ abc_smc(
     min_r_ess::Float64 = alpha^2,
     max_stretch::Float64 = 2.0,
 ) = abc_smc.(
-    s₀, 
+    Ref(s₀), 
     exp.spectra, 
     prior = prior,
     cost = get_wasserstein.(s₀, exp.spectra),
