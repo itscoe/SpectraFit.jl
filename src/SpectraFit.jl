@@ -20,6 +20,7 @@ include("ABC/smc.jl")
 include("visualization/plot.jl")
 
 export ExperimentalSpectrum,
+       ExperimentalSeries,
        get_example_data,
        get_data,
        Zeeman,
