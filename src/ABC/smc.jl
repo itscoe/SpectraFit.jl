@@ -1,6 +1,6 @@
 using Distributions, KissABC, StatsBase, Unitful
 
-function prior(s::Spectra{N, M, C}) where {N, M, C}
+function prior(s::Spectrum{N, M, C}) where {N, M, C}
     dists = Array{Distribution}(undef, length(s))
     p = 1
     for i = 1:N, interaction in s.components[i], j = 1:length(interaction)
@@ -14,7 +14,7 @@ function prior(s::Spectra{N, M, C}) where {N, M, C}
     return Factored(dists...)
 end
 
-function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, exp::ExperimentalSpectra) where {Y1, Z1}
+function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, exp::ExperimentalSpectrum) where {Y1, Z1}
     function ef(v::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
         ef_func = StatsBase.ecdf(ustrip.(to_ppm.(X, exp.ν₀)))
         return ef_func(ustrip.(to_ppm.(v, exp.ν₀)))
@@ -22,14 +22,14 @@ function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, exp::ExperimentalSpectra) wh
     return ef
 end
 
-function get_wasserstein(s₀::Spectra{N, M, C}, 
-  exp::ExperimentalSpectra) where {N, M, C}
+function get_wasserstein(s₀::Spectrum{N, M, C}, 
+  exp::ExperimentalSpectrum) where {N, M, C}
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
         ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
         ν_start = exp.ν[1] - ν_step / 2
         ν_stop = exp.ν[end] + ν_step / 2
 
-        s = Spectra(s₀, p)
+        s = Spectrum(s₀, p)
         weights_sum = N == 1 ? 0. : sum(s.weights)
         weights_sum > 1.0 && return 1.0
 
@@ -52,8 +52,8 @@ function get_wasserstein(s₀::Spectra{N, M, C},
 end 
 
 abc_smc(
-    s₀::Spectra, 
-    exp::ExperimentalSpectra; 
+    s₀::Spectrum, 
+    exp::ExperimentalSpectrum; 
     prior = prior(s₀),
     cost = get_wasserstein(s₀, exp),
     parallel::Bool = false,

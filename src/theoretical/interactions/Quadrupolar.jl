@@ -4,7 +4,7 @@ using Unitful, Distributions
     Quadrupolar
 
 A structure for holding information about the quadrupolar parameters of the NMR
-spectra utilizing the Extended Czjzek Model (ECM) for parameterization
+Spectrum utilizing the Extended Czjzek Model (ECM) for parameterization
 
 # Fields
 - `qcc`
@@ -128,5 +128,5 @@ end
 @inline estimate_powder_pattern(
     q::Quadrupolar, 
     N::Int, 
-    exp::ExperimentalSpectra
+    exp::ExperimentalSpectrum
 ) = estimate_powder_pattern(q, N, μ(N), λ(N), exp.isotope, exp.ν₀)
