@@ -95,11 +95,11 @@ abc_smc(
     r_epstol::Float64 = (1 - alpha)^1.5 / 50,
     min_r_ess::Float64 = alpha^2,
     max_stretch::Float64 = 2.0,
-) = abc_smc.(
-    Ref(s₀), 
-    exp.spectra, 
+) = map(x -> abc_smc.(
+    s₀, 
+    x, 
     prior = prior,
-    cost = get_wasserstein.(Ref(s₀), exp.spectra),
+    cost = get_wasserstein(s₀, x),
     parallel = parallel,
     nparticles = nparticles,
     M = M,
@@ -110,4 +110,5 @@ abc_smc(
     r_epstol = r_epstol,
     min_r_ess = min_r_ess,
     max_stretch = max_stretch,
-)
+), exp.spectra)
+
