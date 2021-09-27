@@ -95,7 +95,7 @@ abc_smc(
     r_epstol::Float64 = (1 - alpha)^1.5 / 50,
     min_r_ess::Float64 = alpha^2,
     max_stretch::Float64 = 2.0,
-) = map(x -> abc_smc.(
+) = map(x -> abc_smc(
     s₀, 
     x, 
     prior = prior,
