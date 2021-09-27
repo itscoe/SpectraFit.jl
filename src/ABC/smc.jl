@@ -99,7 +99,7 @@ abc_smc(
     Ref(s₀), 
     exp.spectra, 
     prior = prior,
-    cost = get_wasserstein.(s₀, exp.spectra),
+    cost = get_wasserstein.(Ref(s₀), exp.spectra),
     parallel = parallel,
     nparticles = nparticles,
     M = M,
