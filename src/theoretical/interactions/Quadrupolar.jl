@@ -104,7 +104,7 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     ηs = (Vyy .- Vxx) ./ Vzz
 
     I₀ = Int64(I(isotope))
-    ms = rand(Binomial(2I₀), N) .- I₀
+    ms = rand(Categorical([3, 5, 6, 6, 5, 3] ./ 28), N) .- I₀
 
     return get_ν.(Qccs, ηs, μs, λs, ms, I₀, ν₀)
 end
