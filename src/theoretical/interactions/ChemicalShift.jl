@@ -32,7 +32,11 @@ labels(_::ChemicalShiftA) = ["δᵢₛₒ (ppm)", "Δδ (ppm)", "ηδ", "ρ"]
 
 Base.length(_::ChemicalShiftA) = 4
 
-prior(_::ChemicalShiftA) = (Uniform(-4000, 4000), Uniform(0, 400), Uniform(0, 1), Uniform(0, 1))
+prior(_::ChemicalShiftA, i::Int) = 
+    i == 1 ? Uniform(-4000, 4000) :
+    i == 2 ? Uniform(0, 400) : 
+    i == 3 ? Uniform(0, 1) : 
+             Uniform(0, 1)
 
 ChemicalShiftA() = ChemicalShiftA(0.0u"ppm", 0.0u"ppm", 0.0, 0.0)
 
