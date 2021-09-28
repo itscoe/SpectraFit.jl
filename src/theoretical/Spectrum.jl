@@ -38,7 +38,7 @@ estimate_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum) = 
-    mapreduce(i -> estimate_powder_pattern(i, N, exp), .+, c)
+    mapreduce(i -> to_ppm.(estimate_powder_pattern(i, N, exp), exp.ν₀), .+, c)
 
 function labels(s::Spectrum{N, M, C}) where {N, M, C}
     labels_s = []
