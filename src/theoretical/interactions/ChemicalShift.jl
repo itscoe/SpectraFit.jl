@@ -23,14 +23,47 @@ get_ν(δᵢₛₒ::Float64) = δᵢₛₒ
 
 struct ChemicalShiftA <: NMRInteraction
     δᵢₛₒ::typeof(1.0u"ppm")
-    σδᵢₛₒ::typeof(1.0u"ppm")
     Δδ::typeof(1.0u"ppm")
-    σΔδ::typeof(1.0u"ppm")
     ηδ::Float64
-    σηδ::Float64
+    ρ::Float64
 end
 
-Base.length(_::ChemicalShiftA) = 6
+labels(_::ChemicalShiftA) = ["δᵢₛₒ (ppm)", "Δδ (ppm)", "ηδ", "ρ"]
 
-get_ν(μ::Float64, λ::Float64, δᵢₛₒ::Float64, Δδ::Float64, ηδ::Float64) = 
+Base.length(_::ChemicalShiftA) = 4
+
+ChemicaShiftA() = ChemicalShiftA(0.0u"ppm", 0.0u"ppm", 0.0, 0.0)
+
+get_ν(μ::Float64, λ::Float64, δᵢₛₒ::typeof(1.0u"ppm"), Δδ::typeof(1.0u"ppm"), ηδ::Float64) = 
     δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
+
+function estimate_powder_pattern(c::ChemicalShiftA, N::Int, 
+    μs::Vector{Float64}, λs::Vector{Float64})
+
+    U₀ = Quantity.(
+        rand(Normal(-3 * ustrip(c.δᵢₛₒ) / √3, q.ρ / 2), N), 
+        unit(c.δᵢₛₒ)
+    )
+    U₁ = Quantity.(
+        rand(Normal(ustrip(c.Δδ) / 2, q.ρ / 2), N), 
+        unit(c.Δδ)
+    )
+    U₅ = Quantity.(
+        rand(Normal(ustrip(c.Δδ) * c.ηδ / 2√3, q.ρ / 2), N), 
+        unit(c.Δδ)
+    )
+
+    σ₁₁s, σ₂₂s, σ₃₃s = -3U₀ ./ √3 .- U₁ .+ √3U₅, -3U₀ ./ √3 .- U₁ .- √3U₅, -3U₀ ./ √3 .+ 2U₁
+    δᵢₛₒs = (σ₁₁s .+ σ₂₂s .+ σ₃₃s) ./ 3
+    
+    Δδs = Array{typeof(1.0u"ppm")}(undef, N)
+    ηδs = Array{Float64}(undef, N)
+    for i = 1:N
+        σ₃₃, σ₁₁, σ₂₂ = (sort([σ₁₁s[i], σ₂₂s[i], σ₃₃s[i]], 
+            by = x -> abs(x - δᵢₛₒs[i]), rev = true)...,)
+        Δδs[i] = σ₃₃ - δᵢₛₒs[i]
+        ηδs[i] = Float64((σ₂₂ - σ₁₁) / Δδs[i])
+    end
+
+    return get_ν.(μs, λs, δᵢₛₒs, Δδs, ηδs)
+end
