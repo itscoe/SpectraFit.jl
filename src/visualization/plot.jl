@@ -1,4 +1,4 @@
-using KernelDensity, Plots, StatsBase, StatPlots
+using KernelDensity, Plots, StatsBase, StatsPlots
 
 function plot_parameters(exp::ExperimentalSeries, s::Spectrum, res)
     nₚ = length(res[1].P)
