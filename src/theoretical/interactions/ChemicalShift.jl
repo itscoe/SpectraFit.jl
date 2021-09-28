@@ -50,15 +50,15 @@ function estimate_powder_pattern(c::ChemicalShiftA, N::Int,
     μs::Vector{Float64}, λs::Vector{Float64})
 
     U₀ = Quantity.(
-        rand(Normal(-3 * ustrip(c.δᵢₛₒ) / √3, q.ρ / 2), N), 
+        rand(Normal(-3 * ustrip(c.δᵢₛₒ) / √3, c.ρ / 2), N), 
         unit(c.δᵢₛₒ)
     )
     U₁ = Quantity.(
-        rand(Normal(ustrip(c.Δδ) / 2, q.ρ / 2), N), 
+        rand(Normal(ustrip(c.Δδ) / 2, c.ρ / 2), N), 
         unit(c.Δδ)
     )
     U₅ = Quantity.(
-        rand(Normal(ustrip(c.Δδ) * c.ηδ / 2√3, q.ρ / 2), N), 
+        rand(Normal(ustrip(c.Δδ) * c.ηδ / 2√3, c.ρ / 2), N), 
         unit(c.Δδ)
     )
 
@@ -80,5 +80,5 @@ end
 @inline estimate_powder_pattern(
     c::ChemicalShiftA, 
     N::Int, 
-    exp::ExperimentalSpectrum
+    _::ExperimentalSpectrum
 ) = estimate_powder_pattern(c, N, μ(N), λ(N))
