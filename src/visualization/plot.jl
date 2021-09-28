@@ -1,4 +1,4 @@
-using KernelDensity, Plots, StatsBase, StatsPlots
+using KernelDensity, Plots, StatsBase, StatsPlots, Distributions
 
 function plot_parameters(exp::ExperimentalSeries, s::Spectrum, res)
     nₚ = length(res[1].P)
@@ -12,7 +12,7 @@ function plot_parameters(exp::ExperimentalSeries, s::Spectrum, res)
             map(x -> res[x].P[i].particles, 1:nₛ), 
             label = "", linewidth = 0, bar_width = 1 / (nₛ + 1), 
             color = palette(:default)[1])
-        scatter!(ps[i], exp.ind_var, map(x -> StatsBase.mean(res[x].P[i].particles), 1:nₛ), 
+        scatter!(ps[i], exp.ind_var, map(x -> mean(res[x].P[i].particles), 1:nₛ), 
             label = "", grid = false, xlabel = exp.ind_var_label, ylabel = labels_s[i], 
             markersize = 3, color = palette(:default)[1], markerstrokecolor = :white)
     end
@@ -58,7 +58,9 @@ function plot_fits(exp::ExperimentalSeries, s::Spectrum, res)
                 exp.spectra[i].i ./ maximum(exp.spectra[i].i) .+ i, 
                 label = "", color = palette(:default)[1])
         plot!(plt, ustrip.(to_Hz.(exp.spectra[i].ν .+ ν_step / 2, exp.spectra[i].ν₀)), 
-                th_spectra_collected[:, 1] ./ maximum(th_spectra_collected[:, 1]) .+ i,
+                th_spectra_collected[:, 1] .* 
+                mean(exp.spectra[i].i ./ maximum(exp.spectra[i].i)) ./ 
+                mean(th_spectra_collected[:, 1]) .+ i,
                 ribbon = (th_spectra_collected[:, 1] ./ maximum(th_spectra_collected[:, 1]) .- 
                         th_spectra_collected[:, 2] ./ maximum(th_spectra_collected[:, 1]), 
                     th_spectra_collected[:, 3] ./ maximum(th_spectra_collected[:, 1]) .- 
