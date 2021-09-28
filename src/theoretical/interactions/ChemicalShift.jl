@@ -76,3 +76,9 @@ function estimate_powder_pattern(c::ChemicalShiftA, N::Int,
 
     return get_ν.(μs, λs, δᵢₛₒs, Δδs, ηδs)
 end
+
+@inline estimate_powder_pattern(
+    c::ChemicalShiftA, 
+    N::Int, 
+    exp::ExperimentalSpectrum
+) = estimate_powder_pattern(c, N, μ(N), λ(N))

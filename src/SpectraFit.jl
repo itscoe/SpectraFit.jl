@@ -32,7 +32,7 @@ export ExperimentalSpectrum,
        abc_smc,
        plot_parameters,
        plot_fits, 
-       Isotopes,
+       Isotope,
        elements
 
 end # module
