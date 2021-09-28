@@ -5,6 +5,7 @@ struct ChemicalShiftI <: NMRInteraction
 end
 
 ChemicalShiftI() = ChemicalShiftI(0.0u"MHz")
+labels(_::ChemicalShiftI) = ["Shift (MHz)"]
 
 ChemicalShiftI(c::Float64) = ChemicalShiftI(Quantity(c, u"MHz"))
 

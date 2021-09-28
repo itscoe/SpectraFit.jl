@@ -39,3 +39,11 @@ estimate_powder_pattern(
     N::Int, 
     exp::ExperimentalSpectrum) = 
     mapreduce(i -> estimate_powder_pattern(i, N, exp), .+, c)
+
+function labels(s::Spectrum{N, M, C}) where {N, M, C}
+    labels_s = []
+    for i = 1:N, c in s.components[i]
+        labels_s = vcat(labels_s, labels(c))
+    end
+    return labels_s
+end

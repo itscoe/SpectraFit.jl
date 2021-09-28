@@ -23,6 +23,7 @@ prior(_::Quadrupolar, i::Int) =
              Uniform(0, 1)
 
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.)
+labels(_::Quadrupolar) = ["|Vzz| (ZV/m²)", "η", "ρ"]
 
 Quadrupolar(Vzz::Float64, η::Float64, ρ::Float64) = 
     Quadrupolar(Quantity(Vzz, u"ZV/m^2"), η, ρ)

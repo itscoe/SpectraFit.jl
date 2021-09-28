@@ -28,6 +28,8 @@ export ExperimentalSpectrum,
        Quadrupolar,
        ChemicalShiftI, 
        Spectrum,
-       abc_smc
+       abc_smc,
+       plot_parameters,
+       plot_fits
 
 end # module
