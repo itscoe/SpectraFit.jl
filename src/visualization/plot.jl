@@ -35,7 +35,7 @@ function generate_theoretical_spectrum(
     return (mean(exp.i) / mean(theoretical)) .* theoretical
 end
 
-function plot_fits(exp::ExperimentalSeries, s::Spectrum, res)
+function plot_fits(exp::ExperimentalSeries, s::Spectrum, res; units = u"MHz")
     nₛ = length(exp.spectra)
     unit_label = exp.ind_var_label[findfirst(
             isequal('('), exp.ind_var_label):findlast(
@@ -54,10 +54,13 @@ function plot_fits(exp::ExperimentalSeries, s::Spectrum, res)
         th_spectra_collected = hcat(map(x -> mean(th_spectra[x, :]), 1:N), 
             map(x -> minimum(th_spectra[x, :]), 1:N), map(x -> maximum(th_spectra[x, :]), 1:N))
         
-        plot!(plt, ustrip.(to_Hz.(exp.spectra[i].ν .+ ν_step / 2, exp.spectra[i].ν₀)), 
+        ν = (exp.spectra[i].ν .+ ν_step / 2, exp.spectra[i].ν₀)
+        ν = units == u"ppm" ? to_ppm(ν, exp.ν₀) : to_Hz(ν, exp.ν₀)
+
+        plot!(plt, ustrip.(ν), 
                 exp.spectra[i].i ./ maximum(exp.spectra[i].i) .+ i, 
                 label = "", color = palette(:default)[1])
-        plot!(plt, ustrip.(to_Hz.(exp.spectra[i].ν .+ ν_step / 2, exp.spectra[i].ν₀)), 
+        plot!(plt, ustrip.(ν), 
                 th_spectra_collected[:, 1] .* 
                 mean(exp.spectra[i].i ./ maximum(exp.spectra[i].i)) ./ 
                 mean(th_spectra_collected[:, 1]) .+ i,
@@ -66,8 +69,8 @@ function plot_fits(exp::ExperimentalSeries, s::Spectrum, res)
                     th_spectra_collected[:, 3] ./ maximum(th_spectra_collected[:, 1]) .- 
                         th_spectra_collected[:, 1] ./ maximum(th_spectra_collected[:, 1])),
                 label = "", color = palette(:default)[2])
-        annotate!(minimum(ustrip.(to_Hz.(exp.spectra[i].ν .+ ν_step / 2, exp.spectra[i].ν₀))), 
-            i + 0.4, text("$(exp.ind_var[i]) $(unit_label)", :black, :left, 10))
+        annotate!(minimum(ustrip.(ν)), i + 0.4, 
+            text("$(exp.ind_var[i]) $(unit_label)", :black, :left, 10))
     end
     return plt
 end
