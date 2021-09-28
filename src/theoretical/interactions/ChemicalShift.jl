@@ -32,7 +32,7 @@ labels(_::ChemicalShiftA) = ["δᵢₛₒ (ppm)", "Δδ (ppm)", "ηδ", "ρ"]
 
 Base.length(_::ChemicalShiftA) = 4
 
-ChemicaShiftA() = ChemicalShiftA(0.0u"ppm", 0.0u"ppm", 0.0, 0.0)
+ChemicalShiftA() = ChemicalShiftA(0.0u"ppm", 0.0u"ppm", 0.0, 0.0)
 
 get_ν(μ::Float64, λ::Float64, δᵢₛₒ::typeof(1.0u"ppm"), Δδ::typeof(1.0u"ppm"), ηδ::Float64) = 
     δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
