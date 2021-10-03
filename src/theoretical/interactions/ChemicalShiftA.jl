@@ -131,4 +131,4 @@ given the CSA interaction
     c::ChemicalShiftA, 
     N::Int, 
     exp::ExperimentalSpectrum
-) = to_Hz(estimate_powder_pattern(c, N, μ(N), λ(N)), exp.ν₀) .- exp.ν₀
+) = to_Hz.(estimate_powder_pattern(c, N, μ(N), λ(N)), exp.ν₀) .- exp.ν₀
