@@ -69,7 +69,8 @@ function plot_fits(exp::ExperimentalSeries, s::Spectrum, res; units = u"MHz")
             isequal('('), exp.ind_var_label):findlast(
             isequal(')'), exp.ind_var_label)] 
     plt = plot(ylabel = "", yaxis = false, yticks = [], 
-        xlabel = "Frequency (MHz)", grid = false, dpi = 300, format = :png)
+        xlabel = units == u"ppm" ? "Frequency (ppm)" : "Frequency (MHz)", 
+        xflip = units == u"ppm", grid = false, dpi = 300, format = :png)
     for i = 1:length(exp.spectra)
         ν_step = (exp.spectra[i].ν[end] - exp.spectra[i].ν[1]) / 
             length(exp.spectra[i].ν)
