@@ -77,7 +77,7 @@ estimate_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum
-) = mapreduce(i -> to_ppm.(estimate_powder_pattern(i, N, exp), exp.ν₀), .+, c)
+) = mapreduce(i -> to_Hz.(estimate_powder_pattern(i, N, exp), exp.ν₀), .+, c)
 
 """
     labels(s)

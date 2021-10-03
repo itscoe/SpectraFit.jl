@@ -31,8 +31,8 @@ of the StatsBase.ecdf function.
 function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, 
   exp::ExperimentalSpectrum) where {Y1, Z1}
     function ef(v::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
-        ef_func = StatsBase.ecdf(ustrip.(to_ppm.(X, exp.ν₀)))
-        return ef_func(ustrip.(to_ppm.(v, exp.ν₀)))
+        ef_func = StatsBase.ecdf(ustrip.(to_Hz.(X, exp.ν₀)))
+        return ef_func(ustrip.(to_Hz.(v, exp.ν₀)))
     end
     return ef
 end
@@ -59,8 +59,8 @@ function get_wasserstein(s₀::Spectrum{N, M, C},
         for c = 1:N
             weight = c == N ? 1. - weights_sum : s.weights[c]
             powder_pattern = filter(
-                x -> to_ppm(ν_start, exp.ν₀) <= x <= to_ppm(ν_stop, exp.ν₀), 
-                to_ppm.(estimate_powder_pattern(
+                x -> to_Hz(ν_start, exp.ν₀) <= x <= to_Hz(ν_stop, exp.ν₀), 
+                to_Hz.(estimate_powder_pattern(
                     s.components[c], 1_000_000, exp), exp.ν₀)
             )
             isempty(powder_pattern) && return 1.0

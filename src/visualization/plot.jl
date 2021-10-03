@@ -46,12 +46,12 @@ function generate_theoretical_spectrum(
     ν_start = exp.ν[1] - ν_step / 2
     ν_stop = exp.ν[end] + ν_step / 2
     powder_pattern = filter(
-        x -> to_ppm(ν_start, exp.ν₀) <= x <= to_ppm(ν_stop, exp.ν₀), 
-        to_ppm.(estimate_powder_pattern(c, 1_000_000, exp), exp.ν₀)
+        x -> to_Hz(ν_start, exp.ν₀) <= x <= to_Hz(ν_stop, exp.ν₀), 
+        to_Hz.(estimate_powder_pattern(c, 1_000_000, exp), exp.ν₀)
     )
     k = kde(ustrip.(powder_pattern))
     ik = InterpKDE(k)
-    theoretical = pdf(ik, ustrip.(to_ppm.((exp.ν .+ ν_step / 2), exp.ν₀)))
+    theoretical = pdf(ik, ustrip.(to_Hz.((exp.ν .+ ν_step / 2), exp.ν₀)))
     return (mean(exp.i) / mean(theoretical)) .* theoretical
 end
 
