@@ -44,7 +44,7 @@ prior(_::ChemicalShiftA, i::Int) =
     i == 1 ? Uniform(-4000, 4000) :
     i == 2 ? Uniform(0, 400) : 
     i == 3 ? Uniform(0, 1) : 
-             Uniform(0, 1000)
+             Uniform(0, 5000)
 
 """
     ChemicalShiftA()
