@@ -17,7 +17,7 @@ end
 Get the number of free parameters of this interaction (1)
 
 """
-@inline length(_::Dipolar) = 1
+@inline Base.length(_::Dipolar) = 1
 
 """
     prior(csi, i)

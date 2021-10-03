@@ -51,7 +51,7 @@ prior(_::ChemicalShiftI, _::Int) = Uniform(-1, 1)
 Get the number of free parameters of this interaction (1)
 
 """
-@inline length(_::ChemicalShiftI) = 1
+@inline Base.length(_::ChemicalShiftI) = 1
 
 """
     get_ν(δᵢₛₒ)

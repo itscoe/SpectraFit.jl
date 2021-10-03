@@ -63,7 +63,7 @@ end
 Get the number of free parameters in the Spectrum
 
 """
-length(s::Spectrum{N, M, C}) where {N, M, C} = 
+Base.length(s::Spectrum{N, M, C}) where {N, M, C} = 
     (mapreduce(length, +, s.components[1]) + 1)N - 1
 
 """

@@ -32,7 +32,7 @@ labels(_::ChemicalShiftA) = ["δᵢₛₒ (ppm)", "Δδ (ppm)", "ηδ", "ρσ (p
 Get the number of free parameters of this interaction (4)
 
 """
-@inline length(_::ChemicalShiftA) = 4
+@inline Base.length(_::ChemicalShiftA) = 4
 
 """
     prior(csa, i)
