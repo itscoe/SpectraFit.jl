@@ -14,7 +14,7 @@ struct Zeeman <: NMRInteraction end
 Get the number of free parameters of this interaction (0)
 
 """
-@inline base.length(_::Zeeman) = 0
+@inline Base.length(_::Zeeman) = 0
 
 """
     labels(z)
