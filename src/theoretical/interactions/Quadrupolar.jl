@@ -59,7 +59,7 @@ Quadrupolar(Vzz::Float64, η::Float64, ρσ::Float64) =
 Get the number of free parameters of this interaction (3)
 
 """
-@inbounds length(_::Quadrupolar) = 3
+@inline length(_::Quadrupolar) = 3
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)

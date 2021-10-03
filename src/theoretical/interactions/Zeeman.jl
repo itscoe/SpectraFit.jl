@@ -14,7 +14,7 @@ struct Zeeman <: NMRInteraction end
 Get the number of free parameters of this interaction (0)
 
 """
-@inbounds length(_::Zeeman) = 0
+@inline length(_::Zeeman) = 0
 
 """
     labels(z)
@@ -31,7 +31,7 @@ Get the estimated powder pattern (a vector of N frequencies) given the
 Zeeman interaction and the Larmor frequency
 
 """
-@inbounds estimate_powder_pattern(_::Zeeman, N::Int, ν₀::typeof(1.0u"MHz")) = 
+@inline estimate_powder_pattern(_::Zeeman, N::Int, ν₀::typeof(1.0u"MHz")) = 
     ν₀ .* ones(N)
 
 """
@@ -41,7 +41,7 @@ Get the estimated powder pattern (a vector of N frequencies) given the
 Zeeman interaction and the Larmor frequency
 
 """
-@inbounds estimate_powder_pattern(_::Zeeman, N::Int, ν₀) = 
+@inline estimate_powder_pattern(_::Zeeman, N::Int, ν₀) = 
     (ν₀ |> u"mHz") .* ones(N)
 
 """
@@ -51,5 +51,5 @@ Get the estimated powder pattern (a vector of N frequencies) given the
 Zeeman interaction and the ExperimentalSpectrum
 
 """
-@inbounds estimate_powder_pattern(_::Zeeman, N::Int, exp::ExperimentalSpectrum) = 
+@inline estimate_powder_pattern(_::Zeeman, N::Int, exp::ExperimentalSpectrum) = 
     exp.ν₀ .* ones(N)
