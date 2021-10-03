@@ -54,8 +54,8 @@ function plot_fits(exp::ExperimentalSeries, s::Spectrum, res; units = u"MHz")
         th_spectra_collected = hcat(map(x -> mean(th_spectra[x, :]), 1:N), 
             map(x -> minimum(th_spectra[x, :]), 1:N), map(x -> maximum(th_spectra[x, :]), 1:N))
         
-        ν = (exp.spectra[i].ν .+ ν_step / 2, exp.spectra[i].ν₀)
-        ν = units == u"ppm" ? to_ppm(ν, exp.ν₀) : to_Hz(ν, exp.ν₀)
+        ν = exp.spectra[i].ν .+ ν_step / 2
+        ν = units == u"ppm" ? to_ppm.(ν, exp.spectra[i].ν₀) : to_Hz.(ν, exp.spectra[i].ν₀)
 
         plot!(plt, ustrip.(ν), 
                 exp.spectra[i].i ./ maximum(exp.spectra[i].i) .+ i, 
