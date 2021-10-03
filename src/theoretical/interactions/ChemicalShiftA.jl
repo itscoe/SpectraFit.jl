@@ -1,26 +1,16 @@
 using Unitful, Distributions
 
-struct ChemicalShiftI <: NMRInteraction
-    δᵢₛₒ::typeof(1.0u"MHz")
-end
+"""
+    ChemicalShiftA
 
-ChemicalShiftI() = ChemicalShiftI(0.0u"MHz")
-labels(_::ChemicalShiftI) = ["Shift (MHz)"]
+CSA interaction under the Extended Czjzek model
 
-ChemicalShiftI(c::Float64) = ChemicalShiftI(Quantity(c, u"MHz"))
-
-prior(_::ChemicalShiftI, _::Int) = Uniform(-1, 1)
-
-Base.length(_::ChemicalShiftI) = 1
-
-get_ν(δᵢₛₒ::Float64) = δᵢₛₒ
-
-@inline estimate_powder_pattern(
-    c::ChemicalShiftI, 
-    N::Int, 
-    _::ExperimentalSpectrum
-) = c.δᵢₛₒ .* ones(N)
-
+# Fields
+- `δᵢₛₒ`
+- `Δδ`
+- `ηδ`
+- `ρσ`
+"""
 struct ChemicalShiftA <: NMRInteraction
     δᵢₛₒ::typeof(1.0u"ppm")
     Δδ::typeof(1.0u"ppm")
@@ -28,24 +18,78 @@ struct ChemicalShiftA <: NMRInteraction
     ρσ::typeof(1.0u"ppm")
 end
 
+"""
+    labels(csa)
+
+Get the labels of each parameter for plotting purposes
+
+"""
 labels(_::ChemicalShiftA) = ["δᵢₛₒ (ppm)", "Δδ (ppm)", "ηδ", "ρσ (ppm)"]
 
-Base.length(_::ChemicalShiftA) = 4
+"""
+    length(csa)
 
+Get the number of free parameters of this interaction (4)
+
+"""
+@inbounds length(_::ChemicalShiftA) = 4
+
+"""
+    prior(csa, i)
+
+Get the prior distribution of the ith parameter of the CSA interaction
+
+"""
 prior(_::ChemicalShiftA, i::Int) = 
     i == 1 ? Uniform(-4000, 4000) :
     i == 2 ? Uniform(0, 400) : 
     i == 3 ? Uniform(0, 1) : 
              Uniform(0, 1000)
 
+"""
+    ChemicalShiftA()
+
+Default constructor for the CSA interaction
+
+"""
 ChemicalShiftA() = ChemicalShiftA(0.0u"ppm", 0.0u"ppm", 0.0, 0.0u"ppm")
 
+"""
+    ChemicalShiftA(δᵢₛₒ, Δδ, ηδ, ρσ)
+
+Construct CSA interaction from floats, assuming ppm as units
+
+"""
 ChemicalShiftA(δᵢₛₒ::Float64, Δδ::Float64, ηδ::Float64, ρσ::Float64) = 
-    ChemicalShiftA(Quantity(δᵢₛₒ, u"ppm"), Quantity(Δδ, u"ppm"), ηδ, Quantity(ρσ, u"ppm"))
+    ChemicalShiftA(
+        Quantity(δᵢₛₒ, u"ppm"), 
+        Quantity(Δδ, u"ppm"), 
+        ηδ, 
+        Quantity(ρσ, u"ppm")
+    )
 
-get_ν(μ::Float64, λ::Float64, δᵢₛₒ::typeof(1.0u"ppm"), Δδ::typeof(1.0u"ppm"), ηδ::Float64) = 
-    δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
+"""
+    get_ν(μ, λ, δᵢₛₒ, Δδ, ηδ)
 
+Get the frequency given the Euler angles (μ, λ) 
+and the parameters (δᵢₛₒ, Δδ, ηδ)
+
+"""
+get_ν(
+    μ::Float64, 
+    λ::Float64, 
+    δᵢₛₒ::typeof(1.0u"ppm"), 
+    Δδ::typeof(1.0u"ppm"), 
+    ηδ::Float64
+) = δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
+
+"""
+    estimate_powder_pattern(c, N, μs, λs)
+
+Get the estimated powder pattern (a vector of N frequencies) given the CSA 
+interaction and vectors of the Euler angles (μs, λs)
+
+"""
 function estimate_powder_pattern(c::ChemicalShiftA, N::Int, 
     μs::Vector{Float64}, λs::Vector{Float64})
 
@@ -76,6 +120,13 @@ function estimate_powder_pattern(c::ChemicalShiftA, N::Int,
     return get_ν.(μs, λs, δᵢₛₒs, Δδs, ηδs)
 end
 
+"""
+    estimate_powder_pattern(c, N, exp)
+
+Get the estimated powder pattern (a vector of N frequencies) 
+given the CSA interaction
+
+"""
 @inline estimate_powder_pattern(
     c::ChemicalShiftA, 
     N::Int, 

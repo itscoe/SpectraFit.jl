@@ -1,5 +1,12 @@
 using Unitful
 
+"""
+    get_example_data(filename)
+
+Gets the filepath on the computer calling it to access the example data 
+from the paper
+
+"""
 get_example_data(filename::String) = 
     joinpath(dirname(pathof(SpectraFit)), "..", "data", filename)
 
@@ -12,6 +19,22 @@ data
 """
 get_exp_ecdf(intensity::Vector{Float64}) = cumsum(intensity) ./ sum(intensity)
 
+"""
+    ExperimentalSpectrum
+
+An ExperimentalSpectrum holds the information of a NMR experiment in terms of 
+the frequency (in a specific unit, like ppm or MHz) and intensity at that 
+frequency, as well as the relavent experimental parameters, such as isotope 
+and magnet strength
+
+# Fields
+- `isotope`
+- `B`
+- `ν₀`
+- `ν`
+- `i`
+- `ecdf`
+"""
 struct ExperimentalSpectrum{U}
     isotope::Isotope
     B::typeof(1.0u"T")
@@ -21,6 +44,14 @@ struct ExperimentalSpectrum{U}
     ecdf::Vector{Float64}
 end
 
+
+"""
+    ExperimentalSpectrum(filename; freq_unit, isotope, B, header, delim, range)
+
+Construct the ExperimentalSpectrum from a text file and the relevant 
+experimental parameters
+
+"""
 function ExperimentalSpectrum(
     filename::String;
     freq_unit::Unitful.Unitlike = u"ppm",

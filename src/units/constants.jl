@@ -1,5 +1,7 @@
 using Unitful
 
+# Just so I don't need to specify the base quantities used 
+# (time, current, mass, and length) from Unitful
 𝐓 = Unitful.𝐓
 𝐈 = Unitful.𝐈
 𝐌 = Unitful.𝐌

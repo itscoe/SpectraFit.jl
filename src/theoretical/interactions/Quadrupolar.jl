@@ -17,18 +17,49 @@ struct Quadrupolar <: NMRInteraction
     ρσ::typeof(1.0u"ZV/m^2")
 end
 
+"""
+    prior(csi, i)
+
+Get the prior distribution of the ith parameter of the quadrupolar interaction
+
+"""
 prior(_::Quadrupolar, i::Int) = 
     i == 1 ? Uniform(0.0, 4.5) : 
     i == 2 ? Uniform(0, 1) : 
              Uniform(0, 1)
 
+"""
+    Quadrupolar()
+
+Default constructor for the quadrupolar interaction
+
+"""
 Quadrupolar() = Quadrupolar(0.0u"ZV/m^2", 0., 0.0u"ZV/m^2")
+
+"""
+    labels(d)
+
+Get the labels of each parameter for plotting purposes
+
+"""
 labels(_::Quadrupolar) = ["|Vzz| (ZV/m²)", "η", "ρσ (ZV/m²)"]
 
+"""
+    Quadrupolar(Vzz, η, ρσ)
+
+Construct quadrupolar interaction from floats, assuming MHz as units
+
+"""
 Quadrupolar(Vzz::Float64, η::Float64, ρσ::Float64) = 
     Quadrupolar(Quantity(Vzz, u"ZV/m^2"), η, Quantity(ρσ, u"ZV/m^2"))
 
-Base.length(_::Quadrupolar) = 3
+"""
+    length(d)
+
+Get the number of free parameters of this interaction (3)
+
+"""
+@inbounds length(_::Quadrupolar) = 3
 
 """
     get_ν(qcc, η, μ, λ, m, I, ν0)
@@ -36,8 +67,8 @@ Base.length(_::Quadrupolar) = 3
 Compute the value of ν with the third order perturbation described in
 
 >Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns
->for integer spin nuclei in the presence of asymmetric quadrupole effects.
->Journal of Magnetic Resonance (1969), 27(1), 121-132.
+>    for integer spin nuclei in the presence of asymmetric quadrupole effects.
+>    Journal of Magnetic Resonance (1969), 27(1), 121-132.
 
 # Arguments
 - `qcc::typeof(1.0u"MHz")`: the quantum coupling constant
@@ -86,6 +117,14 @@ function get_ν(qcc::typeof(1.0u"MHz"), η::Float64, μ::Float64, λ::Float64,
         (νQ ^ 3 / 144ν₀ ^ 2) * e * (m - 1 / 2)
 end
 
+"""
+    estimate_powder_pattern(q, N, μs, λs, isotope, ν₀)
+
+Get the estimated powder pattern (a vector of N frequencies) given the 
+quadrupolar interaction, vectors of the Euler angles, the isotope, 
+and the Larmor frequency
+
+"""
 function estimate_powder_pattern(q::Quadrupolar, N::Int, 
     μs::Vector{Float64}, λs::Vector{Float64}, isotope::Isotope, 
     ν₀::typeof(1.0u"MHz"))
@@ -108,6 +147,14 @@ function estimate_powder_pattern(q::Quadrupolar, N::Int,
     return get_ν.(Qccs, ηs, μs, λs, ms, I₀, ν₀)
 end
 
+"""
+    estimate_powder_pattern(q, N, μs, λs, isotope, ν₀)
+
+Get the estimated powder pattern (a vector of N frequencies) given the 
+quadrupolar interaction, vectors of the Euler angles, the isotope, 
+and the Larmor frequency
+
+"""
 @inline estimate_powder_pattern(
     q::Quadrupolar, 
     N::Int, 
@@ -117,6 +164,13 @@ end
     ν₀
 ) = estimate_powder_pattern(q, N, μs, λs, isotope, ν₀ |> u"MHz")
 
+"""
+    estimate_powder_pattern(q, N, isotope, ν₀)
+
+Get the estimated powder pattern (a vector of N frequencies) given the 
+quadrupolar interaction, the isotope, and the Larmor frequency
+
+"""
 @inline estimate_powder_pattern(
     q::Quadrupolar, 
     N::Int, 
@@ -124,6 +178,13 @@ end
     ν₀
 ) = estimate_powder_pattern(q, N, μ(N), λ(N), isotope, ν₀)
 
+"""
+    estimate_powder_pattern(q, N, exp)
+
+Get the estimated powder pattern (a vector of N frequencies) given the 
+quadrupolar interaction and the ExperimentalSpectrum
+
+"""
 @inline estimate_powder_pattern(
     q::Quadrupolar, 
     N::Int, 

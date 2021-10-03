@@ -1,5 +1,11 @@
 using Distributions, KissABC, StatsBase, Unitful
 
+"""
+    prior(s)
+
+Gets the prior distribution of a spectrum in the form of s
+
+"""
 function prior(s::Spectrum{N, M, C}) where {N, M, C}
     dists = Array{Distribution}(undef, length(s))
     p = 1
@@ -14,7 +20,16 @@ function prior(s::Spectrum{N, M, C}) where {N, M, C}
     return Factored(dists...)
 end
 
-function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, exp::ExperimentalSpectrum) where {Y1, Z1}
+"""
+    ecdf(X, exp)
+
+Higher order function that creates the ecdf function from a sample 
+constructed and the ExperimentalSpectrum. This is a simple extension 
+of the StatsBase.ecdf function. 
+
+"""
+function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, 
+  exp::ExperimentalSpectrum) where {Y1, Z1}
     function ef(v::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
         ef_func = StatsBase.ecdf(ustrip.(to_ppm.(X, exp.ν₀)))
         return ef_func(ustrip.(to_ppm.(v, exp.ν₀)))
@@ -22,6 +37,13 @@ function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, exp::ExperimentalSpectrum) w
     return ef
 end
 
+"""
+    get_wasserstein(s₀, exp)
+
+Higher order function that creates wasserstein distance function 
+for the form of the spectrum s₀ and the ExperimentalSpectrum exp
+
+"""
 function get_wasserstein(s₀::Spectrum{N, M, C}, 
   exp::ExperimentalSpectrum) where {N, M, C}
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
@@ -51,6 +73,14 @@ function get_wasserstein(s₀::Spectrum{N, M, C},
     return wasserstein
 end 
 
+"""
+    abc_smc(s₀, exp)
+
+Run the approximate Bayesian computations through sequential 
+Monte Carlo given the experimental data and the spectrum of 
+the functional form for the model selected
+
+"""
 abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSpectrum; 
@@ -81,6 +111,14 @@ abc_smc(
     max_stretch = max_stretch
 )
 
+"""
+    abc_smc(s₀, exp)
+
+Run the approximate Bayesian computations through sequential 
+Monte Carlo given the experimental data (in a series) and the 
+spectrum of the functional form for the model selected
+
+"""
 abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSeries; 
