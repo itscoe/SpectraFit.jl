@@ -130,5 +130,5 @@ given the CSA interaction
 @inline estimate_powder_pattern(
     c::ChemicalShiftA, 
     N::Int, 
-    _::ExperimentalSpectrum
-) = estimate_powder_pattern(c, N, μ(N), λ(N))
+    exp::ExperimentalSpectrum
+) = to_Hz(estimate_powder_pattern(c, N, μ(N), λ(N)), exp.ν₀) .- exp.ν₀
