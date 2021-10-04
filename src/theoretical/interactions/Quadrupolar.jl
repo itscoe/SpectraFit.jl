@@ -125,9 +125,14 @@ quadrupolar interaction, vectors of the Euler angles, the isotope,
 and the Larmor frequency
 
 """
-function estimate_powder_pattern(q::Quadrupolar, N::Int, 
-    μs::Vector{Float64}, λs::Vector{Float64}, isotope::Isotope, 
-    ν₀::typeof(1.0u"MHz"))
+function estimate_powder_pattern(
+    q::Quadrupolar, 
+    N::Int, 
+    μs::Vector{Float64}, 
+    λs::Vector{Float64}, 
+    isotope::Isotope, 
+    ν₀::typeof(1.0u"MHz")
+)
 
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
     U5 = (q.η * q.Vzz / 2√3) .+ (q.ρσ / 2) .* randn(N)
