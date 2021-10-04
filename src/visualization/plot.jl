@@ -31,6 +31,23 @@ function plot_parameters(exp::ExperimentalSeries, s::Spectrum, res)
     return plot(ps..., dpi = 300, format = :png)
 end
 
+function plot_parameters(exp::ExperimentalSpectrum, s::Spectrum, res)
+    nₚ = length(res.P)
+    ps = Array{Plots.Plot}(undef, nₚ)
+    labels_s = labels(s)
+    
+    for i = 1:nₚ
+        ps[i] = histogram(
+            res.P[i].particles, 
+            label = "", 
+            color = palette(:default)[1])
+        vline!([mean(smc_res.P[i].particles)], label = "", grid = false, 
+            xlabel = labels_s[i], color = palette(:default)[2], width = 3)
+    end
+
+    return plot(ps..., dpi = 300, format = :png)
+end
+
 """
     generate_theoretical_spectrum(exp, c)
 
@@ -109,5 +126,46 @@ function plot_fits(exp::ExperimentalSeries, s::Spectrum, res; units = u"MHz")
         annotate!(minimum(ustrip.(ν)), i + 0.4, 
             text("$(exp.ind_var[i]) $(unit_label)", :black, :left, 10))
     end
+    return plt
+end
+
+function plot_fit(exp::ExperimentalSpectrum, s::Spectrum, res; units = u"MHz")
+    plt = plot(ylabel = "", yaxis = false, yticks = [], 
+    xlabel = units == u"ppm" ? "Frequency (ppm)" : "Frequency (MHz)", 
+    xflip = units == u"ppm", grid = false, dpi = 300, format = :png)
+    ν_step = (exp.ν[end] - exp.ν[1]) / 
+        length(exp.ν)
+    N, M = length(exp.ν), length(res.P[1].particles)
+    th_spectra = zeros(N, M)
+    for j in 1:M
+        th_spectra[:, j] = SpectraFit.generate_theoretical_spectrum(exp, 
+            Spectrum(s, 
+                (map(x -> x.particles[j], res.P)...,)).components[1]
+        )
+    end
+    th_spectra_collected = hcat(map(x -> mean(th_spectra[x, :]), 1:N), 
+        map(x -> minimum(th_spectra[x, :]), 1:N), 
+        map(x -> maximum(th_spectra[x, :]), 1:N))
+
+    ν = exp.ν .+ ν_step / 2
+    ν = units == u"ppm" ? SpectraFit.to_ppm.(ν, exp.ν₀) : 
+        SpectraFit.to_Hz.(ν, exp.ν₀)
+
+    plot!(plt, ustrip.(ν), 
+            exp.i ./ maximum(exp.i), 
+            label = "", color = palette(:default)[1])
+    plot!(plt, ustrip.(ν), 
+            th_spectra_collected[:, 1] .* 
+            mean(exp.i ./ maximum(exp.i)) ./ 
+            mean(th_spectra_collected[:, 1]),
+            ribbon = (th_spectra_collected[:, 1] ./ 
+                maximum(th_spectra_collected[:, 1]) .- 
+                th_spectra_collected[:, 2] ./ 
+                maximum(th_spectra_collected[:, 1]), 
+                th_spectra_collected[:, 3] ./ 
+                maximum(th_spectra_collected[:, 1]) .- 
+                th_spectra_collected[:, 1] ./ 
+                maximum(th_spectra_collected[:, 1])),
+            label = "", color = palette(:default)[2])
     return plt
 end
