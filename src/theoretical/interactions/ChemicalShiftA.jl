@@ -44,7 +44,7 @@ prior(_::ChemicalShiftA, i::Int) =
     i == 1 ? Uniform(-4000, 4000) :
     i == 2 ? Uniform(-4000, 4000) : 
     i == 3 ? Uniform(0, 1) : 
-             Uniform(0, 5000)
+             Uniform(0, 1000)
 
 """
     ChemicalShiftA()
@@ -94,7 +94,7 @@ function estimate_powder_pattern(c::ChemicalShiftA, N::Int,
     μs::Vector{Float64}, λs::Vector{Float64})
 
     σ = ustrip(c.ρσ / 2)
-    μᵤ0 = -3 * ustrip(c.δᵢₛₒ) / √3
+    μᵤ0 = -ustrip(c.δᵢₛₒ) / √3
     μᵤ1 = ustrip(c.Δδ) / 2
     μᵤ5 = ustrip(c.Δδ) * c.ηδ / 2√3
 
