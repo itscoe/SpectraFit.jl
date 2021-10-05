@@ -20,7 +20,8 @@ function plot_parameters(exp::ExperimentalSeries, s::Spectrum, res)
             map(x -> repeat([exp.ind_var[x]], length(res[x].P[i].particles)), 
                 1:nₛ), 
             map(x -> res[x].P[i].particles, 1:nₛ), 
-            label = "", linewidth = 0, bar_width = 1 / (nₛ + 1), 
+            label = "", linewidth = 0, 
+            bar_width = (maximum(exp.ind_var) - minimum(exp.ind_var)) / (nₛ+1), 
             color = palette(:default)[1])
         scatter!(ps[i], exp.ind_var, map(x -> mean(res[x].P[i].particles), 
             1:nₛ), label = "", grid = false, xlabel = exp.ind_var_label, 
