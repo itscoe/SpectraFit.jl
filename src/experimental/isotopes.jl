@@ -22,9 +22,10 @@ Return the spin of the isotope (currently hard-coded and returns a rational)
 
 """
 I(isotope::Isotope) = 
-    isotope.Z.number == 5 && isotope.A == 10 ? 3//1 : 
+    isotope.Z.number == 5  && isotope.A == 10  ? 3//1 : 
+    isotope.Z.number == 5  && isotope.A == 11  ? 3//2 : 
     isotope.Z.number == 82 && isotope.A == 207 ? 1//2 : 
-    0//1
+                                                 0//1
 
 """
     γ(isotope)
@@ -39,9 +40,10 @@ Return the gyromagnetic ratio of the isotope from:
 
 """
 γ(isotope::Isotope) = 
-    isotope.Z.number == 5 && isotope.A == 10 ? (28.746786/2π)u"MHz/T" : 
+    isotope.Z.number == 5  && isotope.A == 10  ? (28.746786/2π)u"MHz/T" :
+    isotope.Z.number == 5  && isotope.A == 11  ? (85.847044/2π)u"MHz/T" : 
     isotope.Z.number == 82 && isotope.A == 207 ? (55.8046/2π)u"MHz/T" : 
-    0u"MHz/T"
+                                                 0u"MHz/T"
 
 """
     Q(isotope)
