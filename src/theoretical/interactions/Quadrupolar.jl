@@ -236,3 +236,63 @@ quadrupolar interaction and the ExperimentalSpectrum
     N::Int, 
     exp::ExperimentalSpectrum
 ) = estimate_static_powder_pattern(q, N, μ(N), λ(N), exp.isotope)
+
+"""
+    estimate_mas_powder_pattern(q, N, μs, λs, isotope, ν₀)
+
+Get the estimated static powder pattern (a vector of N frequencies) given the 
+quadrupolar interaction, vectors of the Euler angles, the isotope, 
+and the Larmor frequency
+
+"""
+function estimate_mas_powder_pattern(
+    q::Quadrupolar, 
+    N::Int, 
+    μs::Vector{Float64}, 
+    λs::Vector{Float64}, 
+    isotope::Isotope
+)
+    U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
+    U5 = (q.η * q.Vzz / 2√3) .+ (q.ρσ / 2) .* randn(N)
+
+    Vxx, Vyy, Vzz = -U1 .+ √3U5, -U1 .- √3U5, 2U1
+
+    Qccs = (e * abs(Q(isotope)) * abs.(Vzz) / h) .|> u"MHz"
+    ηs = (Vyy .- Vxx) ./ Vzz
+
+    I₀ = I(isotope)
+    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), (-I₀ + 1):I₀)
+    ms = rand(Categorical(m_vec ./ sum(m_vec)), N) .- I₀
+
+    return get_ν2.(Qccs, ηs, μs, λs, ms, I₀) .+ 
+           get_ν3.(Qccs, ηs, μs, λs, ms, I₀)
+end
+
+"""
+    estimate_mas_powder_pattern(q, N, μs, λs, isotope)
+
+Get the estimated static powder pattern (a vector of N frequencies) given the 
+quadrupolar interaction, vectors of the Euler angles, the isotope, 
+and the Larmor frequency
+
+"""
+@inline estimate_mas_powder_pattern(
+    q::Quadrupolar, 
+    N::Int, 
+    μs::Vector{Float64}, 
+    λs::Vector{Float64}, 
+    isotope::Isotope
+) = estimate_mas_powder_pattern(q, N, μs, λs, isotope)
+
+"""
+    estimate_mas_powder_pattern(q, N, exp)
+
+Get the estimated powder pattern (a vector of N frequencies) given the 
+quadrupolar interaction and the ExperimentalSpectrum
+
+"""
+@inline estimate_mas_powder_pattern(
+    q::Quadrupolar, 
+    N::Int, 
+    exp::ExperimentalSpectrum
+) = estimate_mas_powder_pattern(q, N, μ(N), λ(N), exp.isotope)
