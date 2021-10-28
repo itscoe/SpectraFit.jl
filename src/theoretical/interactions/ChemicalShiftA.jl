@@ -84,13 +84,13 @@ get_ν(
 ) = δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
 
 """
-    estimate_powder_pattern(c, N, μs, λs)
+    estimate_static_powder_pattern(c, N, μs, λs)
 
 Get the estimated powder pattern (a vector of N frequencies) given the CSA 
 interaction and vectors of the Euler angles (μs, λs)
 
 """
-function estimate_powder_pattern(c::ChemicalShiftA, N::Int, 
+function estimate_static_powder_pattern(c::ChemicalShiftA, N::Int, 
     μs::Vector{Float64}, λs::Vector{Float64})
 
     σ = ustrip(c.ρσ / 2)
@@ -121,14 +121,14 @@ function estimate_powder_pattern(c::ChemicalShiftA, N::Int,
 end
 
 """
-    estimate_powder_pattern(c, N, exp)
+    estimate_static_powder_pattern(c, N, exp)
 
 Get the estimated powder pattern (a vector of N frequencies) 
 given the CSA interaction
 
 """
-@inline estimate_powder_pattern(
+@inline estimate_static_powder_pattern(
     c::ChemicalShiftA, 
     N::Int, 
     exp::ExperimentalSpectrum
-) = to_Hz.(estimate_powder_pattern(c, N, μ(N), λ(N)), exp.ν₀) .- exp.ν₀
+) = to_Hz.(estimate_static_powder_pattern(c, N, μ(N), λ(N)), exp.ν₀) .- exp.ν₀

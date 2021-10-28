@@ -67,17 +67,25 @@ Base.length(s::Spectrum{N, M, C}) where {N, M, C} =
     (mapreduce(length, +, s.components[1]) + 1)N - 1
 
 """
-    estimate_powder_pattern(c, N, exp)
+    estimate_static_powder_pattern(c, N, exp)
 
 Get the estimate powder pattern (a vector of N frequencies), given the 
 component, and the ExperimentalSpectrum
 
 """
-estimate_powder_pattern(
+estimate_static_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum
-) = mapreduce(i -> to_Hz.(estimate_powder_pattern(i, N, exp), exp.ν₀), .+, c)
+) = mapreduce(i -> 
+    to_Hz.(estimate_static_powder_pattern(i, N, exp), exp.ν₀), .+, c)
+
+estimate_static_powder_pattern(
+    c::Tuple{Vararg{NMRInteraction}}, 
+    N::Int, 
+    exp::ExperimentalSpectrum
+) = mapreduce(i -> 
+    to_Hz.(estimate_static_powder_pattern(i, N, exp), exp.ν₀), .+, c)
 
 """
     labels(s)

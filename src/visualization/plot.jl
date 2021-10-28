@@ -65,7 +65,7 @@ function generate_theoretical_spectrum(
     ν_stop = exp.ν[end] + ν_step / 2
     powder_pattern = filter(
         x -> to_Hz(ν_start, exp.ν₀) <= x <= to_Hz(ν_stop, exp.ν₀), 
-        to_Hz.(estimate_powder_pattern(c, 1_000_000, exp), exp.ν₀)
+        to_Hz.(estimate_static_powder_pattern(c, 1_000_000, exp), exp.ν₀)
     )
     k = kde(ustrip.(powder_pattern))
     ik = InterpKDE(k)

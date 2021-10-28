@@ -25,31 +25,31 @@ Get the labels of each parameter for plotting purposes
 labels(_::Zeeman) = Vector{String}()
 
 """
-    estimate_powder_pattern(z, N, ν₀)
+    estimate_static_powder_pattern(z, N, ν₀)
 
 Get the estimated powder pattern (a vector of N frequencies) given the 
 Zeeman interaction and the Larmor frequency
 
 """
-@inline estimate_powder_pattern(_::Zeeman, N::Int, ν₀::typeof(1.0u"MHz")) = 
+@inline estimate_static_powder_pattern(_::Zeeman, N::Int, ν₀::typeof(1.0u"MHz")) = 
     ν₀ .* ones(N)
 
 """
-    estimate_powder_pattern(z, N, ν₀)
+    estimate_static_powder_pattern(z, N, ν₀)
 
 Get the estimated powder pattern (a vector of N frequencies) given the 
 Zeeman interaction and the Larmor frequency
 
 """
-@inline estimate_powder_pattern(_::Zeeman, N::Int, ν₀) = 
+@inline estimate_static_powder_pattern(_::Zeeman, N::Int, ν₀) = 
     (ν₀ |> u"mHz") .* ones(N)
 
 """
-    estimate_powder_pattern(z, N, exp)
+    estimate_static_powder_pattern(z, N, exp)
 
 Get the estimated powder pattern (a vector of N frequencies) given the 
 Zeeman interaction and the ExperimentalSpectrum
 
 """
-@inline estimate_powder_pattern(_::Zeeman, N::Int, exp::ExperimentalSpectrum) = 
-    exp.ν₀ .* ones(N)
+@inline estimate_static_powder_pattern(_::Zeeman, N::Int, 
+    exp::ExperimentalSpectrum) = exp.ν₀ .* ones(N)

@@ -62,13 +62,13 @@ Get the frequency given the parameters, δᵢₛₒ
 get_ν(δᵢₛₒ::Float64) = δᵢₛₒ
 
 """
-    estimate_powder_pattern(c, N, exp)
+    estimate_static_powder_pattern(c, N, exp)
 
 Get the estimated powder pattern (a vector of N frequencies) given the 
 isotropic chemical shift interaction
 
 """
-@inline estimate_powder_pattern(
+@inline estimate_static_powder_pattern(
     c::ChemicalShiftI, 
     N::Int, 
     _::ExperimentalSpectrum
