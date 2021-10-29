@@ -63,7 +63,7 @@ function ExperimentalSpectrum(
         Quantity(Inf, freq_unit))
 )
     ν₀ = γ(isotope) * B
-    if isdir(file)
+    if !isdir(file)
         data = map(x -> parse.(Float64, x), 
             split.(readlines(file)[(header + 1):end], delim))
         data = sortslices(hcat(map(x -> x[1], data), map(x -> x[2], data)), 
