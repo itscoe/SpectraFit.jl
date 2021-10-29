@@ -45,7 +45,7 @@ for the form of the spectrum s₀ and the ExperimentalSpectrum exp
 
 """
 function get_wasserstein(s₀::Spectrum{N, M, C}, 
-  exp::ExperimentalSpectrum) where {N, M, C}
+  exp::ExperimentalSpectrum; type::Symbol = :static) where {N, M, C}
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
         ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
         ν_start = exp.ν[1] - ν_step / 2
@@ -60,7 +60,11 @@ function get_wasserstein(s₀::Spectrum{N, M, C},
             weight = c == N ? 1. - weights_sum : s.weights[c]
             powder_pattern = filter(
                 x -> to_Hz(ν_start, exp.ν₀) <= x <= to_Hz(ν_stop, exp.ν₀), 
-                estimate_static_powder_pattern(s.components[c], 1_000_000, exp)
+                type == :static ? 
+                    estimate_static_powder_pattern(
+                        s.components[c], 1_000_000, exp) : 
+                    estimate_mas_powder_pattern(
+                        s.components[c], 1_000_000, exp)
             )
             isempty(powder_pattern) && return 1.0
             th_cdf .+= weight .* ecdf(powder_pattern, exp)(exp.ν .+ ν_step / 2)
@@ -83,8 +87,9 @@ the functional form for the model selected
 abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSpectrum; 
-    prior = prior(s₀),
-    cost = get_wasserstein(s₀, exp),
+    type::Symbol = :static,
+    prior::KissABC.Factored = prior(s₀),
+    cost::Function = get_wasserstein(s₀, exp, type = type),
     parallel::Bool = false,
     nparticles::Int = 100,
     M::Int = 1,
@@ -121,7 +126,8 @@ spectrum of the functional form for the model selected
 abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSeries; 
-    prior = prior(s₀),
+    type::Symbol = :static,
+    prior::KissABC.Factored = prior(s₀),
     parallel::Bool = false,
     nparticles::Int = 100,
     M::Int = 1,
@@ -136,7 +142,8 @@ abc_smc(
     s₀, 
     x, 
     prior = prior,
-    cost = get_wasserstein(s₀, x),
+    type = type,
+    cost = get_wasserstein(s₀, x, type = type),
     parallel = parallel,
     nparticles = nparticles,
     M = M,
