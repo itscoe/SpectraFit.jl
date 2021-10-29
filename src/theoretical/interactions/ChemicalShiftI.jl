@@ -64,11 +64,24 @@ get_ν(δᵢₛₒ::Float64) = δᵢₛₒ
 """
     estimate_static_powder_pattern(c, N, exp)
 
-Get the estimated powder pattern (a vector of N frequencies) given the 
+Get the estimated static powder pattern (a vector of N frequencies) given the 
 isotropic chemical shift interaction
 
 """
 @inline estimate_static_powder_pattern(
+    c::ChemicalShiftI, 
+    N::Int, 
+    _::ExperimentalSpectrum
+) = c.δᵢₛₒ .* ones(N)
+
+"""
+    estimate_mas_powder_pattern(c, N, exp)
+
+Get the estimated MAS powder pattern (a vector of N frequencies) given the 
+isotropic chemical shift interaction
+
+"""
+@inline estimate_mas_powder_pattern(
     c::ChemicalShiftI, 
     N::Int, 
     _::ExperimentalSpectrum

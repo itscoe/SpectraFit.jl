@@ -54,9 +54,19 @@ Dipolar(σ::Float64) = Dipolar(Quantity(σ, u"MHz"))
 """
     estimate_static_powder_pattern(d, N, exp)
 
-Get the estimated powder pattern (a vector of N frequencies) given the 
+Get the estimated static powder pattern (a vector of N frequencies) given the 
 dipolar interaction
 
 """
 estimate_static_powder_pattern(d::Dipolar, N::Int, _::ExperimentalSpectrum) = 
+    d.σ * randn(N)
+
+"""
+    estimate_mas_powder_pattern(d, N, exp)
+
+Get the estimated MAS powder pattern (a vector of N frequencies) given the 
+dipolar interaction
+
+"""
+estimate_mas_powder_pattern(d::Dipolar, N::Int, _::ExperimentalSpectrum) = 
     d.σ * randn(N)
