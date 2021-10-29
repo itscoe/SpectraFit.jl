@@ -53,7 +53,7 @@ experimental parameters
 
 """
 function ExperimentalSpectrum(
-    filename::String;
+    file::String;
     freq_unit::Unitful.Unitlike = u"ppm",
     isotope::Isotope = Isotope(elements["Boron"], 10),
     B::typeof(1.0u"T") = 7.0u"T",
@@ -63,10 +63,22 @@ function ExperimentalSpectrum(
         Quantity(Inf, freq_unit))
 )
     ν₀ = γ(isotope) * B
-    data = map(x -> parse.(Float64, x), 
-        split.(readlines(filename)[(header + 1):end], delim))
-    data = sortslices(hcat(map(x -> x[1], data), map(x -> x[2], data)), 
-        dims = 1)
+    if isdir(file)
+        data = map(x -> parse.(Float64, x), 
+            split.(readlines(file)[(header + 1):end], delim))
+        data = sortslices(hcat(map(x -> x[1], data), map(x -> x[2], data)), 
+            dims = 1)
+    else
+        dic, data = nmrglue.fileio.bruker.read_pdata("10/pdata/1")
+        data = nmrglue.fileio.bruker.scale_pdata(dic, data)
+        udic = nmrglue.fileio.bruker.guess_udic(dic, data)
+        udic[0]["sw"] = dic["procs"]["SW_p"]
+        udic[0]["obs"] = dic["procs"]["SF"]
+        uc = nmrglue.fileiobase.uc_from_udic(udic)
+        ppm_scale = uc.ppm_scale()
+        ppm_scale .+= dic["procs"]["OFFSET"] - ppm_scale[1]
+        data = sortslices(hcat(ppm_scale, data), dims = 1)
+    end
     start_i = findfirst(x -> 
         to_Hz(Quantity(x, freq_unit), ν₀) > to_Hz(range[1], ν₀), data[:, 1])
     stop_i = findlast(x -> 
