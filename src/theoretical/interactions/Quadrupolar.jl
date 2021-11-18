@@ -209,22 +209,6 @@ function estimate_static_powder_pattern(
 end
 
 """
-    estimate_static_powder_pattern(q, N, μs, λs, isotope)
-
-Get the estimated static powder pattern (a vector of N frequencies) given the 
-quadrupolar interaction, vectors of the Euler angles, the isotope, 
-and the Larmor frequency
-
-"""
-@inline estimate_static_powder_pattern(
-    q::Quadrupolar, 
-    N::Int, 
-    μs::Vector{Float64}, 
-    λs::Vector{Float64}, 
-    isotope::Isotope
-) = estimate_static_powder_pattern(q, N, μs, λs, isotope)
-
-"""
     estimate_static_powder_pattern(q, N, exp)
 
 Get the estimated powder pattern (a vector of N frequencies) given the 
@@ -267,22 +251,6 @@ function estimate_mas_powder_pattern(
     return get_ν2.(Qccs, ηs, μs, λs, ms, I₀) .+ 
            get_ν3.(Qccs, ηs, μs, λs, ms, I₀)
 end
-
-"""
-    estimate_mas_powder_pattern(q, N, μs, λs, isotope)
-
-Get the estimated static powder pattern (a vector of N frequencies) given the 
-quadrupolar interaction, vectors of the Euler angles, the isotope, 
-and the Larmor frequency
-
-"""
-@inline estimate_mas_powder_pattern(
-    q::Quadrupolar, 
-    N::Int, 
-    μs::Vector{Float64}, 
-    λs::Vector{Float64}, 
-    isotope::Isotope
-) = estimate_mas_powder_pattern(q, N, μs, λs, isotope)
 
 """
     estimate_mas_powder_pattern(q, N, exp)
