@@ -83,8 +83,6 @@ function ExperimentalSpectrum(
         to_Hz(Quantity(x, freq_unit), ν₀) > to_Hz(range[1], ν₀), data[:, 1])
     stop_i = findlast(x -> 
         to_Hz(Quantity(x, freq_unit), ν₀) < to_Hz(range[2], ν₀), data[:, 1])
-    println(start_i)
-    println(stop_i)
     return ExperimentalSpectrum(
         isotope, 
         B, 

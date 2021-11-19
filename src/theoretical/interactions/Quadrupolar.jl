@@ -170,6 +170,16 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
     )
 end
 
+@inline function get_m(i::Int64, m_vec::Vector{Int64}, I::Int64)
+    @inbounds j = m_vec[1] 
+    i <= j && return -I + 1
+    for k = 2:length(m_vec) - 1
+        @inbounds j += m_vec[k]
+        i <= j && return k - I
+    end
+    return length(m_vec) - I
+end
+
 """
     estimate_static_powder_pattern(q, N, μs, λs, isotope, ν₀)
 
