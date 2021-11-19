@@ -85,11 +85,9 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-function get_ν1(qcc::typeof(1.0u"MHz"), η::Float64, μ::Float64, λ::Float64, 
-    m::Rational, I::Rational)
-    νQ = 3 * qcc / (2 * I * (2 * I - 1))
-    a = -(3 * μ^2 - 1 + η * λ - η * λ * μ^2)
-    return (νQ / 2) * (m - 1 / 2) * a
+@inline function get_ν1(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
+    λ::Float64, m::Int64)
+    return (νQ / 2) * (m - 1 / 2) * (-3μ^2 + ((μ^2 - 1)λ)η + 1)
 end
 
 """
@@ -116,15 +114,14 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-function get_ν2(qcc::typeof(1.0u"MHz"), η::Float64, μ::Float64, λ::Float64, 
-    m::Rational, I::Rational)
-    νQ = 3 * qcc / (2 * I * (2 * I - 1))
-    c = (0.5 * ((I + 3 / 2) * (I - 1 / 2) - 3 * (m - 1 / 2)^2)) *
-    (μ^4 * (3 - η * λ)^2 + 2 * μ^2 * (-9 + 2 * η^2 - η^2 * λ^2) +
-    (3 + η * λ)^2) + (4 * ((I + 3 / 2) * (I - 1 / 2) - 6 * (m - 1 / 2)^2)) *
-    (μ^4 * (3 - η * λ)^2 + μ^2 * (-9 + η^2 + 6 * η * λ - 2 * η^2 * λ^2) +
-    (-(η^2) + η^2 * λ^2))
-    return (νQ ^ 2 / 72ν₀) * c
+@inline function get_ν2(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
+    λ::Float64, m::Int64, I::Int64, ν₀::typeof(1.0u"MHz"))
+    return (νQ ^ 2 / 72ν₀) * (
+        (0.5 * ((I + 3 / 2) * (I - 1 / 2) - 3 * (m - 1 / 2)^2)) *
+            ((3 + η * λ)^2 + (-18 + (4 - 2λ^2)η^2 + ((3 - η * λ)^2)μ^2)μ^2) + 
+        (4 * ((I + 3 / 2) * (I - 1 / 2) - 6 * (m - 1 / 2)^2)) *
+            ((λ^2 - 1)η^2 + (-9 + (6λ + (1 - 2λ^2)η)η + ((3 - η * λ)^2)μ^2)μ^2)
+    )
 end
 
 """
@@ -151,29 +148,26 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-function get_ν3(
-    qcc::typeof(1.0u"MHz"), 
-    η::Float64, 
-    μ::Float64, 
-    λ::Float64, 
-    m::Rational, 
-    I::Rational
-)
-    νQ = 3 * qcc / (2 * I * (2 * I - 1))
-    e = (12 * I * (I + 1) - 40 * m * (m - 1) - 27) * (μ*μ*μ*μ*μ*μ *
-        (3 - η * λ)^3 + μ^4 * (-36 + 3 * η^2 + 42 * η * λ - η^3 * λ - 19 * η^2 *
-        λ^2 + 3 * η^3 * λ^3) + μ^2 * (9 - 4 * η^2 - 15 * η * λ + 2 * η^3 * λ +
-        11 * η^2 * λ^2 - 3 * η^3 * λ^3) + (η^2 - η^3 * λ - η^2 * λ^2 + η^3 *
-        λ^3)) + (1 / 2 * (3 * I * (I + 1) - 5 * m * (m - 1) - 6)) *
-        (μ*μ*μ*μ*μ*μ * (3 - η * λ)^3 + μ^4 * (-63 + 12 * η^2 + 33 * η * λ - 4 *
-        η^3 * λ - 13 * η^2 * λ^2 + 3 * η^3 * λ^3) + μ^2 * (45 - 4 * η^2 - 9 *
-        η * λ + 4 * η^3 * λ - η^2 * λ^2 - 3 * η^3 * λ^3) + (-9 + 3 * η * λ + 5 *
-        η^2 * λ^2 + η^3 * λ^3)) + (8 * I * (I + 1) - 20 * m * (m - 1) - 15) *
-        (μ*μ*μ*μ*μ*μ * (3 - η * λ)^3 + μ^4 * (-54 + 9 * η^2 + 36 * η * λ - 3 *
-        η^3 * λ - 15 * η^2 * λ^2 + 3 * η^3 * λ^3) + μ^2 * (27 - 6 * η^2 - 9 *
-        η * λ + 4 * η^3 * λ + 3 * η^2 * λ^2 - 3 * η^3 * λ^3) + (-3 * η^2 - η^3 *
-        λ + 3 * η^2 * λ^2 + η^3 * λ^3))
-    return (νQ ^ 3 / 144(ν₀ ^ 2)) * (m - 1 / 2) * e 
+@inline function get_ν3(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
+    λ::Float64, m::Int64, I::Int64, ν₀::typeof(1.0u"MHz"))
+    return (νQ^3 / 144ν₀^2) * (m - 1 / 2) * (
+        (12 * (I + 1)I - 40 * (m - 1)m - 27) * 
+            ((1 - λ^2 + ((λ^2 - 1)λ)η)η^2 + 
+            (9 + (-15λ * (-4 + 11λ^2 + ((2 - 3λ^2)λ)η)η)η + 
+            (-36 + (42λ + (3 - 19λ^2 + ((3λ^2 - 1)λ)η)η)η + 
+            ((3 - η * λ)^3)μ^2)μ^2)μ^2) +
+        ((3 * (I + 1)I - 5 * (m - 1)m - 6) / 2) *
+            (-9 + (3λ + (5λ^2 + (λ^3)η)η)η +
+            (45 - (9λ + (4 - λ^2 + (4 - 3λ^2)η)η)η + 
+            (-63 + (33λ + (12 - 13λ^2 + ((3λ^2 - 4)λ)η)η)η + 
+            ((3 - η * λ)^3)μ^2)μ^2)μ^2) +
+        (8 * (I + 1)I - 20 * (m - 1)m - 15) *
+            ((-3 + (-η + (3 + (η)λ)λ)λ)η^2 + 
+            (27 + (-9λ + (3λ^2 - 6 + ((4 - 3λ^2)λ)η)η)η +
+            (-54 + (36λ + (9 - 15λ^2 + ((3λ^2 - 3)λ)η)η)η + 
+            ((3 - η * λ)^3)μ^2)μ^2)μ^2
+        )
+    )
 end
 
 """
@@ -188,24 +182,24 @@ function estimate_static_powder_pattern(
     q::Quadrupolar, 
     N::Int, 
     μs::Vector{Float64}, 
-    λs::Vector{Float64}, 
-    isotope::Isotope
+    λs::Vector{Float64},
+    exp::ExperimentalSpectrum
 )
+    I₀ = I(exp.isotope)
+    
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
-    U5 = (q.η * q.Vzz / 2√3) .+ (q.ρσ / 2) .* randn(N)
+    
+    νQ_c = (2e * 0.0845e-28u"m^2" / (2h/3 * I₀ * (2 * I₀ - 1)))
+    
+    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
+    ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
 
-    Vxx, Vyy, Vzz = -U1 .+ √3U5, -U1 .- √3U5, 2U1
-
-    Qccs = (e * abs(Q(isotope)) * abs.(Vzz) / h) .|> u"MHz"
-    ηs = (Vyy .- Vxx) ./ Vzz
-
-    I₀ = I(isotope)
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), (-I₀ + 1):I₀)
-    ms = rand(Categorical(m_vec ./ sum(m_vec)), N) .- I₀
-
-    return get_ν1.(Qccs, ηs, μs, λs, ms, I₀) .+ 
-           get_ν2.(Qccs, ηs, μs, λs, ms, I₀) .+ 
-           get_ν3.(Qccs, ηs, μs, λs, ms, I₀)
+    ms = get_m.(rand(1:sum(m_vec), N), Ref(m_vec), I₀)
+    
+    return get_ν1.(νQs, ηs, μs, λs, ms) .+ 
+           get_ν2.(νQs, ηs, μs, λs, ms, I₀, exp.ν₀) .+
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, exp.ν₀)
 end
 
 """
@@ -219,7 +213,7 @@ quadrupolar interaction and the ExperimentalSpectrum
     q::Quadrupolar, 
     N::Int, 
     exp::ExperimentalSpectrum
-) = estimate_static_powder_pattern(q, N, μ(N), λ(N), exp.isotope)
+) = estimate_static_powder_pattern(q, N, μ(N), λ(N), exp)
 
 """
     estimate_mas_powder_pattern(q, N, μs, λs, isotope, ν₀)
@@ -233,23 +227,23 @@ function estimate_mas_powder_pattern(
     q::Quadrupolar, 
     N::Int, 
     μs::Vector{Float64}, 
-    λs::Vector{Float64}, 
-    isotope::Isotope
+    λs::Vector{Float64},
+    exp::ExperimentalSpectrum
 )
+    I₀ = I(exp.isotope)
+    
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
-    U5 = (q.η * q.Vzz / 2√3) .+ (q.ρσ / 2) .* randn(N)
+    
+    νQ_c = (2e * 0.0845e-28u"m^2" / (2h/3 * I₀ * (2 * I₀ - 1)))
+    
+    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
+    ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
 
-    Vxx, Vyy, Vzz = -U1 .+ √3U5, -U1 .- √3U5, 2U1
-
-    Qccs = (e * abs(Q(isotope)) * abs.(Vzz) / h) .|> u"MHz"
-    ηs = (Vyy .- Vxx) ./ Vzz
-
-    I₀ = I(isotope)
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), (-I₀ + 1):I₀)
-    ms = rand(Categorical(m_vec ./ sum(m_vec)), N) .- I₀
-
-    return get_ν2.(Qccs, ηs, μs, λs, ms, I₀) .+ 
-           get_ν3.(Qccs, ηs, μs, λs, ms, I₀)
+    ms = get_m.(rand(1:sum(m_vec), N), Ref(m_vec), I₀)
+    
+    return get_ν2.(νQs, ηs, μs, λs, ms, I₀, exp.ν₀) .+
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, exp.ν₀)
 end
 
 """
@@ -263,4 +257,4 @@ quadrupolar interaction and the ExperimentalSpectrum
     q::Quadrupolar, 
     N::Int, 
     exp::ExperimentalSpectrum
-) = estimate_mas_powder_pattern(q, N, μ(N), λ(N), exp.isotope)
+) = estimate_mas_powder_pattern(q, N, μ(N), λ(N), exp)

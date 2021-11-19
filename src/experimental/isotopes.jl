@@ -22,10 +22,10 @@ Return the spin of the isotope (currently hard-coded and returns a rational)
 
 """
 I(isotope::Isotope) = 
-    isotope.Z.number == 5  && isotope.A == 10  ? 3//1 : 
-    isotope.Z.number == 5  && isotope.A == 11  ? 3//2 : 
-    isotope.Z.number == 82 && isotope.A == 207 ? 1//2 : 
-                                                 0//1
+    isotope.Z.number == 5  && isotope.A == 10  ? 3 : 
+    #isotope.Z.number == 5  && isotope.A == 11  ? 3//2 : 
+    #isotope.Z.number == 82 && isotope.A == 207 ? 1//2 : 
+                                                 0
 
 """
     γ(isotope)
