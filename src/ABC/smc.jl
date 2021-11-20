@@ -44,26 +44,28 @@ Higher order function that creates wasserstein distance function
 for the form of the spectrum s₀ and the ExperimentalSpectrum exp
 
 """
-function get_wasserstein(s₀::Spectrum{N, M, C}, 
-  exp::ExperimentalSpectrum; type::Symbol = :static) where {N, M, C}
+function get_wasserstein(
+    s₀::Spectrum{N, M, C}, 
+    exp::ExperimentalSpectrum; 
+    type::Symbol = :static
+) where {N, M, C}
+    n = 1_000_000
+    μs = μ(n)
+    λs = λ(n)
+    ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
+    ν_start = to_Hz(exp.ν[1] - ν_step / 2, exp.ν₀)
+    ν_stop = to_Hz(exp.ν[end] + ν_step / 2, exp.ν₀)
+    th_cdf = zeros(length(exp.ν))
+  
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
-        ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
-        ν_start = exp.ν[1] - ν_step / 2
-        ν_stop = exp.ν[end] + ν_step / 2
-
-        n = 1_000_000
-        μs = μ(n)
-        λs = λ(n)
-
         s = Spectrum(s₀, p)
         weights_sum = N == 1 ? 0. : sum(s.weights)
         weights_sum > 1.0 && return 1.0
 
-        th_cdf = zeros(length(exp.ν))
         for c = 1:N
             weight = c == N ? 1. - weights_sum : s.weights[c]
             powder_pattern = filter(
-                x -> to_Hz(ν_start, exp.ν₀) <= x <= to_Hz(ν_stop, exp.ν₀), 
+                x -> ν_start <= x <= ν_stop, 
                 type == :static ? 
                     estimate_static_powder_pattern(
                         s.components[c], n, μs, λs, exp) : 
