@@ -1,3 +1,8 @@
+using Distributions
+
+const ϕ_dist = Uniform(0, π)
+const λ_dist = Arcsine(-1, 1; check_args = false)
+
 """
     μ(N)
 
@@ -12,7 +17,7 @@ Return N randomly sampled μ
 Return N randomly sampled ϕ
 
 """
-@inline ϕ(N::Int) = rand(Uniform(0, π), N)
+@inline ϕ(N::Int) = rand(ϕ_dist, N)
 
 """
     λ(N)
@@ -20,4 +25,4 @@ Return N randomly sampled ϕ
 Return N randomly sampled λ
 
 """
-@inline λ(N::Int) = rand(Arcsine(-1, 1; check_args = false), N)
+@inline λ(N::Int) = rand(λ_dist, N)
