@@ -12,7 +12,7 @@ Return N randomly sampled μ
 Return N randomly sampled ϕ
 
 """
-@inline ϕ(N::Int) = rand(N) .* π
+@inline ϕ(N::Int) = rand(Uniform(0, π), N)
 
 """
     λ(N)
@@ -20,4 +20,4 @@ Return N randomly sampled ϕ
 Return N randomly sampled λ
 
 """
-@inline λ(N::Int) = cos.(2 .* ϕ(N))
+@inline λ(N::Int) = rand(Arcsine(-1, 1; check_args = false), N)
