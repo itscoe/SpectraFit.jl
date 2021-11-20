@@ -51,6 +51,10 @@ function get_wasserstein(s₀::Spectrum{N, M, C},
         ν_start = exp.ν[1] - ν_step / 2
         ν_stop = exp.ν[end] + ν_step / 2
 
+        n = 1_000_000
+        μs = μ(n)
+        λs = λ(n)
+
         s = Spectrum(s₀, p)
         weights_sum = N == 1 ? 0. : sum(s.weights)
         weights_sum > 1.0 && return 1.0
@@ -62,9 +66,9 @@ function get_wasserstein(s₀::Spectrum{N, M, C},
                 x -> to_Hz(ν_start, exp.ν₀) <= x <= to_Hz(ν_stop, exp.ν₀), 
                 type == :static ? 
                     estimate_static_powder_pattern(
-                        s.components[c], 1_000_000, exp) : 
+                        s.components[c], n, μs, λs, exp) : 
                     estimate_mas_powder_pattern(
-                        s.components[c], 1_000_000, exp)
+                        s.components[c], n, μs, λs, exp)
             )
             isempty(powder_pattern) && return 1.0
             th_cdf .+= weight .* ecdf(powder_pattern, exp)(exp.ν .+ ν_step / 2)
