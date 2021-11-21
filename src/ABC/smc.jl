@@ -71,7 +71,7 @@ function get_wasserstein(
     ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
     ν_start = to_Hz(exp.ν[1] - ν_step / 2, exp.ν₀)
     ν_stop = to_Hz(exp.ν[end] + ν_step / 2, exp.ν₀)
-    ecdf = get_ecdf(ustrip.(to_Hz.(ν .+ ν_step / 2, exp.ν₀)))
+    ecdf = get_ecdf(ustrip.(to_Hz.(exp.ν .+ ν_step / 2, exp.ν₀)))
 
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
