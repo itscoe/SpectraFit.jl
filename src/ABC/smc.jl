@@ -10,8 +10,15 @@ of the StatsBase.ecdf function.
 """
 function get_ecdf(ν::Vector{Float64})
     function ecdf(X::Vector{Float64})
+        r = zeros(Int64, length(ν))
+        for xᵢ in X
+            i = findfirst(isgreater(xᵢ), ν)
+            if !isnothing(i)
+                r[i:end] .+= 1
+            end
+        end
         # modified from StatsBase.jl
-        return map(νᵢ -> count(x -> x < νᵢ, X), ν) / length(X)
+        return r / length(X)
     end
     return ecdf
 end
