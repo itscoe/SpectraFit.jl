@@ -14,14 +14,13 @@ function get_ecdf(ν::Vector{Float64})
         # modified from StatsBase.jl
         sort!(X)
         weightsum = length(X)
-        r = similar(X, m)
-        r0, i = 0, 1
+        r = zeros(m)
+        i = 1
         for (j, x) in enumerate(X)
             while i <= m && x > ν[i]
-                r[i] = r0
+                r[i] = j - 1
                 i += 1
             end
-            r0 += 1
             i > m && break
         end
         while i <= m
@@ -53,27 +52,76 @@ function get_wasserstein(
     ν_stop = to_Hz(exp.ν[end] + ν_step / 2, exp.ν₀)
     ecdf = get_ecdf(ustrip.(to_Hz.(exp.ν .+ ν_step / 2, exp.ν₀)))
 
-    function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
-        s = Spectrum(s₀, p)
-        weights_sum = N == 1 ? 0. : sum(s.weights)
-        weights_sum > 1.0 && return 1.0
-
-        th_cdf = zeros(length(exp.ν))
-        for c = 1:N
-            weight = c == N ? 1. - weights_sum : s.weights[c]
-            powder_pattern = filter(
-                x -> ν_start <= x <= ν_stop, 
-                type == :static ? 
+    if type == :static
+        if N == 1
+            function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
+                s = Spectrum(s₀, p)
+                powder_pattern = filter(
+                    x -> ν_start <= x <= ν_stop, 
                     estimate_static_powder_pattern(
-                        s.components[c], n, μs, λs, exp) : 
-                    estimate_mas_powder_pattern(
-                        s.components[c], n, μs, λs, exp)
-            )
-            isempty(powder_pattern) && return 1.0
-            th_cdf .+= weight .* ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
+                        s.components[c], n, μs, λs, exp))
+                isempty(powder_pattern) && return 1.0
+                th_cdf = ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
+                return mean(abs.(th_cdf .- exp.ecdf))
+            end
+        else
+            function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
+                s = Spectrum(s₀, p)
+                weights_sum = sum(s.weights)
+                weights_sum > 1.0 && return 1.0
+        
+                th_cdf = zeros(length(exp.ν))
+                for c = 1:N
+                    weight = c == N ? 1. - weights_sum : s.weights[c]
+                    powder_pattern = filter(
+                        x -> ν_start <= x <= ν_stop, 
+                            estimate_static_powder_pattern(
+                                s.components[c], n, μs, λs, exp))
+                    isempty(powder_pattern) && return 1.0
+                    th_cdf .+= weight .* 
+                        ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
+                end
+        
+                return mean(abs.(th_cdf .- exp.ecdf))
+            end
         end
-
-        return mean(abs.(th_cdf .- exp.ecdf))
+    else
+        if N == 1 
+            function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
+                s = Spectrum(s₀, p)
+                powder_pattern = filter(
+                    x -> ν_start <= x <= ν_stop, 
+                    estimate_mas_powder_pattern(
+                        s.components[c], n, μs, λs, exp))
+                isempty(powder_pattern) && return 1.0
+                th_cdf = ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
+                return mean(abs.(th_cdf .- exp.ecdf))
+            end
+        else
+            function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
+                s = Spectrum(s₀, p)
+                weights_sum = sum(s.weights)
+                weights_sum > 1.0 && return 1.0
+        
+                th_cdf = zeros(length(exp.ν))
+                for c = 1:N
+                    weight = c == N ? 1. - weights_sum : s.weights[c]
+                    powder_pattern = filter(
+                        x -> ν_start <= x <= ν_stop, 
+                        type == :static ? 
+                            estimate_static_powder_pattern(
+                                s.components[c], n, μs, λs, exp) : 
+                            estimate_mas_powder_pattern(
+                                s.components[c], n, μs, λs, exp)
+                    )
+                    isempty(powder_pattern) && return 1.0
+                    th_cdf .+= weight .* 
+                        ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
+                end
+        
+                return mean(abs.(th_cdf .- exp.ecdf))
+            end
+        end
     end
 
     return wasserstein
