@@ -13,9 +13,7 @@ function get_ecdf(ν::Vector{Float64})
     function ecdf(X::Vector{Float64})
         # modified from StatsBase.jl
         sort!(X)
-        weightsum = length(X)
-        r = zeros(m)
-        i = 1
+        weightsum, r, i = length(X), zeros(m), 1
         for (j, x) in enumerate(X)
             while i <= m && x > ν[i]
                 r[i] = j - 1
@@ -23,10 +21,7 @@ function get_ecdf(ν::Vector{Float64})
             end
             i > m && break
         end
-        while i <= m
-            r[i] = weightsum
-            i += 1
-        end
+        r[i:m] .= weightsum
         return r / weightsum
     end
     return ecdf
@@ -57,7 +52,7 @@ function get_wasserstein(
         powder_pattern = filter(
             x -> ν_start <= x <= ν_stop, 
             estimate_static_powder_pattern(
-                s.components[c], n, μs, λs, exp))
+                s.components[1], n, μs, λs, exp))
         isempty(powder_pattern) && return 1.0
         th_cdf = ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
         return mean(abs.(th_cdf .- exp.ecdf))
@@ -88,7 +83,7 @@ function get_wasserstein(
         powder_pattern = filter(
             x -> ν_start <= x <= ν_stop, 
             estimate_mas_powder_pattern(
-                s.components[c], n, μs, λs, exp))
+                s.components[1], n, μs, λs, exp))
         isempty(powder_pattern) && return 1.0
         th_cdf = ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
         return mean(abs.(th_cdf .- exp.ecdf))
