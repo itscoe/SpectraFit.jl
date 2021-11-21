@@ -55,13 +55,13 @@ function get_wasserstein(
     ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
     ν_start = to_Hz(exp.ν[1] - ν_step / 2, exp.ν₀)
     ν_stop = to_Hz(exp.ν[end] + ν_step / 2, exp.ν₀)
-    th_cdf = zeros(length(exp.ν))
   
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
         weights_sum = N == 1 ? 0. : sum(s.weights)
         weights_sum > 1.0 && return 1.0
 
+        th_cdf = zeros(length(exp.ν))
         for c = 1:N
             weight = c == N ? 1. - weights_sum : s.weights[c]
             powder_pattern = filter(
