@@ -83,8 +83,8 @@ estimate_static_powder_pattern(
 estimate_static_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
-    μs::Vector{Float64}
-    λs::Vector{Float64}
+    μs::Vector{Float64},
+    λs::Vector{Float64},
     exp::ExperimentalSpectrum
 ) = mapreduce(i -> 
     to_Hz.(estimate_static_powder_pattern(i, N, μs, λs, exp), exp.ν₀), .+, c)
@@ -99,8 +99,8 @@ estimate_mas_powder_pattern(
 estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
-    μs::Vector{Float64}
-    λs::Vector{Float64}
+    μs::Vector{Float64},
+    λs::Vector{Float64},
     exp::ExperimentalSpectrum
 ) = mapreduce(i -> 
     to_Hz.(estimate_mas_powder_pattern(i, N, μs, λs, exp), exp.ν₀), .+, c)
