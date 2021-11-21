@@ -28,9 +28,9 @@ constructed and the ExperimentalSpectrum. This is a simple extension
 of the StatsBase.ecdf function. 
 
 """
-function get_ecdf(ν::Vector{Quantity{Float64, Y1, Z1}}) where {Y1, Z1}
+function get_ecdf(ν::Vector{Float64})
     m = length(ν)
-    function ecdf(X::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
+    function ecdf(X::Vector{Float64})
         # modified from StatsBase.jl
         sort!(X)
         weightsum = length(X)
