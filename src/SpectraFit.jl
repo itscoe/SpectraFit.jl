@@ -3,6 +3,7 @@ module SpectraFit
 # install NMRGlue
 ENV["PYTHON"] = "";
 using PyCall, Conda
+Conda.add_channel("spectrocat")
 Conda.add("nmrglue", channel = "spectrocat")
 nmrglue = pyimport("nmrglue")
 
