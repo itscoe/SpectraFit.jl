@@ -1,26 +1,6 @@
 using Distributions, KissABC, StatsBase, Unitful, ProgressMeter
 
 """
-    prior(s)
-
-Gets the prior distribution of a spectrum in the form of s
-
-"""
-function prior(s::Spectrum{N, M, C}) where {N, M, C}
-    dists = Array{Distribution}(undef, length(s))
-    p = 1
-    for i = 1:N, interaction in s.components[i], j = 1:length(interaction)
-        dists[p] = prior(interaction, j)
-        p += 1
-    end
-    for _ = 1:N-1
-        dists[p] = Uniform(0, 1)
-        p += 1
-    end
-    return Factored(dists...)
-end
-
-"""
     ecdf(X, exp)
 
 Higher order function that creates the ecdf function from a sample 
