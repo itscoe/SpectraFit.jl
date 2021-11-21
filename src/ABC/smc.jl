@@ -31,7 +31,7 @@ of the StatsBase.ecdf function.
 function get_ecdf(ν::Vector{Float64})
     function ecdf(X::Vector{Float64})
         # modified from StatsBase.jl
-        return map(νᵢ -> count(x -> x < νᵢ, X), ν) / weightsum
+        return map(νᵢ -> count(x -> x < νᵢ, X), ν) / length(X)
     end
     return ecdf
 end
