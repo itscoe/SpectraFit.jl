@@ -9,17 +9,26 @@ of the StatsBase.ecdf function.
 
 """
 function get_ecdf(ν::Vector{Float64})
+    m = length(ν)
     function ecdf(X::Vector{Float64})
-        r = zeros(Int64, length(ν))
-        for xᵢ in X
-            for (i, νᵢ) in pairs(ν)
-                if νᵢ > xᵢ
-                    r[i:end] .+= 1
-                    break
-                end
+        # modified from StatsBase.jl
+        sort!(X)
+        weightsum = length(X)
+        r = similar(X, m)
+        r0, i = 0, 1
+        for (j, x) in enumerate(X)
+            while i <= m && x > ν[i]
+                r[i] = r0
+                i += 1
             end
+            r0 += 1
+            i > m && break
         end
-        return r / length(X)
+        while i <= m
+            r[i] = weightsum
+            i += 1
+        end
+        return r / weightsum
     end
     return ecdf
 end
