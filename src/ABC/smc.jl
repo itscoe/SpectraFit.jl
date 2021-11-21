@@ -28,8 +28,8 @@ constructed and the ExperimentalSpectrum. This is a simple extension
 of the StatsBase.ecdf function. 
 
 """
-function get_ecdf(v::Vector{Quantity{Float64, Y1, Z1}}) where {Y1, Z1}
-    m = length(v)
+function get_ecdf(ν::Vector{Quantity{Float64, Y1, Z1}}) where {Y1, Z1}
+    m = length(ν)
     function ecdf(X::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
         # modified from StatsBase.jl
         sort!(X)
@@ -37,7 +37,7 @@ function get_ecdf(v::Vector{Quantity{Float64, Y1, Z1}}) where {Y1, Z1}
         r = similar(X, m)
         r0, i = 0, 1
         for (j, x) in enumerate(X)
-            while i <= m && x > v[i]
+            while i <= m && x > ν[i]
                 r[i] = r0
                 i += 1
             end
@@ -71,7 +71,7 @@ function get_wasserstein(
     ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
     ν_start = to_Hz(exp.ν[1] - ν_step / 2, exp.ν₀)
     ν_stop = to_Hz(exp.ν[end] + ν_step / 2, exp.ν₀)
-    ecdf = get_ecdf(ustrip.(to_Hz.(v .+ ν_step / 2, exp.ν₀)))
+    ecdf = get_ecdf(ustrip.(to_Hz.(ν .+ ν_step / 2, exp.ν₀)))
 
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
