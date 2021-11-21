@@ -28,13 +28,29 @@ constructed and the ExperimentalSpectrum. This is a simple extension
 of the StatsBase.ecdf function. 
 
 """
-function ecdf(X::Vector{Quantity{Float64, Y1, Z1}}, 
-  exp::ExperimentalSpectrum) where {Y1, Z1}
-    function ef(v::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
-        ef_func = StatsBase.ecdf(ustrip.(to_Hz.(X, exp.ν₀)))
-        return ef_func(ustrip.(to_Hz.(v, exp.ν₀)))
+function get_ecdf(v::Vector{Quantity{Float64, Y1, Z1}}) where {Y1, Z1}
+    m = length(v)
+    function ecdf(X::Vector{Quantity{Float64, Y2, Z2}}) where {Y2, Z2}
+        # modified from StatsBase.jl
+        sort!(X)
+        weightsum = length(X)
+        r = similar(X, m)
+        r0, i = 0, 1
+        for (j, x) in enumerate(X)
+            while i <= m && x > v[i]
+                r[i] = r0
+                i += 1
+            end
+            r0 += 1
+            i > m && break
+        end
+        while i <= m
+            r[i] = weightsum
+            i += 1
+        end
+        return r / weightsum
     end
-    return ef
+    return ecdf
 end
 
 """
@@ -55,7 +71,8 @@ function get_wasserstein(
     ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
     ν_start = to_Hz(exp.ν[1] - ν_step / 2, exp.ν₀)
     ν_stop = to_Hz(exp.ν[end] + ν_step / 2, exp.ν₀)
-  
+    ecdf = get_ecdf(ustrip.(to_Hz.(v .+ ν_step / 2, exp.ν₀)))
+
     function wasserstein(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
         weights_sum = N == 1 ? 0. : sum(s.weights)
@@ -73,7 +90,7 @@ function get_wasserstein(
                         s.components[c], n, μs, λs, exp)
             )
             isempty(powder_pattern) && return 1.0
-            th_cdf .+= weight .* ecdf(powder_pattern, exp)(exp.ν .+ ν_step / 2)
+            th_cdf .+= weight .* ecdf(ustrip.(to_Hz.(powder_pattern, exp.ν₀)))
         end
 
         return mean(abs.(th_cdf .- exp.ecdf))
