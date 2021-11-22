@@ -1,6 +1,6 @@
 # FPOT are "Fractional (Multiples of) Powers of Two"
 
-struct FPOT
+struct FPOT <: Real
     n::Int8   # numerator
     d::UInt8  # denominator power of 2
 end
