@@ -48,3 +48,6 @@ Base.Float64(a::FPOT) = a.n / (0x01 << a.d)
 
 # Comparison
 Base.:<=(a::FPOT, b::FPOT) = a.d == b.d ? a.n <= b.n : Float64(a) <= Float64(b)
+
+# Rounding
+round(a::SpectraFit.FPOT, r::RoundingMode{:Down}) = a.n ÷ (0x01 << a.d)
