@@ -45,6 +45,7 @@ FPOT(n::Int) = FPOT(Int8(n), 0x00)
 
 # Conversion
 Base.Float64(a::FPOT) = a.n / (0x01 << a.d)
+Base.Int64(a::FPOT) = a.d == 0x00 ? a.n : throw(InexactError)
 Base.Integer(a::FPOT) = a.d == 0x00 ? a.n : throw(InexactError)
 
 # Comparison
