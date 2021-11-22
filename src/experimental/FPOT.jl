@@ -45,3 +45,6 @@ HalfInteger(n::Int) = HalfInteger(Int8(n), 0x00)
 
 # Conversion to Float64
 Base.Float64(a::FPOT) = a.n / (0x01 << a.d)
+
+# Comparison
+Base.:<=(a::FPOT, b::FPOT) = a.d == b.d ? a.n <= b.n : Float64(a) <= Float64(b)
