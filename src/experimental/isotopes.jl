@@ -22,10 +22,10 @@ Return the spin of the isotope (currently hard-coded and returns a rational)
 
 """
 I(isotope::Isotope) = 
-    isotope.Z.number == 5  && isotope.A == 10  ? FPOT(3, 0) : 
+    isotope.Z.number == 5  && isotope.A == 10  ? FPOT(3) : 
     isotope.Z.number == 5  && isotope.A == 11  ? FPOT(3, 1) : 
     isotope.Z.number == 82 && isotope.A == 207 ? FPOT(1, 1) : 
-                                                 FPOT(0, 0)
+                                                 FPOT(0)
 
 """
     γ(isotope)

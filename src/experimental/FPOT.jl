@@ -5,8 +5,8 @@ struct FPOT <: Real
     d::UInt8  # denominator power of 2
 end
 
-HalfInteger(n::Int, d::Int) = HalfInteger(Int8(n), UInt8(d))
-HalfInteger(n::Int) = HalfInteger(Int8(n), 0x00)
+FPOT(n::Int, d::Int) = FPOT(Int8(n), UInt8(d))
+FPOT(n::Int) = FPOT(Int8(n), 0x00)
 
 # Addition
 @inline Base.:+(a::FPOT, b::FPOT) = 
