@@ -151,7 +151,7 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 ```
 """
 @inline function get_ν3(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
-    λ::Float64, m::Int64, I::Int64, ν₀::typeof(1.0u"MHz"))
+    λ::Float64, m::FPOT, I::FPOT, ν₀::typeof(1.0u"MHz"))
     return (νQ^3 / 144ν₀^2) * Float64(m - FPOT(1, 1)) * (
         Float64(12 * (I + 1)I - 40 * (m - 1)m - 27) * 
             ((1 - λ^2 + ((λ^2 - 1)λ)η)η^2 + 
