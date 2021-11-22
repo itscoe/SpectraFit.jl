@@ -172,7 +172,7 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
     )
 end
 
-@inline function get_m(i::Int64, m_vec::Vector{Int64}, I::FPOT)
+@inline function get_m(i::Int64, m_vec::Vector{FPOT}, I::FPOT)
     @inbounds j = m_vec[1] 
     i <= j && return -I + 1
     for k = 2:length(m_vec) - 1
@@ -207,7 +207,7 @@ function estimate_static_powder_pattern(
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
 
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
-    ms = get_m.(rand(1:sum(m_vec), N), Ref(m_vec), I₀)
+    ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
     
     return get_ν1.(νQs, ηs, μs, λs, ms) .+ 
            get_ν2.(νQs, ηs, μs, λs, ms, I₀, exp.ν₀) .+
