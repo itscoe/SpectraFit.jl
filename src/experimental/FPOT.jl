@@ -51,6 +51,8 @@ Base.Integer(a::FPOT) = a.d == 0x00 ? a.n : throw(InexactError)
 # Comparison
 Base.:<(a::FPOT, b::FPOT) = a.d == b.d ? a.n < b.n : Float64(a) < Float64(b)
 Base.:<=(a::FPOT, b::FPOT) = a.d == b.d ? a.n <= b.n : Float64(a) <= Float64(b)
+Base.:<(a::FPOT, b::Int64) = a.d == 0x01 ? a.n < b : Float64(a) < b
+Base.:<=(a::FPOT, b::Int64) = a.d == 0x01 ? a.n <= b : Float64(a) <= b
 
 # Rounding
 Base.round(a::SpectraFit.FPOT, _::RoundingMode{:Down}) = 
