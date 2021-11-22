@@ -1,7 +1,7 @@
-using Distributions, KissABC, StatsBase, Unitful, ProgressMeter
+using Distributions, KissABC, Unitful, ProgressMeter
 
 """
-    ecdf(X, exp)
+    get_ecdf(X, exp)
 
 Higher order function that creates the ecdf function from a sample 
 constructed and the ExperimentalSpectrum. This is a simple extension 
