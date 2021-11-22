@@ -1,8 +1,8 @@
-# FPOT are "Fractional (Multiples of) Powers of Two
+# FPOT are "Fractional (Multiples of) Powers of Two"
 
 struct FPOT
-    n::Int8
-    d::UInt8
+    n::Int8   # numerator
+    d::UInt8  # denominator power of 2
 end
 
 HalfInteger(n::Int, d::Int) = HalfInteger(Int8(n), UInt8(d))
@@ -19,6 +19,7 @@ HalfInteger(n::Int) = HalfInteger(Int8(n), 0x00)
 @inline Base.:+(b::Int64, a::FPOT) = a + b
 
 # Subtraction
+@inline Base.:-(a::FPOT) = FPOT(-a.n, a.d)
 @inline Base.:-(a::FPOT, b::FPOT) = 
     a.d == b.d ? FPOT(a.n + b.n, a.d) : 
                  FPOT(a.n * (0x01 << b.d) - b.n * (0x01 << a.d), a.d + b.d)
