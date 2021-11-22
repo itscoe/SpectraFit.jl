@@ -52,7 +52,9 @@ Base.Integer(a::FPOT) = a.d == 0x00 ? a.n : throw(InexactError)
 Base.:<(a::FPOT, b::FPOT) = a.d == b.d ? a.n < b.n : Float64(a) < Float64(b)
 Base.:<=(a::FPOT, b::FPOT) = a.d == b.d ? a.n <= b.n : Float64(a) <= Float64(b)
 Base.:<(a::FPOT, b::Int64) = a.d == 0x01 ? a.n < b : Float64(a) < b
+Base.:<(b::Int64, a::FPOT) = a.d == 0x01 ? b < a.n : b < Float64(a)
 Base.:<=(a::FPOT, b::Int64) = a.d == 0x01 ? a.n <= b : Float64(a) <= b
+Base.:<=(b::Int64, a::FPOT) = a.d == 0x01 ? b <= a.n : b <= Float64(a)
 
 # Rounding
 Base.round(a::SpectraFit.FPOT, _::RoundingMode{:Down}) = 
