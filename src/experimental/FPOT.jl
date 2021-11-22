@@ -43,13 +43,14 @@ FPOT(n::Int) = FPOT(Int8(n), 0x00)
 # Exponentiation
 @inline Base.:^(a::FPOT, ::Val{2}) = FPOT(a.n * a.n, a.d + a.d)
 
-# Conversion to Float64
+# Conversion
 Base.Float64(a::FPOT) = a.n / (0x01 << a.d)
+Base.Integer(a::FPOT) = a.d == 0x00 ? a.n : throw(InexactError)
 
 # Comparison
 Base.:<(a::FPOT, b::FPOT) = a.d == b.d ? a.n < b.n : Float64(a) < Float64(b)
 Base.:<=(a::FPOT, b::FPOT) = a.d == b.d ? a.n <= b.n : Float64(a) <= Float64(b)
 
 # Rounding
-Base.round(a::SpectraFit.FPOT, r::RoundingMode{:Down}) = 
+Base.round(a::SpectraFit.FPOT, _::RoundingMode{:Down}) = 
     FPOT(a.n ÷ (0x01 << a.d), 0x00)
