@@ -251,7 +251,7 @@ function estimate_mas_powder_pattern(
     νQs = abs.(U1 .* νQ_c) .|> u"MHz"
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
 
-    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), (-I₀ + 1):I₀)
+    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:sum(m_vec), N), Ref(m_vec), I₀)
     
     return get_ν2.(νQs, ηs, μs, λs, ms, I₀, exp.ν₀) .+
