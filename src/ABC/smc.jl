@@ -45,7 +45,7 @@ function get_wasserstein(
     I₀ = I(exp.isotope)
     ν₀ = exp.ν₀
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
-    ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
+    ms = get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀)
     ν_step = (exp.ν[end] - exp.ν[1]) / length(exp.ν)
     ν_start = to_Hz(exp.ν[1] - ν_step / 2, ν₀)
     ν_stop = to_Hz(exp.ν[end] + ν_step / 2, ν₀)
