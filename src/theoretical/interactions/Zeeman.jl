@@ -39,8 +39,8 @@ Zeeman interaction and the ExperimentalSpectrum
     N::Int, 
     _::Vector{Float64}, 
     _::Vector{Float64},
-    _::Vector{FPOT},
-    _::FPOT,
+    _::Vector{Int64},
+    _::Int64,
     ν₀::typeof(1.0u"MHz")
 ) = ν₀ .* ones(N)
 
@@ -59,7 +59,7 @@ Zeeman interaction and the ExperimentalSpectrum
     N::Int, 
     _::Vector{Float64}, 
     _::Vector{Float64},
-    _::Vector{FPOT},
-    _::FPOT,
+    _::Vector{Int64},
+    _::Int64,
     ν₀::typeof(1.0u"MHz")
 ) = ν₀ .* ones(N)

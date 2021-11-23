@@ -105,8 +105,8 @@ component, and the ExperimentalSpectrum
     N::Int, 
     μs::Vector{Float64}, 
     λs::Vector{Float64},
-    ms::Vector{FPOT},
-    I₀::FPOT,
+    ms::Vector{Int64},
+    I₀::Int64,
     ν₀::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
     to_Hz.(estimate_static_powder_pattern(i, N, μs, λs, ms, I₀, ν₀), ν₀), .+, c)
@@ -123,8 +123,8 @@ component, and the ExperimentalSpectrum
     N::Int, 
     μs::Vector{Float64}, 
     λs::Vector{Float64},
-    ms::Vector{FPOT},
-    I₀::FPOT,
+    ms::Vector{Int64},
+    I₀::Int64,
     ν₀::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
     to_Hz.(estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀), ν₀), .+, c)

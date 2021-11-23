@@ -17,7 +17,6 @@ end
 include("units/constants.jl")
 include("units/ppm.jl")
 
-include("experimental/FPOT.jl")
 include("experimental/isotopes.jl")
 include("experimental/ExperimentalSpectrum.jl")
 include("experimental/ExperimentalSeries.jl")

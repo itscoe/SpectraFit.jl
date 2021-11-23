@@ -79,8 +79,8 @@ isotropic chemical shift interaction
     N::Int, 
     _::Vector{Float64}, 
     _::Vector{Float64},
-    _::Vector{FPOT},
-    _::FPOT,
+    _::Vector{Int64},
+    _::Int64,
     _::typeof(1.0u"MHz")
 ) = c.δᵢₛₒ .* ones(N)
 
@@ -102,7 +102,7 @@ isotropic chemical shift interaction
     N::Int, 
     _::Vector{Float64}, 
     _::Vector{Float64},
-    _::Vector{FPOT},
-    _::FPOT,
+    _::Vector{Int64},
+    _::Int64,
     _::typeof(1.0u"MHz")
 ) = c.δᵢₛₒ .* ones(N)
