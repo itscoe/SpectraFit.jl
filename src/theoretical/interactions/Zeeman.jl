@@ -34,8 +34,15 @@ Zeeman interaction and the ExperimentalSpectrum
 @inline estimate_static_powder_pattern(_::Zeeman, N::Int, 
     exp::ExperimentalSpectrum) = exp.ν₀ .* ones(N)
 
-@inline estimate_static_powder_pattern(_::Zeeman, N::Int, _::Vector{Float64}, 
-    _::Vector{Float64}, exp::ExperimentalSpectrum) = exp.ν₀ .* ones(N)
+@inline estimate_static_powder_pattern(
+    _::Zeeman, 
+    N::Int, 
+    _::Vector{Float64}, 
+    _::Vector{Float64},
+    _::Vector{FPOT},
+    _::FPOT,
+    ν₀::typeof(1.0u"MHz")
+) = ν₀ .* ones(N)
 
 """
     estimate_mas_powder_pattern(z, N, exp)
@@ -47,5 +54,12 @@ Zeeman interaction and the ExperimentalSpectrum
 @inline estimate_mas_powder_pattern(_::Zeeman, N::Int, 
     exp::ExperimentalSpectrum) = exp.ν₀ .* ones(N)
 
-@inline estimate_mas_powder_pattern(_::Zeeman, N::Int, _::Vector{Float64}, 
-    _::Vector{Float64}, exp::ExperimentalSpectrum) = exp.ν₀ .* ones(N)
+@inline estimate_mas_powder_pattern(
+    _::Zeeman, 
+    N::Int, 
+    _::Vector{Float64}, 
+    _::Vector{Float64},
+    _::Vector{FPOT},
+    _::FPOT,
+    ν₀::typeof(1.0u"MHz")
+) = ν₀ .* ones(N)
