@@ -208,6 +208,26 @@ function estimate_static_powder_pattern(
            get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀)
 end
 
+function estimate_static_powder_pattern(
+    q::Quadrupolar, 
+    N::Int, 
+    exp::ExperimentalSpectrum
+)
+    μs = μ(N)
+    λs = λ(N)
+    I₀ = I(exp.isotope)
+    ν₀ = exp.ν₀
+    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
+    ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
+    U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
+    νQ_c = 2e * 0.0845e-28u"m^2" / (2h/3 * Float64(I₀ * (2 * I₀ - 1)))
+    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
+    ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
+    return get_ν1.(νQs, ηs, μs, λs, ms) .+ 
+           get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀) .+
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀)
+end
+
 """
     estimate_mas_powder_pattern(q, N, μs, λs, isotope, ν₀)
 
@@ -219,12 +239,14 @@ and the Larmor frequency
 function estimate_mas_powder_pattern(
     q::Quadrupolar, 
     N::Int, 
-    μs::Vector{Float64}, 
-    λs::Vector{Float64},
-    ms::Vector{FPOT},
-    I₀::FPOT,
-    ν₀::typeof(1.0u"MHz")
+    exp::ExperimentalSpectrum
 )
+    μs = μ(N)
+    λs = λ(N)
+    I₀ = I(exp.isotope)
+    ν₀ = exp.ν₀
+    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
+    ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
     νQ_c = (2e * 0.0845e-28u"m^2" / (2h/3 * I₀ * (2 * I₀ - 1)))
     νQs = abs.(U1 .* νQ_c) .|> u"MHz"
