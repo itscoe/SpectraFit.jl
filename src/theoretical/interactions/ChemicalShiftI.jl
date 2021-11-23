@@ -77,9 +77,11 @@ isotropic chemical shift interaction
 @inline estimate_static_powder_pattern(
     c::ChemicalShiftI, 
     N::Int, 
+    _::Vector{Float64}, 
     _::Vector{Float64},
-    _::Vector{Float64},
-    _::ExperimentalSpectrum
+    _::Vector{FPOT},
+    _::FPOT,
+    _::typeof(1.0u"MHz")
 ) = c.δᵢₛₒ .* ones(N)
 
 """
@@ -98,7 +100,9 @@ isotropic chemical shift interaction
 @inline estimate_mas_powder_pattern(
     c::ChemicalShiftI, 
     N::Int, 
+    _::Vector{Float64}, 
     _::Vector{Float64},
-    _::Vector{Float64},
-    _::ExperimentalSpectrum
+    _::Vector{FPOT},
+    _::FPOT,
+    _::typeof(1.0u"MHz")
 ) = c.δᵢₛₒ .* ones(N)

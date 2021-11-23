@@ -93,38 +93,41 @@ Get the estimate powder pattern (a vector of N frequencies), given the
 component, and the ExperimentalSpectrum
 
 """
-estimate_static_powder_pattern(
+@inline estimate_static_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum
 ) = mapreduce(i -> 
     to_Hz.(estimate_static_powder_pattern(i, N, exp), exp.ν₀), .+, c)
 
-estimate_static_powder_pattern(
+@inline estimate_static_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
-    μs::Vector{Float64},
+    μs::Vector{Float64}, 
     λs::Vector{Float64},
-    exp::ExperimentalSpectrum
+    ms::Vector{FPOT},
+    I₀::FPOT,
+    ν₀::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    to_Hz.(estimate_static_powder_pattern(i, N, μs, λs, exp), exp.ν₀), .+, c)
+    to_Hz.(estimate_static_powder_pattern(i, N, μs, λs, ms, I₀, ν₀), ν₀), .+, c)
 
-estimate_mas_powder_pattern(
+@inline estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum
 ) = mapreduce(i -> 
     to_Hz.(estimate_mas_powder_pattern(i, N, exp), exp.ν₀), .+, c)
 
-estimate_mas_powder_pattern(
+@inline estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
-    μs::Vector{Float64},
+    μs::Vector{Float64}, 
     λs::Vector{Float64},
-    exp::ExperimentalSpectrum
+    ms::Vector{FPOT},
+    I₀::FPOT,
+    ν₀::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    to_Hz.(estimate_mas_powder_pattern(i, N, μs, λs, exp), exp.ν₀), .+, c)
-
+    to_Hz.(estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀), ν₀), .+, c)
 """
     labels(s)
 
