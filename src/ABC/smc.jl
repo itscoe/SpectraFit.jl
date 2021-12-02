@@ -37,9 +37,9 @@ for the form of the spectrum s₀ and the ExperimentalSpectrum exp
 function get_wasserstein(
     s₀::Spectrum{N, M, C}, 
     exp::ExperimentalSpectrum; 
-    type::Symbol = :static
+    type::Symbol = :static, 
+    n::Int64 = 1_000_000
 ) where {N, M, C}
-    n = 1_000_000
     μs = μ(n)
     λs = λ(n)
     I₀ = I(exp.isotope)
@@ -52,7 +52,7 @@ function get_wasserstein(
     ecdf = get_ecdf(ustrip.(to_Hz.(exp.ν .+ ν_step / 2, ν₀)))
     exp_ecdf = exp.ecdf
 
-    function wasserstein_s_1(p::NTuple{Nₚ, Float64}) where {Nₚ}
+    @inline function wasserstein_s_1(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
         powder_pattern = filter(x -> ν_start <= x <= ν_stop, 
             estimate_static_powder_pattern(
@@ -62,7 +62,7 @@ function get_wasserstein(
         return mean(abs.(th_cdf .- exp_ecdf))
     end
 
-    function wasserstein_s_n(p::NTuple{Nₚ, Float64}) where {Nₚ}
+    @inline function wasserstein_s_n(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
         weights_sum = sum(s.weights)
         weights_sum > 1.0 && return 1.0
@@ -81,7 +81,7 @@ function get_wasserstein(
         return mean(abs.(th_cdf .- exp_ecdf))
     end
 
-    function wasserstein_m_1(p::NTuple{Nₚ, Float64}) where {Nₚ}
+    @inline function wasserstein_m_1(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
         powder_pattern = filter(
             x -> ν_start <= x <= ν_stop, 
@@ -92,7 +92,7 @@ function get_wasserstein(
         return mean(abs.(th_cdf .- exp_ecdf))
     end
 
-    function wasserstein_m_n(p::NTuple{Nₚ, Float64}) where {Nₚ}
+    @inline function wasserstein_m_n(p::NTuple{Nₚ, Float64}) where {Nₚ}
         s = Spectrum(s₀, p)
         weights_sum = sum(s.weights)
         weights_sum > 1.0 && return 1.0
@@ -125,17 +125,18 @@ Monte Carlo given the experimental data and the spectrum of
 the functional form for the model selected
 
 """
-abc_smc(
+@inline abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSpectrum; 
     type::Symbol = :static,
     prior::KissABC.Factored = prior(s₀),
-    cost::Function = get_wasserstein(s₀, exp, type = type),
+    n::Int64 = 1_000_000,
+    cost::Function = get_wasserstein(s₀, exp, type = type, n = n),
     parallel::Bool = false,
-    nparticles::Int = 100,
-    M::Int = 1,
+    nparticles::Int64 = 100,
+    M::Int64 = 1,
     alpha::Float64 = 0.95,
-    mcmc_retrys::Int = 0,
+    mcmc_retrys::Int64 = 0,
     mcmc_tol::Float64 = 0.015,
     epstol::Float64 = 0.0,
     r_epstol::Float64 = (1 - alpha)^1.5 / 50,
@@ -164,16 +165,17 @@ Monte Carlo given the experimental data (in a series) and the
 spectrum of the functional form for the model selected
 
 """
-abc_smc(
+@inline abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSeries; 
     type::Symbol = :static,
+    n::Int64 = 1_000_000,
     prior::KissABC.Factored = prior(s₀),
     parallel::Bool = false,
-    nparticles::Int = 100,
-    M::Int = 1,
+    nparticles::Int64 = 100,
+    M::Int64 = 1,
     alpha::Float64 = 0.95,
-    mcmc_retrys::Int = 0,
+    mcmc_retrys::Int64 = 0,
     mcmc_tol::Float64 = 0.015,
     epstol::Float64 = 0.0,
     r_epstol::Float64 = (1 - alpha)^1.5 / 50,
@@ -184,7 +186,7 @@ abc_smc(
     x, 
     prior = prior,
     type = type,
-    cost = get_wasserstein(s₀, x, type = type),
+    n = n,
     parallel = parallel,
     nparticles = nparticles,
     M = M,
