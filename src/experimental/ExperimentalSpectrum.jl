@@ -54,7 +54,7 @@ experimental parameters
 """
 function ExperimentalSpectrum(
     file::String;
-    freq_unit::DataType = u"ppm",
+    freq_unit::Unitful.Unitlike = u"ppm",
     isotope::Isotope = Isotope(elements["Boron"], 10),
     B::typeof(1.0u"T") = 7.0u"T",
     header::Int64 = 0,
