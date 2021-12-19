@@ -62,7 +62,7 @@ function ExperimentalSpectrum(
     range::Tuple{Quantity, Quantity} = (Quantity(-Inf, freq_unit), 
         Quantity(Inf, freq_unit))
 )
-    ν₀ = freq_unit == u"ppm" ? 0.0u"ppm" : γ(isotope) * B
+    ν₀ = γ(isotope) * B
 
     if !isdir(file)
         data = map(x -> parse.(Float64, x), 
