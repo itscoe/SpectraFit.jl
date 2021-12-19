@@ -28,7 +28,7 @@ function get_wasserstein(
     function get_ecdf(x::Array{Int64})
         # modified from StatsBase.jl add_counts
         r = zeros(Int64, N2)
-        for i in 1:length(x)
+        @inbounds for i in 1:length(x)
             r[x[i]] += 1
         end
         return cumsum(r) ./ length(x)
