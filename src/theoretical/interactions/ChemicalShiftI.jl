@@ -71,8 +71,8 @@ isotropic chemical shift interaction
 @inline estimate_static_powder_pattern(
     c::ChemicalShiftI, 
     N::Int, 
-    _::ExperimentalSpectrum
-) = c.δᵢₛₒ .* ones(N)
+    exp::ExperimentalSpectrum
+) = ((c.δᵢₛₒ - exp.ν_start) / exp.ν_step) .* ones(N)
 
 @inline estimate_static_powder_pattern(
     c::ChemicalShiftI, 
@@ -81,8 +81,10 @@ isotropic chemical shift interaction
     _::Vector{Float64},
     _::Vector{FPOT},
     _::FPOT,
-    _::typeof(1.0u"MHz")
-) = c.δᵢₛₒ .* ones(N)
+    _::typeof(1.0u"MHz"),
+    ν_step::typeof(1.0u"MHz"),
+    ν_start::typeof(1.0u"MHz")
+) = ((c.δᵢₛₒ - ν_start) / ν_step) .* ones(N)
 
 """
     estimate_mas_powder_pattern(c, N, exp)
@@ -94,8 +96,8 @@ isotropic chemical shift interaction
 @inline estimate_mas_powder_pattern(
     c::ChemicalShiftI, 
     N::Int, 
-    _::ExperimentalSpectrum
-) = c.δᵢₛₒ .* ones(N)
+    exp::ExperimentalSpectrum
+) = ((c.δᵢₛₒ - exp.ν_start) / exp.ν_step) .* ones(N)
 
 @inline estimate_mas_powder_pattern(
     c::ChemicalShiftI, 
@@ -104,5 +106,7 @@ isotropic chemical shift interaction
     _::Vector{Float64},
     _::Vector{FPOT},
     _::FPOT,
-    _::typeof(1.0u"MHz")
-) = c.δᵢₛₒ .* ones(N)
+    _::typeof(1.0u"MHz",
+    ν_step::typeof(1.0u"MHz"),
+    ν_start::typeof(1.0u"MHz")
+) = ((c.δᵢₛₒ - ν_start) / ν_step) .* ones(N)

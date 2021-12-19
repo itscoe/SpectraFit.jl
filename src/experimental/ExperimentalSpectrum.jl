@@ -87,9 +87,9 @@ function ExperimentalSpectrum(
         to_Hz(Quantity(x, freq_unit), ν₀) < to_Hz(range[2], ν₀), data[:, 1])
 
     N = stop_i - start_i + 1
-    ν_start = to_Hz(Quantity(data[start_i, 1], freq_unit), ν₀)
     ν_step = 
         to_Hz(Quantity((data[stop_i, 1] - data[start_i, 1]) / N, freq_unit), ν₀)
+    ν_start = to_Hz(Quantity(data[start_i, 1], freq_unit), ν₀) - (ν_step / 2)
     
     return ExperimentalSpectrum{N}(
         isotope, 
