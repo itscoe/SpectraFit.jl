@@ -210,8 +210,7 @@ function estimate_static_powder_pattern(
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
     return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
            get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
-           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .-
-           (ν_start / ν_step)
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
 end
 
 function estimate_static_powder_pattern(
@@ -233,8 +232,7 @@ function estimate_static_powder_pattern(
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
     return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
            get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
-           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .-
-           (ν_start / ν_step)
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
 end
 
 """
@@ -263,6 +261,5 @@ function estimate_mas_powder_pattern(
     νQs = abs.(U1 .* νQ_c) .|> u"MHz"
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
     return get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
-           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .- 
-           (ν_start / ν_step)
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
 end

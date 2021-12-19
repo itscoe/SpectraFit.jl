@@ -98,8 +98,8 @@ estimate_static_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum
-) = mapreduce(i -> 
-    to_Hz.(estimate_static_powder_pattern(i, N, exp), exp.ν₀), .+, c)
+) = mapreduce(i -> estimate_static_powder_pattern(i, N, exp), .+, c) .-
+    (ν_start / ν_step)
 
 estimate_static_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
@@ -113,14 +113,14 @@ estimate_static_powder_pattern(
     ν_start::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
     estimate_static_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step, ν_start), 
-    .+, c)
+    .+, c) .- (ν_start / ν_step)
 
 estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum
 ) = mapreduce(i -> 
-    estimate_mas_powder_pattern(i, N, exp), .+, c)
+    estimate_mas_powder_pattern(i, N, exp), .+, c) .- (ν_start / ν_step)
 
 estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
@@ -132,7 +132,7 @@ estimate_mas_powder_pattern(
     ν₀::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
     estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step, ν_start), 
-    .+, c)
+    .+, c) .- (ν_start / ν_step)
 
 """
     labels(s)
