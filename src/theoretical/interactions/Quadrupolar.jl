@@ -116,7 +116,8 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 ```
 """
 @inline function get_ν2(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
-    λ::Float64, m::FPOT, I::FPOT, ν₀::typeof(1.0u"MHz"))
+    λ::Float64, m::FPOT, I::FPOT, ν₀::typeof(1.0u"MHz"), 
+    ν_step::typeof(1.0u"MHz"))
     return (νQ ^ 2 / (72 * ν₀ * ν_step)) * (
         Float64(FPOT(1, 1) * (I + FPOT(3, 1)) * (I - FPOT(1, 1)) - FPOT(3, 1) * 
         (m - FPOT(1, 1))^2) *
@@ -152,7 +153,8 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 ```
 """
 @inline function get_ν3(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
-    λ::Float64, m::FPOT, I::FPOT, ν₀::typeof(1.0u"MHz"))
+    λ::Float64, m::FPOT, I::FPOT, ν₀::typeof(1.0u"MHz"), 
+    ν_step::typeof(1.0u"MHz"))
     return (νQ^3 / (144 * ν₀^2 * ν_step)) * Float64(m - FPOT(1, 1)) * (
         Float64(12 * (I + 1)I - 40 * (m - 1)m - 27) * 
             ((1 - λ^2 + ((λ^2 - 1)λ)η)η^2 + 
