@@ -35,13 +35,13 @@ and magnet strength
 - `i`
 - `ecdf`
 """
-struct ExperimentalSpectrum{U}
+struct ExperimentalSpectrum{N, U}
     isotope::Isotope
     B::typeof(1.0u"T")
-    ν₀::typeof(1.0u"MHz")
-    ν::Vector{U}
-    i::Vector{Float64}
-    ecdf::Vector{Float64}
+    ν₀::U
+    ν_start::U
+    ν_step::U
+    ecdf::NTuple{N, Float64}
 end
 
 
@@ -54,7 +54,7 @@ experimental parameters
 """
 function ExperimentalSpectrum(
     file::String;
-    freq_unit::Unitful.Unitlike = u"ppm",
+    freq_unit::DataType = u"ppm",
     isotope::Isotope = Isotope(elements["Boron"], 10),
     B::typeof(1.0u"T") = 7.0u"T",
     header::Int64 = 0,
@@ -62,7 +62,8 @@ function ExperimentalSpectrum(
     range::Tuple{Quantity, Quantity} = (Quantity(-Inf, freq_unit), 
         Quantity(Inf, freq_unit))
 )
-    ν₀ = γ(isotope) * B
+    ν₀ = freq_unit == u"ppm" ? 0.0u"ppm" : γ(isotope) * B
+
     if !isdir(file)
         data = map(x -> parse.(Float64, x), 
             split.(readlines(file)[(header + 1):end], delim))
@@ -79,16 +80,22 @@ function ExperimentalSpectrum(
         ppm_scale .+= dic["procs"]["OFFSET"] - ppm_scale[1]
         data = sortslices(hcat(ppm_scale, data), dims = 1)
     end
+
     start_i = findfirst(x -> 
         to_Hz(Quantity(x, freq_unit), ν₀) > to_Hz(range[1], ν₀), data[:, 1])
     stop_i = findlast(x -> 
         to_Hz(Quantity(x, freq_unit), ν₀) < to_Hz(range[2], ν₀), data[:, 1])
-    return ExperimentalSpectrum(
+
+    N = stop_i - start_i + 1
+    ν_start = Quantity(data[start_i, 1], freq_unit)
+    ν_step = Quantity((data[stop_i, 1] - data[start_i, 1]) / N, freq_unit)
+    
+    return ExperimentalSpectrum{N, typeof(Quantity(1.0, freq_unit))}(
         isotope, 
         B, 
         ν₀, 
-        Quantity.(data[start_i:stop_i, 1], freq_unit), 
-        data[start_i:stop_i, 2], 
-        get_exp_ecdf(data[start_i:stop_i, 2]),
+        ν_start, 
+        ν_step, 
+        (get_exp_ecdf(data[start_i:stop_i, 2])...,),
     )
 end
