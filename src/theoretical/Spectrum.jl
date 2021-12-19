@@ -54,7 +54,8 @@ function Spectrum(s::Spectrum{N, M, C},
 
         components[i] = (interactions...,)
     end
-    return Spectrum{N, M, C}((components...,), N == 1 ? () : (p[pᵢ:end]...,))
+    return Spectrum{N, M, C}((components...,), 
+        N == 1 ? (1.0,) : (p[pᵢ:end]...,))
 end
 
 """
@@ -107,17 +108,19 @@ estimate_static_powder_pattern(
     λs::Vector{Float64},
     ms::Vector{FPOT},
     I₀::FPOT,
-    ν₀::typeof(1.0u"MHz")
+    ν₀::typeof(1.0u"MHz"),
+    ν_step::typeof(1.0u"MHz"),
+    ν_start::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    to_Hz.(estimate_static_powder_pattern(i, N, μs, λs, ms, I₀, ν₀), ν₀), 
-        .+, c)
+    estimate_static_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step, ν_start), 
+    .+, c)
 
 estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
     exp::ExperimentalSpectrum
 ) = mapreduce(i -> 
-    to_Hz.(estimate_mas_powder_pattern(i, N, exp), exp.ν₀), .+, c)
+    estimate_mas_powder_pattern(i, N, exp), .+, c)
 
 estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
@@ -128,8 +131,8 @@ estimate_mas_powder_pattern(
     I₀::FPOT,
     ν₀::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    to_Hz.(estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀), ν₀), 
-        .+, c)
+    estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step, ν_start), 
+    .+, c)
 
 """
     labels(s)
