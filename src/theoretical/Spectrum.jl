@@ -55,7 +55,7 @@ function Spectrum(s::Spectrum{N, M, C},
         components[i] = (interactions...,)
     end
     return Spectrum{N, M, C}((components...,), 
-        N == 1 ? (1.0,) : (p[pᵢ:end]...,))
+        N == 1 ? () : (p[pᵢ:end]...,))
 end
 
 """
