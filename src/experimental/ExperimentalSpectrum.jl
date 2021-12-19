@@ -88,7 +88,7 @@ function ExperimentalSpectrum(
 
     N = stop_i - start_i + 1
     ν_step = 
-        to_Hz(Quantity((data[stop_i, 1] - data[start_i, 1]) / N, freq_unit), ν₀)
+        to_Hz(Quantity((data[stop_i, 1] - data[start_i, 1]), freq_unit), ν₀) / N
     ν_start = to_Hz(Quantity(data[start_i, 1], freq_unit), ν₀) - (ν_step / 2)
     
     return ExperimentalSpectrum{N}(
