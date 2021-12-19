@@ -28,10 +28,10 @@ function get_wasserstein(
     function get_ecdf(x::Array{Int64})
         # modified from StatsBase.jl add_counts
         r = zeros(Int64, N2)
-        for i in 1:n
+        for i in 1:length(x)
             r[x[i]] += 1
         end
-        return cumsum(r) ./ n
+        return cumsum(r) ./ length(x)
     end
 
     @inline function wasserstein_s_1(p::NTuple{Nₚ, Float64}) where {Nₚ}
