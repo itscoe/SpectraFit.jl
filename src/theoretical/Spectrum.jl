@@ -112,7 +112,7 @@ estimate_static_powder_pattern(
     ν_step::typeof(1.0u"MHz"),
     ν_start::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    estimate_static_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step), 
+    estimate_static_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step, ν_start), 
     .+, c) .- (ν_start / ν_step)
 
 estimate_mas_powder_pattern(
@@ -129,11 +129,9 @@ estimate_mas_powder_pattern(
     λs::Vector{Float64},
     ms::Vector{FPOT},
     I₀::FPOT,
-    ν₀::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    ν₀::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step), 
+    estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step, ν_start), 
     .+, c) .- (ν_start / ν_step)
 
 """

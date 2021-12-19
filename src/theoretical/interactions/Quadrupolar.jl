@@ -85,8 +85,10 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-@inline function get_ν1(η::Float64, μ::Float64, λ::Float64, m::FPOT)
-    return Float64(m - FPOT(1, 1)) * (-3μ^2 + ((μ^2 - 1)λ)η + 1)
+@inline function get_ν1(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
+    λ::Float64, m::FPOT, ν_step::typeof(1.0u"MHz"))
+    return (νQ / (2 * ν_step)) * Float64(m - FPOT(1, 1)) * 
+        (-3μ^2 + ((μ^2 - 1)λ)η + 1)
 end
 
 """
@@ -113,9 +115,12 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-@inline function get_ν2(η::Float64, μ::Float64, λ::Float64, m::FPOT, I::FPOT)
-    return (Float64(FPOT(1, 1) * (I + FPOT(3, 1)) * (I - FPOT(1, 1)) - 
-        FPOT(3, 1) * (m - FPOT(1, 1))^2) *
+@inline function get_ν2(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
+    λ::Float64, m::FPOT, I::FPOT, ν₀::typeof(1.0u"MHz"), 
+    ν_step::typeof(1.0u"MHz"))
+    return (νQ ^ 2 / (72 * ν₀ * ν_step)) * (
+        Float64(FPOT(1, 1) * (I + FPOT(3, 1)) * (I - FPOT(1, 1)) - FPOT(3, 1) * 
+        (m - FPOT(1, 1))^2) *
             ((3 + η * λ)^2 + (-18 + (4 - 2λ^2)η^2 + ((3 - η * λ)^2)μ^2)μ^2) + 
         Float64(4 * (I + FPOT(3, 1)) * (I - FPOT(1, 1)) - 24 * 
         (m - FPOT(1, 1))^2) *
@@ -147,8 +152,10 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
 31.8515444235865
 ```
 """
-@inline function get_ν3(η::Float64, μ::Float64, λ::Float64, m::FPOT, I::FPOT)
-    return  Float64(m - FPOT(1, 1)) * (
+@inline function get_ν3(νQ::typeof(1.0u"MHz"), η::Float64, μ::Float64, 
+    λ::Float64, m::FPOT, I::FPOT, ν₀::typeof(1.0u"MHz"), 
+    ν_step::typeof(1.0u"MHz"))
+    return (νQ^3 / (144 * ν₀^2 * ν_step)) * Float64(m - FPOT(1, 1)) * (
         Float64(12 * (I + 1)I - 40 * (m - 1)m - 27) * 
             ((1 - λ^2 + ((λ^2 - 1)λ)η)η^2 + 
             (9 + (-15λ * (-4 + 11λ^2 + ((2 - 3λ^2)λ)η)η)η + 
@@ -194,15 +201,16 @@ function estimate_static_powder_pattern(
     ms::Vector{FPOT},
     I₀::FPOT,
     ν₀::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz")
+    ν_step::typeof(1.0u"MHz"),
+    ν_start::typeof(1.0u"MHz")
 )
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
     νQ_c = 2e * 0.0845e-28u"m^2" / (2h/3 * Float64(I₀ * (2 * I₀ - 1)))
-    νQ = abs.(U1 .* νQ_c) .|> u"MHz"
+    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
-    return (νQ / (2 * ν_step)) * get_ν1.(ηs, μs, λs, ms) .+ 
-        (νQ ^ 2 / (72 * ν₀ * ν_step)) * get_ν2.(ηs, μs, λs, ms, I₀) .+
-        (νQ ^ 3 / (144 * ν₀^2 * ν_step)) * get_ν3.(ηs, μs, λs, ms, I₀)
+    return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
+           get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
 end
 
 function estimate_static_powder_pattern(
@@ -215,15 +223,16 @@ function estimate_static_powder_pattern(
     I₀ = I(exp.isotope)
     ν₀ = exp.ν₀
     ν_step = exp.ν_step
+    ν_start = exp.ν_start
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
     νQ_c = 2e * 0.0845e-28u"m^2" / (2h/3 * Float64(I₀ * (2 * I₀ - 1)))
-    νQ = abs.(U1 .* νQ_c) .|> u"MHz"
+    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
-    return (νQ / (2 * ν_step)) * get_ν1.(ηs, μs, λs, ms) .+ 
-        (νQ ^ 2 / (72 * ν₀ * ν_step)) * get_ν2.(ηs, μs, λs, ms, I₀) .+
-        (νQ ^ 3 / (144 * ν₀^2 * ν_step)) * get_ν3.(ηs, μs, λs, ms, I₀)
+    return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
+           get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
 end
 
 """
@@ -249,8 +258,8 @@ function estimate_mas_powder_pattern(
     ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
     νQ_c = (2e * 0.0845e-28u"m^2" / (2h/3 * I₀ * (2 * I₀ - 1)))
-    νQ = abs.(U1 .* νQ_c) .|> u"MHz"
+    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
     ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
-    return (νQ ^ 2 / (72 * ν₀ * ν_step)) * get_ν2.(ηs, μs, λs, ms, I₀) .+
-        (νQ ^ 3 / (144 * ν₀^2 * ν_step)) * get_ν3.(ηs, μs, λs, ms, I₀)
+    return get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
+           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
 end
