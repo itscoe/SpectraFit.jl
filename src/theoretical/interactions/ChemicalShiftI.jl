@@ -82,8 +82,7 @@ isotropic chemical shift interaction
     _::Vector{FPOT},
     _::FPOT,
     _::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    ν_step::typeof(1.0u"MHz")
 ) = (c.δᵢₛₒ / ν_step) .* ones(N)
 
 """
@@ -107,6 +106,5 @@ isotropic chemical shift interaction
     _::Vector{FPOT},
     _::FPOT,
     _::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    ν_step::typeof(1.0u"MHz")
 ) = (c.δᵢₛₒ / ν_step) .* ones(N)

@@ -25,7 +25,7 @@ function get_wasserstein(
     ms = get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀)
     exp_ecdf = exp.ecdf
 
-    function get_ecdf(x::Array{Int64})
+    @inline function get_ecdf(x::Array{Int64})
         # modified from StatsBase.jl add_counts
         r = zeros(Int64, N2)
         @simd for i in 1:length(x)

@@ -43,8 +43,7 @@ Zeeman interaction and the ExperimentalSpectrum
     _::Vector{FPOT},
     _::FPOT,
     ν₀::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    ν_step::typeof(1.0u"MHz")
 ) = (ν₀ / ν_step) .* ones(N)
 
 """
@@ -66,6 +65,5 @@ Zeeman interaction and the ExperimentalSpectrum
     _::Vector{FPOT},
     _::FPOT,
     ν₀::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    ν_step::typeof(1.0u"MHz")
 ) = (ν₀ / ν_step) .* ones(N)
