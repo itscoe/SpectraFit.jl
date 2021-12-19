@@ -19,6 +19,8 @@ function get_wasserstein(
     λs = λ(n)
     I₀ = I(exp.isotope)
     ν₀ = exp.ν₀
+    ν_start = exp.ν_start
+    ν_step = exp.ν_step
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀)
     exp_ecdf = exp.ecdf
@@ -36,7 +38,7 @@ function get_wasserstein(
         s = Spectrum(s₀, p)
         powder_pattern = filter(x -> 1 <= x <= N2, 
             ceil.(Int64, estimate_static_powder_pattern(
-                s.components[1], n, μs, λs, ms, I₀, ν₀)))
+                s.components[1], n, μs, λs, ms, I₀, ν₀, ν_step, ν_start)))
         isempty(powder_pattern) && return 1.0
         th_cdf = get_ecdf(powder_pattern)
         return sum(abs.(th_cdf .- exp_ecdf)) / N2
@@ -52,7 +54,7 @@ function get_wasserstein(
             weight = c == N ? 1. - weights_sum : s.weights[c]
             powder_pattern = filter(x -> 1 <= x <= N2, 
                 ceil.(Int64, estimate_static_powder_pattern(
-                    s.components[c], n, μs, λs, ms, I₀, ν₀)))
+                    s.components[c], n, μs, λs, ms, I₀, ν₀, ν_step, ν_start)))
             isempty(powder_pattern) && return 1.0
             th_cdf .+= weight .* get_ecdf(powder_pattern)
         end
@@ -64,7 +66,7 @@ function get_wasserstein(
         s = Spectrum(s₀, p)
         powder_pattern = filter(x -> 1 <= x <= N2, 
             ceil.(Int64, estimate_mas_powder_pattern(
-                s.components[1], n, μs, λs, ms, I₀, ν₀)))
+                s.components[1], n, μs, λs, ms, I₀, ν₀, ν_step, ν_start)))
         isempty(powder_pattern) && return 1.0
         th_cdf = get_ecdf(powder_pattern)
         return sum(abs.(th_cdf .- exp_ecdf)) / N2
@@ -80,7 +82,7 @@ function get_wasserstein(
             weight = c == N ? 1. - weights_sum : s.weights[c]
             powder_pattern = filter(x -> 1 <= x <= N2, 
                 ceil.(Int64, estimate_mas_powder_pattern(
-                    s.components[c], n, μs, λs, ms, I₀, ν₀)))
+                    s.components[c], n, μs, λs, ms, I₀, ν₀, ν_step, ν_start)))
             isempty(powder_pattern) && return 1.0
             th_cdf .+= weight .* get_ecdf(powder_pattern)
         end
