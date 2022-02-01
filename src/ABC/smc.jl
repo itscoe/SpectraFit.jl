@@ -23,8 +23,7 @@ function get_wasserstein(
     ν_step = exp.ν_step
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀)
-    vQ_c = (1.5 * e * 0.0845e-28u"m^2" / h) / 
-        Float64(I₀ * (2 * I₀ - 1)) |> u"MHz"
+    vQ_c = (1.5 * e * 0.0845e-28u"m^2" / h) / Float64(I₀ * (2 * I₀ - 1))
     U1_rand = randn(n)
     U5_rand = randn(n)
     exp_ecdf = exp.ecdf
