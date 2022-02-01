@@ -195,6 +195,7 @@ and the Larmor frequency
 """
 function estimate_static_powder_pattern(
     q::Quadrupolar, 
+    _::Int64,
     μs::Vector{Float64}, 
     λs::Vector{Float64},
     ms::Vector{FPOT},

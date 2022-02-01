@@ -75,15 +75,17 @@ isotropic chemical shift interaction
 ) = (c.δᵢₛₒ / exp.ν_step) .* ones(N)
 
 @inline estimate_static_powder_pattern(
-    c::ChemicalShiftI, 
-    N::Int, 
+    c::ChemicalShiftI,
+    N::Int64,
     _::Vector{Float64}, 
     _::Vector{Float64},
     _::Vector{FPOT},
+    _::Vector{Float64},
+    _::Vector{Float64},
     _::FPOT,
     _::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    _::typeof(1.0u"T^-1")
 ) = (c.δᵢₛₒ / ν_step) .* ones(N)
 
 """
