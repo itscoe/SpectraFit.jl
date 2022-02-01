@@ -207,7 +207,7 @@ function estimate_static_powder_pattern(
     vQ_c::typeof(1.0u"T^-1")
 )
     U1 = q.Vzz .+ q.ρσ .* U1_rand
-    νQs = (vQ_c * abs.(U1)) |> u"MHz", 
+    νQs = (vQ_c * abs.(U1)) |> u"MHz"
     ηs = (q.ρσ .* U5_rand .- q.η * q.Vzz) ./ U1
     return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
            get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
