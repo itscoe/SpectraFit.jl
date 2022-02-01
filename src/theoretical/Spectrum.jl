@@ -112,7 +112,8 @@ estimate_static_powder_pattern(
     I₀::FPOT,
     ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    vQ_c::typeof(1.0u"T^-1")
+    vQ_c::typeof(1.0u"T^-1"),
+    ν_start::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
     estimate_static_powder_pattern(i, N, μs, λs, ms, U1_rand, U5_rand, I₀, ν₀, 
     ν_step, vQ_c), .+, c) .- (ν_start / ν_step)

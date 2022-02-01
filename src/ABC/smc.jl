@@ -43,7 +43,7 @@ function get_wasserstein(
         powder_pattern = filter(x -> 1 <= x <= N2, 
             ceil.(Int64, estimate_static_powder_pattern(
                 s.components[1], n, μs, λs, ms, U1_rand, U5_rand, I₀, ν₀, 
-                ν_step, vQ_c)))
+                ν_step, vQ_c, ν_start)))
         isempty(powder_pattern) && return 1.0
         th_cdf = get_ecdf(powder_pattern)
         return sum(abs.(th_cdf .- exp_ecdf)) / N2
@@ -60,7 +60,7 @@ function get_wasserstein(
             powder_pattern = filter(x -> 1 <= x <= N2, 
                 ceil.(Int64, estimate_static_powder_pattern(
                     s.components[c], n, μs, λs, ms, U1_rand, U5_rand, I₀, ν₀, 
-                    ν_step, vQ_c)))
+                    ν_step, vQ_c, ν_start)))
             isempty(powder_pattern) && return 1.0
             th_cdf .+= weight .* get_ecdf(powder_pattern)
         end
