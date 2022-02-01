@@ -195,19 +195,18 @@ and the Larmor frequency
 """
 function estimate_static_powder_pattern(
     q::Quadrupolar, 
-    N::Int, 
     μs::Vector{Float64}, 
     λs::Vector{Float64},
     ms::Vector{FPOT},
+    U1_rand::Vector{Float64},
+    U5_rand::Vector{Float64},
     I₀::FPOT,
     ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    vQ_c::typeof(1.0u"MHz")
 )
-    U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
-    νQ_c = 2e * 0.0845e-28u"m^2" / (2h/3 * Float64(I₀ * (2 * I₀ - 1)))
-    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
-    ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
+    U1 = q.Vzz .+ q.ρσ .* U1_rand
+    νQs, ηs = vQ_c * abs.(U1), (q.ρσ .* U5_rand .- q.η * q.Vzz) ./ U1
     return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
            get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
            get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
@@ -223,13 +222,12 @@ function estimate_static_powder_pattern(
     I₀ = I(exp.isotope)
     ν₀ = exp.ν₀
     ν_step = exp.ν_step
-    ν_start = exp.ν_start
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
     νQ_c = 2e * 0.0845e-28u"m^2" / (2h/3 * Float64(I₀ * (2 * I₀ - 1)))
     νQs = abs.(U1 .* νQ_c) .|> u"MHz"
-    ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
+    ηs = (-q.η * q.Vzz .+ q.ρσ .* randn(N)) ./ 2U1
     return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
            get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
            get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
@@ -253,7 +251,6 @@ function estimate_mas_powder_pattern(
     I₀ = I(exp.isotope)
     ν₀ = exp.ν₀
     ν_step = exp.ν_step
-    ν_start = exp.ν_start
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
     U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
