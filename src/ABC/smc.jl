@@ -23,7 +23,7 @@ function get_wasserstein(
     ν_step = exp.ν_step
 
     ms = I₀.d == 0x0000 ? get_m.(rand(1:m_sum(I₀), n), I₀) : 
-        FPOT(0, 0x0000) * ones(n)
+        FPOT(0, 0x0000) * ones(Int64, n)
     vQ_c = ((1.5 * e * 0.0845e-28u"m^2" / h) / Float64(I₀ * (2 * I₀ - 1))) |> 
         u"T^-1"
     U1_rand = randn(n)
