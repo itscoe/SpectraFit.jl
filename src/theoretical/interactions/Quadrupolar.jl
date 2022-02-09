@@ -175,7 +175,12 @@ julia> get_ν(5.5, 0.12, 0.1, 0.2, -1, 3, 32.239)
     )
 end
 
-@inline function get_m(i::Int64, m_vec::Vector{FPOT}, I::FPOT)
+# Derived from Sivaraman, R. "Sum of powers of natural numbers." AUT AUT 
+# Research Journal 11, no. 4 (2020): 353-359.
+@inline m_sum(I₀::FPOT) = Int64(2I₀ * (I₀ ^ 2 + I₀ - 1) + (I₀ ^ 3 - I₀) ÷ 3)
+
+@inline function get_m(i::Int64, I::FPOT)
+    m_vec = map(m -> I * (I + 1) - m * (m - 1), (-I + 1):I)
     @inbounds j = m_vec[1] 
     i <= j && return -I + 1
     for k = 2:length(m_vec) - 1

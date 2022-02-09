@@ -21,8 +21,9 @@ function get_wasserstein(
     ν₀ = exp.ν₀
     ν_start = exp.ν_start
     ν_step = exp.ν_step
-    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), (-I₀ + 1):I₀)
-    ms = get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀)
+
+    ms = I₀.d == 0x0000 ? get_m.(rand(1:m_sum(I₀), n), I₀) : 
+        FPOT(0, 0x0000) * ones(n)
     vQ_c = ((1.5 * e * 0.0845e-28u"m^2" / h) / Float64(I₀ * (2 * I₀ - 1))) |> 
         u"T^-1"
     U1_rand = randn(n)
