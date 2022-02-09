@@ -107,6 +107,7 @@ estimate_static_powder_pattern(
     μs::Vector{Float64}, 
     λs::Vector{Float64},
     ms::Vector{FPOT},
+    U0_rand::Vector{Float64},
     U1_rand::Vector{Float64},
     U5_rand::Vector{Float64},
     I₀::FPOT,
@@ -115,8 +116,8 @@ estimate_static_powder_pattern(
     vQ_c::typeof(1.0u"T^-1"),
     ν_start::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    estimate_static_powder_pattern(i, N, μs, λs, ms, U1_rand, U5_rand, I₀, ν₀, 
-    ν_step, vQ_c), .+, c) .- (ν_start / ν_step)
+    estimate_static_powder_pattern(i, N, μs, λs, ms, U0_rand, U1_rand, U5_rand, 
+    I₀, ν₀, ν_step, vQ_c), .+, c) .- (ν_start / ν_step)
 
 estimate_mas_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 

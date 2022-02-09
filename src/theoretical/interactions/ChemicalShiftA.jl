@@ -81,7 +81,7 @@ get_ν(
     δᵢₛₒ::typeof(1.0u"ppm"), 
     Δδ::typeof(1.0u"ppm"), 
     ηδ::Float64
-) = δᵢₛₒ + (Δδ / 2) * (3 * μ^2 - 1 + ηδ * (1-μ^2) * λ)
+) = δᵢₛₒ + 0.5 * Δδ * (μ^2 * (3 - ηδ * λ) + ηδ * λ - 1)
 
 """
     estimate_static_powder_pattern(c, N, μs, λs)
@@ -90,34 +90,36 @@ Get the estimated powder pattern (a vector of N frequencies) given the CSA
 interaction and vectors of the Euler angles (μs, λs)
 
 """
-function estimate_static_powder_pattern(c::ChemicalShiftA, N::Int, 
-    μs::Vector{Float64}, λs::Vector{Float64})
-
-    σ = ustrip(c.ρσ / 2)
-    μᵤ0 = -ustrip(c.δᵢₛₒ) / √3
-    μᵤ1 = ustrip(c.Δδ) / 2
-    μᵤ5 = ustrip(c.Δδ) * c.ηδ / 2√3
-
-    U₀ = Quantity.(rand(Normal(μᵤ0, σ), N), unit(c.δᵢₛₒ))
-    U₁ = Quantity.(rand(Normal(μᵤ1, σ), N), unit(c.δᵢₛₒ))
-    U₅ = Quantity.(rand(Normal(μᵤ5, σ), N), unit(c.δᵢₛₒ))
-
-    σ₁₁s = -3U₀ ./ √3 .- U₁ .+ √3U₅
-    σ₂₂s = -3U₀ ./ √3 .- U₁ .- √3U₅
-    σ₃₃s = -3U₀ ./ √3 .+ 2U₁
-
-    δᵢₛₒs = (σ₁₁s .+ σ₂₂s .+ σ₃₃s) ./ 3
+function estimate_static_powder_pattern(
+    c::ChemicalShiftA, 
+    N::Int64,
+    μs::Vector{Float64}, 
+    λs::Vector{Float64},
+    _::Vector{FPOT},
+    U0_rand::Vector{Float64},
+    U1_rand::Vector{Float64},
+    U5_rand::Vector{Float64},
+    _::FPOT,
+    _::typeof(1.0u"MHz"),
+    ν_step::typeof(1.0u"MHz"),
+    _::typeof(1.0u"T^-1")
+)
+    σ = 0.5 * c.ρσ
+    U₀ = c.δᵢₛₒ .+ √3σ .* U0_rand
+    U₁ = (0.5 * c.Δδ) .+ σ .* U1_rand
+    U₅ = (0.5 * c.Δδ * c.ηδ) .+ √3σ .* U5_rand
+    σ₁₁s, σ₂₂s, σ₃₃s = U₀ .- U₁ .+ U₅, σ₁₁s .- 2U₅, U₀ .+ 2U₁
     
     Δδs = Array{typeof(1.0u"ppm")}(undef, N)
     ηδs = Array{Float64}(undef, N)
     for i = 1:N
         σᵢ = sort([σ₁₁s[i], σ₂₂s[i], σ₃₃s[i]], 
-            by = x -> abs(x - δᵢₛₒs[i]), rev = true)
-        Δδs[i] = σᵢ[1] - δᵢₛₒs[i]
+            by = x -> abs(x - U₀[i]), rev = true)
+        Δδs[i] = σᵢ[1] - U₀[i]
         ηδs[i] = Float64((σᵢ[3] - σᵢ[2]) / Δδs[i])
     end
 
-    return get_ν.(μs, λs, δᵢₛₒs, Δδs, ηδs)
+    return get_ν.(μs, λs, U₀, Δδs, ηδs) ./ ν_step
 end
 
 """
