@@ -82,6 +82,7 @@ isotropic chemical shift interaction
     _::Vector{FPOT},
     _::Vector{Float64},
     _::Vector{Float64},
+    _::Vector{Float64},
     _::FPOT,
     _::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),

@@ -43,6 +43,7 @@ Zeeman interaction and the ExperimentalSpectrum
     _::Vector{FPOT},
     _::Vector{Float64},
     _::Vector{Float64},
+    _::Vector{Float64},
     _::FPOT,
     ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
