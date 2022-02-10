@@ -67,8 +67,8 @@ function ExperimentalSpectrum(
     if !isdir(file)
         data = map(x -> parse.(Float64, x), 
             split.(readlines(file)[(header + 1):end], delim))
-        data = sortslices(hcat(map(x -> x[1], data), map(x -> x[2], data)), 
-            dims = 1)
+        data = sortslices(hcat(map(x -> to_Hz(Quantity(x[1], freq_unit), ν₀), 
+            data), map(x -> x[2], data)), dims = 1)
     else
         dic, data = nmrglue.fileio.bruker.read_pdata("10/pdata/1")
         data = nmrglue.fileio.bruker.scale_pdata(dic, data)
@@ -81,15 +81,12 @@ function ExperimentalSpectrum(
         data = sortslices(hcat(ppm_scale, data), dims = 1)
     end
 
-    start_i = findfirst(x -> 
-        to_Hz(Quantity(x, freq_unit), ν₀) > to_Hz(range[1], ν₀), data[:, 1])
-    stop_i = findlast(x -> 
-        to_Hz(Quantity(x, freq_unit), ν₀) < to_Hz(range[2], ν₀), data[:, 1])
+    start_i = findfirst(x -> x > to_Hz(range[1], ν₀), data[:, 1])
+    stop_i = findlast(x -> x < to_Hz(range[2], ν₀), data[:, 1])
 
     N = stop_i - start_i + 1
-    ν_start = to_Hz(Quantity(data[start_i, 1], freq_unit), ν₀)
-    ν_stop = to_Hz(Quantity(data[stop_i, 1], freq_unit), ν₀)
-    ν_step = (ν_stop - ν_start) / N
+    ν_start = data[start_i, 1]
+    ν_step = (data[stop_i, 1] - ν_start) / N
     ν_start -= (ν_step / 2)
     
     return ExperimentalSpectrum{N}(
