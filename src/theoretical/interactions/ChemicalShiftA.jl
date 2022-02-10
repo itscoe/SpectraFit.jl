@@ -121,7 +121,7 @@ function estimate_static_powder_pattern(
         ηδs[i] = Float64((σᵢ[3] - σᵢ[2]) / Δδs[i])
     end
 
-    return to_MHz.(get_ν.(μs, λs, U₀, Δδs, ηδs), ν₀) ./ ν_step
+    return to_Hz.(get_ν.(μs, λs, U₀, Δδs, ηδs), ν₀) ./ ν_step
 end
 
 """
