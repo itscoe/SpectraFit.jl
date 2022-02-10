@@ -108,7 +108,9 @@ function estimate_static_powder_pattern(
     U₀ = c.δᵢₛₒ .+ √3σ .* U0_rand
     U₁ = (0.5 * c.Δδ) .+ σ .* U1_rand
     U₅ = (0.5 * c.Δδ * c.ηδ) .+ √3σ .* U5_rand
-    σ₁₁s, σ₂₂s, σ₃₃s = U₀ .- U₁ .+ U₅, σ₁₁s .- 2U₅, U₀ .+ 2U₁
+    σ₁₁s = U₀ .- U₁ .+ U₅
+    σ₂₂s = σ₁₁s .- 2U₅
+    σ₃₃s = U₀ .+ 2U₁
     
     Δδs = Array{typeof(1.0u"ppm")}(undef, N)
     ηδs = Array{Float64}(undef, N)
