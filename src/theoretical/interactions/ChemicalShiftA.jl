@@ -100,7 +100,7 @@ function estimate_static_powder_pattern(
     U1_rand::Vector{Float64},
     U5_rand::Vector{Float64},
     _::FPOT,
-    _::typeof(1.0u"MHz"),
+    ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
     _::typeof(1.0u"T^-1")
 )
@@ -121,7 +121,7 @@ function estimate_static_powder_pattern(
         ηδs[i] = Float64((σᵢ[3] - σᵢ[2]) / Δδs[i])
     end
 
-    return get_ν.(μs, λs, U₀, Δδs, ηδs) ./ ν_step
+    return to_MHz.(get_ν.(μs, λs, U₀, Δδs, ηδs), ν₀) ./ ν_step
 end
 
 """
