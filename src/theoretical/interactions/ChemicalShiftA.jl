@@ -75,13 +75,21 @@ Get the frequency given the Euler angles (μ, λ)
 and the parameters (δᵢₛₒ, Δδ, ηδ)
 
 """
-get_ν(
+function get_ν(
     μ::Float64, 
     λ::Float64, 
     δᵢₛₒ::typeof(1.0u"ppm"), 
-    Δδ::typeof(1.0u"ppm"), 
-    ηδ::Float64
-) = δᵢₛₒ + 0.5 * Δδ * (μ^2 * (3 - ηδ * λ) + ηδ * λ - 1)
+    σ₁₁::typeof(1.0u"ppm"), 
+    σ₂₂::typeof(1.0u"ppm"),
+    σ₃₃::typeof(1.0u"ppm"),
+)
+    σ = σ₁₁, σ₂₂, σ₃₃
+    σ₁ᵢ = argmin(abs.(σ))
+    σ₂ᵢ, σ₃ᵢ = σ₁ᵢ == 1 ? (2, 3) : σ₁ᵢ == 2 ? (1, 3) : (1, 2)
+    @inbounds Δδ = σ[σ₁ᵢ]
+    @inbounds ηδ = Float64(abs(σ[σ₃ᵢ] - σ[σ₂ᵢ]) / Δδ)
+    return δᵢₛₒ + 0.5 * Δδ * (μ^2 * (3 - ηδ * λ) + ηδ * λ - 1)
+end
 
 """
     estimate_static_powder_pattern(c, N, μs, λs)
@@ -104,24 +112,12 @@ function estimate_static_powder_pattern(
     ν_step::typeof(1.0u"MHz"),
     _::typeof(1.0u"T^-1")
 )
-    σ = 0.5 * c.ρσ
-    U₀ = c.δᵢₛₒ .+ √3σ .* U0_rand
-    U₁ = (0.5 * c.Δδ) .+ σ .* U1_rand
-    U₅ = (0.5 * c.Δδ * c.ηδ) .+ √3σ .* U5_rand
-    σ₁₁s = U₀ .- U₁ .+ U₅
-    σ₂₂s = σ₁₁s .- 2U₅
-    σ₃₃s = U₀ .+ 2U₁
-    
-    Δδs = Array{typeof(1.0u"ppm")}(undef, N)
-    ηδs = Array{Float64}(undef, N)
-    for i = 1:N
-        σᵢ = sort([σ₁₁s[i], σ₂₂s[i], σ₃₃s[i]], 
-            by = x -> abs(x - U₀[i]), rev = true)
-        Δδs[i] = σᵢ[1] - U₀[i]
-        ηδs[i] = Float64((σᵢ[3] - σᵢ[2]) / Δδs[i])
-    end
-
-    return to_Hz.(get_ν.(μs, λs, U₀, Δδs, ηδs), ν₀) ./ ν_step
+    σ = (√3 / 2) * c.ρσ
+    U₀ = c.δᵢₛₒ .+ σ .* U0_rand
+    U₁ = (-0.5 * c.Δδ) .- (√3 / 3) * σ .* U1_rand
+    U₅ = (0.5 * c.Δδ * c.ηδ) .- σ .* U5_rand
+    σ₁₁s, σ₂₂s, σ₃₃s = U₁ .+ U₅, U₁ .- U₅, 2U₁
+    return (to_Hz.(get_ν.(μs, λs, U₀, σ₁₁s, σ₂₂s, σ₃₃s), ν₀) .- ν₀) ./ ν_step
 end
 
 """
