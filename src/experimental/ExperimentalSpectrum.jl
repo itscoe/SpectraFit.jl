@@ -99,6 +99,6 @@ function ExperimentalSpectrum(
         ν₀, 
         ν_start, 
         ν_step, 
-        (get_exp_ecdf(Float64.(data[start_i:stop_i, 2]))...,),
+        (get_exp_ecdf(is[start_i:stop_i])...,),
     )
 end
