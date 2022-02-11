@@ -89,8 +89,8 @@ function ExperimentalSpectrum(
     stop_i = findlast(x -> x < to_Hz(range[2], ν₀), νs)
 
     N = stop_i - start_i + 1
-    ν_start = data[start_i, 1]
-    ν_step = (data[stop_i, 1] - ν_start) / N
+    ν_start = νs[start_i]
+    ν_step = (νs[stop_i] - ν_start) / N
     ν_start -= (ν_step / 2)
     
     return ExperimentalSpectrum{N}(
