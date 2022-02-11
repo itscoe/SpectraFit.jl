@@ -67,8 +67,11 @@ function ExperimentalSpectrum(
     if !isdir(file)
         data = map(x -> parse.(Float64, x), 
             split.(readlines(file)[(header + 1):end], delim))
-        data = sortslices(hcat(map(x -> to_Hz(Quantity(x[1], freq_unit), ν₀), 
-            data), map(x -> x[2], data)), dims = 1)
+        νs = map(x -> to_Hz(Quantity(x[1], freq_unit), ν₀), data)
+        is = map(x -> x[2], data)
+        indices = sortperm(νs)
+        νs = νs[indices]
+        is = is[indices]
     else
         dic, data = nmrglue.fileio.bruker.read_pdata("10/pdata/1")
         data = nmrglue.fileio.bruker.scale_pdata(dic, data)
@@ -78,11 +81,12 @@ function ExperimentalSpectrum(
         uc = nmrglue.fileiobase.uc_from_udic(udic)
         ppm_scale = uc.ppm_scale()
         ppm_scale .+= dic["procs"]["OFFSET"] - ppm_scale[1]
-        data = sortslices(hcat(ppm_scale, data), dims = 1)
+        νs = to_Hz.(Quantity.(ppm_scale, freq_unit), ν₀)
+        is = data
     end
 
-    start_i = findfirst(x -> x > to_Hz(range[1], ν₀), data[:, 1])
-    stop_i = findlast(x -> x < to_Hz(range[2], ν₀), data[:, 1])
+    start_i = findfirst(x -> x > to_Hz(range[1], ν₀), νs)
+    stop_i = findlast(x -> x < to_Hz(range[2], ν₀), νs)
 
     N = stop_i - start_i + 1
     ν_start = data[start_i, 1]
