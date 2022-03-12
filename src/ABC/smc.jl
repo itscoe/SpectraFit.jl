@@ -5,14 +5,14 @@ using Distributions, KissABC, Unitful, ProgressMeter
 """
     get_wasserstein(s₀, exp)
 
-Higher order function that creates wasserstein distance function 
-for the form of the spectrum s₀ and the ExperimentalSpectrum exp
+Higher order function that creates wasserstein distance function for the form of the spectrum s₀ and the 
+ExperimentalSpectrum exp
 
 """
 function get_wasserstein(
     s₀::Spectrum{N, M, C}, 
     exp::ExperimentalSpectrum{N2}; 
-    type::Symbol = :static, 
+    exp_type::Symbol = :static, 
     n::Int64 = 1_000_000
 ) where {N, M, C, N2}
     μs = μ(n)
@@ -40,73 +40,41 @@ function get_wasserstein(
         return cumsum(r) ./ length(x)
     end
 
-    @inline function wasserstein_s_1(p::NTuple{Nₚ, Float64}) where {Nₚ}
-        s = Spectrum(s₀, p)
-        powder_pattern = filter(x -> 1 <= x <= N2, 
-            ceil.(Int64, estimate_static_powder_pattern(
-                s.components[1], n, μs, λs, ms, U0_rand, U1_rand, U5_rand, I₀, 
-                ν₀, ν_step, vQ_c, ν_start)))
-        isempty(powder_pattern) && return 1.0
-        th_cdf = get_ecdf(powder_pattern)
-        return sum(abs.(th_cdf .- exp_ecdf)) / N2
-    end
-
-    @inline function wasserstein_s_n(p::NTuple{Nₚ, Float64}) where {Nₚ}
-        s = Spectrum(s₀, p)
-        weights_sum = sum(s.weights)
-        weights_sum > 1.0 && return 1.0
-
-        th_cdf = zeros(length(exp.ν))
-        for c = 1:N
-            weight = c == N ? 1. - weights_sum : s.weights[c]
+    if N == 1
+        return @inline function (p::NTuple{Nₚ, Float64}) where {Nₚ}
+            s = Spectrum(s₀, p)
             powder_pattern = filter(x -> 1 <= x <= N2, 
-                ceil.(Int64, estimate_static_powder_pattern(
-                    s.components[c], n, μs, λs, ms, U0_rand, U1_rand, U5_rand, 
-                    I₀, ν₀, ν_step, vQ_c, ν_start)))
+                ceil.(Int64, estimate_static_powder_pattern(s.components[1], n, 
+                μs, λs, ms, U0_rand, U1_rand, U5_rand, I₀, ν₀, ν_step, vQ_c, 
+                ν_start, exp_type)))
             isempty(powder_pattern) && return 1.0
-            th_cdf .+= weight .* get_ecdf(powder_pattern)
+            th_cdf = get_ecdf(powder_pattern)
+            return sum(abs.(th_cdf .- exp_ecdf)) / N2
         end
-
-        return  sum(abs.(th_cdf .- exp_ecdf)) / N2
-    end
-
-    @inline function wasserstein_m_1(p::NTuple{Nₚ, Float64}) where {Nₚ}
-        s = Spectrum(s₀, p)
-        powder_pattern = filter(x -> 1 <= x <= N2, 
-            ceil.(Int64, estimate_mas_powder_pattern(
-                s.components[1], n, μs, λs, ms, I₀, ν₀, ν_step, ν_start)))
-        isempty(powder_pattern) && return 1.0
-        th_cdf = get_ecdf(powder_pattern)
-        return sum(abs.(th_cdf .- exp_ecdf)) / N2
-    end
-
-    @inline function wasserstein_m_n(p::NTuple{Nₚ, Float64}) where {Nₚ}
-        s = Spectrum(s₀, p)
-        weights_sum = sum(s.weights)
-        weights_sum > 1.0 && return 1.0
-
-        th_cdf = zeros(length(exp.ν))
-        for c = 1:N
-            weight = c == N ? 1. - weights_sum : s.weights[c]
-            powder_pattern = filter(x -> 1 <= x <= N2, 
-                ceil.(Int64, estimate_mas_powder_pattern(
-                    s.components[c], n, μs, λs, ms, I₀, ν₀, ν_step, ν_start)))
-            isempty(powder_pattern) && return 1.0
-            th_cdf .+= weight .* get_ecdf(powder_pattern)
+    else
+        return @inline function (p::NTuple{Nₚ, Float64}) where {Nₚ}
+            s = Spectrum(s₀, p)
+            weights_sum = sum(s.weights)
+            weights_sum > 1.0 && return 1.0
+            th_cdf = zeros(length(exp.ν))
+            for c = 1:N
+                weight = c == N ? 1. - weights_sum : s.weights[c]
+                powder_pattern = filter(x -> 1 <= x <= N2, 
+                    ceil.(Int64, estimate_powder_pattern(s.components[c], n, μs,
+                    λs, ms, U0_rand, U1_rand, U5_rand, I₀, ν₀, ν_step, vQ_c, 
+                    ν_start, exp_type)))
+                isempty(powder_pattern) && return 1.0
+                th_cdf .+= weight .* get_ecdf(powder_pattern)
+            end
+            return  sum(abs.(th_cdf .- exp_ecdf)) / N2
         end
-
-        return  sum(abs.(th_cdf .- exp_ecdf)) / N2
     end
-
-    return type == :static ? (N == 1 ? wasserstein_s_1 : wasserstein_s_n) : 
-                             (N == 1 ? wasserstein_m_1 : wasserstein_m_n)
 end 
 
 """
     abc_smc(s₀, exp)
 
-Run the approximate Bayesian computations through sequential 
-Monte Carlo given the experimental data and the spectrum of 
+Run the approximate Bayesian computations through sequential Monte Carlo given the experimental data and the spectrum of 
 the functional form for the model selected
 
 """
@@ -145,9 +113,8 @@ the functional form for the model selected
 """
     abc_smc(s₀, exp)
 
-Run the approximate Bayesian computations through sequential 
-Monte Carlo given the experimental data (in a series) and the 
-spectrum of the functional form for the model selected
+Run the approximate Bayesian computations through sequential Monte Carlo given the experimental data (in a series) and 
+the spectrum of the functional form for the model selected
 
 """
 @inline abc_smc(

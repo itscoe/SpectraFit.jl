@@ -1,8 +1,7 @@
 """
     Dipolar
 
-Dipolar broadening is currently represented as Gaussian broadening, with σ as 
-the standard deviation (and mean of zero)
+Dipolar broadening is currently represented as Gaussian broadening, with σ as the standard deviation (and mean of zero)
 
 # Fields
 - `σ`
@@ -54,19 +53,21 @@ Dipolar(σ::Float64) = Dipolar(Quantity(σ, u"MHz"))
 """
     estimate_static_powder_pattern(d, N, exp)
 
-Get the estimated static powder pattern (a vector of N frequencies) given the 
-dipolar interaction
+Get the estimated static powder pattern (a vector of N frequencies) given the dipolar interaction
 
 """
-estimate_static_powder_pattern(d::Dipolar, N::Int, _::ExperimentalSpectrum) = 
-    d.σ * randn(N)
-
-"""
-    estimate_mas_powder_pattern(d, N, exp)
-
-Get the estimated MAS powder pattern (a vector of N frequencies) given the 
-dipolar interaction
-
-"""
-estimate_mas_powder_pattern(d::Dipolar, N::Int, _::ExperimentalSpectrum) = 
-    d.σ * randn(N)
+estimate_powder_pattern(
+    d::Dipolar, 
+    N::Int64,
+    _::Vector{Float64}, 
+    _::Vector{Float64},
+    _::Vector{FPOT},
+    _::Vector{Float64},
+    _::Vector{Float64},
+    _::Vector{Float64},
+    _::FPOT,
+    _::typeof(1.0u"MHz"),
+    ν_step::typeof(1.0u"MHz"),
+    _::typeof(1.0u"T^-1"),
+    _::Symbol
+) = (d.σ / ν_step) * randn(N) 

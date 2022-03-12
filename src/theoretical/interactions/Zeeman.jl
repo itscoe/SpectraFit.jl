@@ -25,17 +25,13 @@ Get the labels of each parameter for plotting purposes
 labels(_::Zeeman) = Vector{String}()
 
 """
-    estimate_static_powder_pattern(z, N, exp)
+    estimate_powder_pattern
 
-Get the estimated static powder pattern (a vector of N frequencies) given the 
-Zeeman interaction and the ExperimentalSpectrum
+Get the estimated static powder pattern (a vector of N frequencies) given the Zeeman interaction and the 
+ExperimentalSpectrum
 
 """
-@inline estimate_static_powder_pattern(_::Zeeman, N::Int, 
-    exp::ExperimentalSpectrum) = 
-    (exp.ν₀ / exp.ν_step) .* ones(N)
-
-@inline estimate_static_powder_pattern(
+@inline estimate_powder_pattern(
     _::Zeeman,
     N::Int64,
     _::Vector{Float64}, 
@@ -47,28 +43,6 @@ Zeeman interaction and the ExperimentalSpectrum
     _::FPOT,
     ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    _::typeof(1.0u"T^-1")
-) = (ν₀ / ν_step) .* ones(N)
-
-"""
-    estimate_mas_powder_pattern(z, N, exp)
-
-Get the estimated MAS powder pattern (a vector of N frequencies) given the 
-Zeeman interaction and the ExperimentalSpectrum
-
-"""
-@inline estimate_mas_powder_pattern(_::Zeeman, N::Int, 
-    exp::ExperimentalSpectrum) = 
-    (exp.ν₀ / exp.ν_step) .* ones(N)
-
-@inline estimate_mas_powder_pattern(
-    _::Zeeman, 
-    N::Int, 
-    _::Vector{Float64}, 
-    _::Vector{Float64},
-    _::Vector{FPOT},
-    _::FPOT,
-    ν₀::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    _::typeof(1.0u"T^-1"),
+    _::Symbol
 ) = (ν₀ / ν_step) .* ones(N)

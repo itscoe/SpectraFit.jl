@@ -71,8 +71,7 @@ ChemicalShiftA(δᵢₛₒ::Float64, Δδ::Float64, ηδ::Float64, ρσ::Float64
 """
     get_ν(μ, λ, δᵢₛₒ, Δδ, ηδ)
 
-Get the frequency given the Euler angles (μ, λ) 
-and the parameters (δᵢₛₒ, Δδ, ηδ)
+Get the frequency given the Euler angles (μ, λ) and the parameters (δᵢₛₒ, Δδ, ηδ)
 
 """
 function get_ν(
@@ -92,15 +91,15 @@ function get_ν(
 end
 
 """
-    estimate_static_powder_pattern(c, N, μs, λs)
+    estimate_powder_pattern(c, N, μs, λs)
 
-Get the estimated powder pattern (a vector of N frequencies) given the CSA 
-interaction and vectors of the Euler angles (μs, λs)
+Get the estimated powder pattern (a vector of N frequencies) given the CSA interaction and vectors of the Euler angles 
+(μs, λs)
 
 """
-function estimate_static_powder_pattern(
+function estimate_powder_pattern(
     c::ChemicalShiftA, 
-    N::Int64,
+    _::Int64,
     μs::Vector{Float64}, 
     λs::Vector{Float64},
     _::Vector{FPOT},
@@ -110,7 +109,8 @@ function estimate_static_powder_pattern(
     _::FPOT,
     ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    _::typeof(1.0u"T^-1")
+    _::typeof(1.0u"T^-1"),
+    _::Symbol
 )
     σ = (√3 / 2) * c.ρσ
     U₀ = c.δᵢₛₒ .+ σ .* U0_rand
@@ -119,16 +119,3 @@ function estimate_static_powder_pattern(
     σ₁₁s, σ₂₂s, σ₃₃s = U₁ .+ U₅, U₁ .- U₅, 2U₁
     return (to_Hz.(get_ν.(μs, λs, U₀, σ₁₁s, σ₂₂s, σ₃₃s), ν₀) .- ν₀) ./ ν_step
 end
-
-"""
-    estimate_static_powder_pattern(c, N, exp)
-
-Get the estimated powder pattern (a vector of N frequencies) 
-given the CSA interaction
-
-"""
-@inline estimate_static_powder_pattern(
-    c::ChemicalShiftA, 
-    N::Int, 
-    exp::ExperimentalSpectrum
-) = to_Hz.(estimate_static_powder_pattern(c, N, μ(N), λ(N)), exp.ν₀) .- exp.ν₀

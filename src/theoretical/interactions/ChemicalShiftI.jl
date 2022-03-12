@@ -39,8 +39,7 @@ ChemicalShiftI(c::Float64) = ChemicalShiftI(Quantity(c, u"MHz"))
 """
     prior(csi, i)
 
-Get the prior distribution of the ith parameter of the isotropic chemical shift 
-interaction
+Get the prior distribution of the ith parameter of the isotropic chemical shift interaction
 
 """
 prior(_::ChemicalShiftI, _::Int) = Uniform(-1, 1)
@@ -62,19 +61,13 @@ Get the frequency given the parameters, δᵢₛₒ
 get_ν(δᵢₛₒ::Float64) = δᵢₛₒ
 
 """
-    estimate_static_powder_pattern(c, N, exp)
+    estimate_powder_pattern(c, N, exp)
 
-Get the estimated static powder pattern (a vector of N frequencies) given the 
-isotropic chemical shift interaction
+Get the estimated powder pattern (a vector of N frequencies) given the isotropic chemical shift interaction
 
 """
-@inline estimate_static_powder_pattern(
-    c::ChemicalShiftI, 
-    N::Int, 
-    exp::ExperimentalSpectrum
-) = (c.δᵢₛₒ / exp.ν_step) .* ones(N)
 
-@inline estimate_static_powder_pattern(
+@inline estimate_powder_pattern(
     c::ChemicalShiftI,
     N::Int64,
     _::Vector{Float64}, 
@@ -86,30 +79,6 @@ isotropic chemical shift interaction
     _::FPOT,
     _::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    _::typeof(1.0u"T^-1")
-) = (c.δᵢₛₒ / ν_step) .* ones(N)
-
-"""
-    estimate_mas_powder_pattern(c, N, exp)
-
-Get the estimated MAS powder pattern (a vector of N frequencies) given the 
-isotropic chemical shift interaction
-
-"""
-@inline estimate_mas_powder_pattern(
-    c::ChemicalShiftI, 
-    N::Int, 
-    exp::ExperimentalSpectrum
-) = (c.δᵢₛₒ / exp.ν_step) .* ones(N)
-
-@inline estimate_mas_powder_pattern(
-    c::ChemicalShiftI, 
-    N::Int, 
-    _::Vector{Float64}, 
-    _::Vector{Float64},
-    _::Vector{FPOT},
-    _::FPOT,
-    _::typeof(1.0u"MHz"),
-    ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
+    _::typeof(1.0u"T^-1"),
+    _::Symbol
 ) = (c.δᵢₛₒ / ν_step) .* ones(N)

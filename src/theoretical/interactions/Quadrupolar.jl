@@ -3,8 +3,8 @@ using Unitful, Distributions
 """
     Quadrupolar
 
-A structure for holding information about the quadrupolar parameters of the NMR
-Spectrum utilizing the Extended Czjzek Model (ECM) for parameterization
+A structure for holding information about the quadrupolar parameters of the NMR Spectrum utilizing the Extended Czjzek 
+Model (ECM) for parameterization
 
 # Fields
 - `qcc`
@@ -64,12 +64,10 @@ Get the number of free parameters of this interaction (3)
 """
     get_ν1(qcc, η, μ, λ, m, I, ν0)
 
-Compute the 1st order component of ν with the third order perturbation 
-described in
+Compute the 1st order component of ν with the third order perturbation described in
 
->Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns
->    for integer spin nuclei in the presence of asymmetric quadrupole effects.
->    Journal of Magnetic Resonance (1969), 27(1), 121-132.
+>Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns for integer spin nuclei in the presence of
+>asymmetric quadrupole effects. Journal of Magnetic Resonance (1969), 27(1), 121-132.
 
 # Arguments
 - `qcc::typeof(1.0u"MHz")`: the quantum coupling constant
@@ -94,12 +92,10 @@ end
 """
     get_ν2(qcc, η, μ, λ, m, I, ν0)
 
-Compute the 2nd order component of ν with the third order perturbation 
-described in
+Compute the 2nd order component of ν with the third order perturbation described in
 
->Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns
->    for integer spin nuclei in the presence of asymmetric quadrupole effects.
->    Journal of Magnetic Resonance (1969), 27(1), 121-132.
+>Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns for integer spin nuclei in the presence of
+>asymmetric quadrupole effects. Journal of Magnetic Resonance (1969), 27(1), 121-132.
 
 # Arguments
 - `qcc::typeof(1.0u"MHz")`: the quantum coupling constant
@@ -134,9 +130,8 @@ end
 Compute the 3rd order component of ν with the third order perturbation 
 described in
 
->Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns
->    for integer spin nuclei in the presence of asymmetric quadrupole effects.
->    Journal of Magnetic Resonance (1969), 27(1), 121-132.
+>Jellison Jr, G. E., Feller, S. A., & Bray, P. J. (1977). NMR powder patterns for integer spin nuclei in the presence of
+>asymmetric quadrupole effects. Journal of Magnetic Resonance (1969), 27(1), 121-132.
 
 # Arguments
 - `qcc::typeof(1.0u"MHz")`: the quantum coupling constant
@@ -191,14 +186,13 @@ end
 end
 
 """
-    estimate_static_powder_pattern(q, N, μs, λs, isotope, ν₀)
+    estimate_powder_pattern
 
-Get the estimated static powder pattern (a vector of N frequencies) given the 
-quadrupolar interaction, vectors of the Euler angles, the isotope, 
-and the Larmor frequency
+Get the estimated powder pattern (a vector of N frequencies) given the quadrupolar interaction, vectors of the Euler 
+angles, the isotope, and the Larmor frequency
 
 """
-function estimate_static_powder_pattern(
+function estimate_powder_pattern(
     q::Quadrupolar, 
     _::Int64,
     μs::Vector{Float64}, 
@@ -210,61 +204,18 @@ function estimate_static_powder_pattern(
     I₀::FPOT,
     ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    vQ_c::typeof(1.0u"T^-1")
+    vQ_c::typeof(1.0u"T^-1"),
+    exp_type::Symbol
 )
     U1 = q.Vzz .+ q.ρσ .* U1_rand
     νQs = (vQ_c .* abs.(U1)) .|> u"MHz"
     ηs = (q.ρσ .* U5_rand .- q.η * q.Vzz) ./ U1
-    return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
-           get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
-           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
-end
-
-function estimate_static_powder_pattern(
-    q::Quadrupolar, 
-    N::Int, 
-    exp::ExperimentalSpectrum
-)
-    μs = μ(N)
-    λs = λ(N)
-    I₀ = I(exp.isotope)
-    ν₀ = exp.ν₀
-    ν_step = exp.ν_step
-    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
-    ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
-    U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
-    νQ_c = 2e * 0.0845e-28u"m^2" / (2h/3 * Float64(I₀ * (2 * I₀ - 1)))
-    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
-    ηs = (-q.η * q.Vzz .+ q.ρσ .* randn(N)) ./ 2U1
-    return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
-           get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
-           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
-end
-
-"""
-    estimate_mas_powder_pattern(q, N, μs, λs, isotope, ν₀)
-
-Get the estimated static powder pattern (a vector of N frequencies) given the 
-quadrupolar interaction, vectors of the Euler angles, the isotope, 
-and the Larmor frequency
-
-"""
-function estimate_mas_powder_pattern(
-    q::Quadrupolar, 
-    N::Int, 
-    exp::ExperimentalSpectrum
-)
-    μs = μ(N)
-    λs = λ(N)
-    I₀ = I(exp.isotope)
-    ν₀ = exp.ν₀
-    ν_step = exp.ν_step
-    m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
-    ms = get_m.(rand(1:Int64(sum(m_vec)), N), Ref(m_vec), I₀)
-    U1 = (q.Vzz / 2) .+ (q.ρσ / 2) .* randn(N)
-    νQ_c = (2e * 0.0845e-28u"m^2" / (2h/3 * I₀ * (2 * I₀ - 1)))
-    νQs = abs.(U1 .* νQ_c) .|> u"MHz"
-    ηs = -√3 * (q.η * q.Vzz / 2√3) ./ U1 .+ (q.ρσ / 2) .* randn(N) ./ U1
-    return get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
-           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
+    if exp_type == :mas
+        return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
+            get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
+            get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
+    else
+        return get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
+            get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
+    end
 end
