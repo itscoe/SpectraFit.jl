@@ -81,10 +81,10 @@ the functional form for the model selected
 @inline abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSpectrum; 
-    type::Symbol = :static,
+    exp_type::Symbol = :static,
     prior::KissABC.Factored = prior(s₀),
     n::Int64 = 1_000_000,
-    cost::Function = get_wasserstein(s₀, exp, type = type, n = n),
+    cost::Function = get_wasserstein(s₀, exp, exp_type = exp_type, n = n),
     parallel::Bool = false,
     nparticles::Int64 = 100,
     M::Int64 = 1,
@@ -120,7 +120,7 @@ the spectrum of the functional form for the model selected
 @inline abc_smc(
     s₀::Spectrum, 
     exp::ExperimentalSeries; 
-    type::Symbol = :static,
+    exp_type::Symbol = :static,
     n::Int64 = 1_000_000,
     prior::KissABC.Factored = prior(s₀),
     parallel::Bool = false,
@@ -137,7 +137,7 @@ the spectrum of the functional form for the model selected
     s₀, 
     x, 
     prior = prior,
-    type = type,
+    exp_type = exp_type,
     n = n,
     parallel = parallel,
     nparticles = nparticles,

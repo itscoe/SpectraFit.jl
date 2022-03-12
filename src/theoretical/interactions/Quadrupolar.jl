@@ -198,7 +198,7 @@ function estimate_powder_pattern(
     μs::Vector{Float64}, 
     λs::Vector{Float64},
     ms::Vector{FPOT},
-    U0_rand::Vector{Float64},
+    _::Vector{Float64},
     U1_rand::Vector{Float64},
     U5_rand::Vector{Float64},
     I₀::FPOT,
