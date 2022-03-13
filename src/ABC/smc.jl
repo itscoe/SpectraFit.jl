@@ -44,7 +44,7 @@ function get_wasserstein(
         return @inline function (p::NTuple{Nₚ, Float64}) where {Nₚ}
             s = Spectrum(s₀, p)
             powder_pattern = filter(x -> 1 <= x <= N2, 
-                ceil.(Int64, estimate_static_powder_pattern(s.components[1], n, 
+                ceil.(Int64, estimate_powder_pattern(s.components[1], n, 
                 μs, λs, ms, U0_rand, U1_rand, U5_rand, I₀, ν₀, ν_step, vQ_c, 
                 ν_start, exp_type)))
             isempty(powder_pattern) && return 1.0

@@ -87,21 +87,7 @@ Get the number of free parameters in the Spectrum
 Base.length(s::Spectrum{N, M, C}) where {N, M, C} = 
     (mapreduce(length, +, s.components[1]) + 1)N - 1
 
-"""
-    estimate_static_powder_pattern(c, N, exp)
-
-Get the estimate powder pattern (a vector of N frequencies), given the 
-component, and the ExperimentalSpectrum
-
-"""
-estimate_static_powder_pattern(
-    c::Tuple{Vararg{NMRInteraction}}, 
-    N::Int, 
-    exp::ExperimentalSpectrum
-) = mapreduce(i -> estimate_static_powder_pattern(i, N, exp), .+, c) .-
-    (ν_start / ν_step)
-
-estimate_static_powder_pattern(
+estimate_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int64,
     μs::Vector{Float64}, 
@@ -114,29 +100,11 @@ estimate_static_powder_pattern(
     ν₀::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
     vQ_c::typeof(1.0u"T^-1"),
-    ν_start::typeof(1.0u"MHz")
+    ν_start::typeof(1.0u"MHz"),
+    exp_type::Symbol
 ) = mapreduce(i -> 
-    estimate_static_powder_pattern(i, N, μs, λs, ms, U0_rand, U1_rand, U5_rand, 
-    I₀, ν₀, ν_step, vQ_c), .+, c) .- (ν_start / ν_step)
-
-estimate_mas_powder_pattern(
-    c::Tuple{Vararg{NMRInteraction}}, 
-    N::Int, 
-    exp::ExperimentalSpectrum
-) = mapreduce(i -> 
-    estimate_mas_powder_pattern(i, N, exp), .+, c) .- (ν_start / ν_step)
-
-estimate_mas_powder_pattern(
-    c::Tuple{Vararg{NMRInteraction}}, 
-    N::Int, 
-    μs::Vector{Float64}, 
-    λs::Vector{Float64},
-    ms::Vector{FPOT},
-    I₀::FPOT,
-    ν₀::typeof(1.0u"MHz")
-) = mapreduce(i -> 
-    estimate_mas_powder_pattern(i, N, μs, λs, ms, I₀, ν₀, ν_step, ν_start), 
-    .+, c) .- (ν_start / ν_step)
+    estimate_powder_pattern(i, N, μs, λs, ms, U0_rand, U1_rand, U5_rand, 
+    I₀, ν₀, ν_step, vQ_c, exp_type), .+, c) .- (ν_start / ν_step)
 
 """
     labels(s)
