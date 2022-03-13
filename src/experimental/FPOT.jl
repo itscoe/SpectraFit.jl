@@ -40,7 +40,7 @@ FPOT(n::Int) = FPOT(Int16(n), 0x0000)
 @inline Base.:*(b::Int64, a::FPOT) = a * b
 
 # Division
-@inline Base.:div(a::FPOT, ::Val{3}) = FPOT(a.n ÷ 3, a.d)
+@inline Base.:÷(a::FPOT, b::Int64) = FPOT(a.n ÷ b, a.d)
 
 # Exponentiation
 @inline Base.:^(a::FPOT, ::Val{2}) = FPOT(a.n * a.n, a.d + a.d)
