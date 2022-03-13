@@ -207,9 +207,9 @@ function estimate_powder_pattern(
     vQ_c::typeof(1.0u"T^-1"),
     exp_type::Symbol
 )
-    U1 = q.Vzz .+ q.ρσ .* U1_rand
+    U1 = 0.5 * (q.Vzz .+ q.ρσ .* U1_rand)
     νQs = (vQ_c .* abs.(U1)) .|> u"MHz"
-    ηs = (q.ρσ .* U5_rand .- q.η * q.Vzz) ./ U1
+    ηs = (q.ρσ .* U5_rand .- q.η * q.Vzz) ./ 2U1
     if exp_type == :mas
         return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
             get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
