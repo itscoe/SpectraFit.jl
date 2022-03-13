@@ -178,7 +178,7 @@ end
     m_vec = map(m -> I * (I + 1) - m * (m - 1), (-I + 1):I)
     j = 2I 
     i <= j && return 1 - I
-    for k = FPOT(2, 0x0000):(2 * I - 1)
+    for k = 2:Int64(2 * I - 1)
         @inbounds j += m_vec[k]
         i <= j && return k - I
     end
