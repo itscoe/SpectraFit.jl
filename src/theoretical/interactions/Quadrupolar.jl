@@ -172,7 +172,7 @@ end
 
 # Derived from Sivaraman, R. "Sum of powers of natural numbers." AUT AUT 
 # Research Journal 11, no. 4 (2020): 353-359.
-@inline m_sum(I::FPOT) = Int64(2I * (I ^ 2 + I - 1) + (I ^ 3 - I) ÷ 3)
+@inline Base.:÷(a::FPOT, b::Int64) = FPOT(a.n ÷ b, a.d)
 
 @inline function get_m(i::Int64, I::FPOT)
     m_vec = map(m -> I * (I + 1) - m * (m - 1), (-I + 1):I)
