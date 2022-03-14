@@ -208,7 +208,7 @@ function estimate_static_powder_pattern(
     ν_start::typeof(1.0u"MHz")
 )
     cQ_m = q.Vzz .+ 2q.ρσ .* u1
-    νQ_c = 2e * 0.0845e-28u"m^2" / (2h/3 * Float64(I₀ * (2 * I₀ - 1)))
+    νQ_c = 3e * 0.0845e-28u"m^2" / (h * Float64(2 * I₀ * (2 * I₀ - 1)))
     νQs = abs.(cQ_m .* νQ_c) .|> u"MHz"
     ηs = (q.η .* q.Vzz .- 2√3 .* q.ρσ .* u5) ./ cQ_m
     return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
