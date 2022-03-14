@@ -23,6 +23,10 @@ function get_wasserstein(
     ν_step = exp.ν_step
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀)
+    u0 = randn(n)
+    u1 = randn(n)
+    u5 = randn(n)
+    
     exp_ecdf = exp.ecdf
 
     function get_ecdf(x::Array{Int64})
@@ -38,7 +42,8 @@ function get_wasserstein(
         s = Spectrum(s₀, p)
         powder_pattern = filter(x -> 1 <= x <= N2, 
             ceil.(Int64, estimate_static_powder_pattern(
-                s.components[1], n, μs, λs, ms, I₀, ν₀, ν_step, ν_start)))
+                s.components[1], n, μs, λs, ms, u0, u1, u5, I₀, ν₀, ν_step, 
+                ν_start)))
         isempty(powder_pattern) && return 1.0
         th_cdf = get_ecdf(powder_pattern)
         return sum(abs.(th_cdf .- exp_ecdf)) / N2
