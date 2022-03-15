@@ -185,6 +185,41 @@ end
     return length(m_vec) - I
 end
 
+coef_0_1(νQ_c, ν_step, m, μ) = (νQ_c / 2ν_step) * (m - 1 / 2) * (1 - 3μ^2)
+coef_1_1(νQ_c, ν_step, m, μ, λ) = (νQ_c / 2ν_step) * (m - 1 / 2) * λ * (μ^2 - 1)
+coef_0_2(νQ_c, ν_step, ν₀, I, m, μ) = (νQ_c^2 / (8ν₀ * ν_step)) * 
+    ((I + 3/2) * (I - 3/2) * (1 / 2 - 5μ^2 + 9μ^2 / 2) - 
+    (m- 1 / 2)^2 * (3 / 2 - 27μ^2 + 51μ^4 / 2))
+coef_1_2(νQ_c, ν_step, ν₀, I, m, μ, λ) = (νQ_c^2 / (72ν₀ * ν_step)) * 
+    ((I + 3/2) * (I - 3/2) * (3λ*(1 + 8μ^2 - 9μ^4)) - 
+    (m- 1 / 2)^2 * (9λ*(1 + 16μ^2 - 17μ^4)))
+coef_2_2(νQ_c, ν_step, ν₀, I, m, μ, λ) = (νQ_c^2 / (72ν₀ * ν_step)) * 
+    ((I + 3/2) * (I - 3/2) * ((9λ^2 / 2) * (1 - 2μ^2 + μ^4) + 6μ^2 - 4) - 
+    (m- 1 / 2)^2 * ((51λ^2 / 2) * (1 - 2μ^2 + μ^4) + 30μ^2 - 24))
+coef_0_3(νQ_c, ν_step, ν₀, I, m, μ) = (νQ_c^3 / (144ν₀^2 * ν_step)) * (
+    (12I * (I + 1) - 40m * (m - 1) - 27) * (9μ^2 - 36μ^4 + 27μ^6) + 
+    (3I / 2 * (I + 1) - 5m / 2 * (m - 1) - 3) * (-9 + 45μ^2 - 63μ^4 + 27μ^6) + 
+    (8I * (I + 1) - 20m * (m - 1) - 15) * (27μ^2 - 54μ^4 + 27μ^6))
+coef_1_3(νQ_c, ν_step, ν₀, I, m, μ, λ) = (νQ_c^3 / (144ν₀^2 * ν_step)) * (
+    (12I * (I + 1) - 40m * (m - 1) - 27) * λ * (-15μ^2 + 42μ^4 - 27μ^6) + 
+    (3I / 2 * (I + 1) - 5m / 2 * (m - 1) - 3) * λ * (3 - 9μ^2 + 33μ^4 - 27μ^6) + 
+    (8I * (I + 1) - 20m * (m - 1) - 15) * λ * (-27μ^2 + 36μ^4 - 27μ^6))
+coef_2_3(νQ_c, ν_step, ν₀, I, m, μ, λ) = (νQ_c^3 / (144ν₀^2 * ν_step)) * (
+    (12I * (I + 1) - 40m * (m - 1) - 27) * 
+        (λ^2 * (-1 + 11μ^2 - 18μ^4 + 9μ^6) + 3μ^4 - 4μ^2 + 1) + 
+    (3I / 2 * (I + 1) - 5m / 2 * (m - 1) - 3) * 
+        (λ^2 * (5 - μ^2 + 12μ^4 + 9μ^6) + 12μ^4 - 4μ^2) + 
+    (8I * (I + 1) - 20m * (m - 1) - 15) * 
+        (λ^2 * (3 + 3μ^2 - 15μ^4 + 9μ^6) + 9μ^4 - 6μ^2 - 3))
+coef_3_3(νQ_c, ν_step, ν₀, I, m, μ, λ) = (νQ_c^3 / (144ν₀^2 * ν_step)) * (
+    (12I * (I + 1) - 40m * (m - 1) - 27) * 
+        (λ^3 * (1 - 3μ^2 + 3μ^4 - μ^6) + λ * (-4μ^4 + 4μ^2 - 1)) + 
+    (3I / 2 * (I + 1) - 5m / 2 * (m - 1) - 3) * 
+        (λ^3 * (1 - 3μ^2 + 3μ^4 - μ^6) + λ * (-4μ^4 + 4μ^2)) + 
+    (8I * (I + 1) - 20m * (m - 1) - 15) * 
+        (λ^3 * (1 - 3μ^2 - 3μ^4 - μ^6) + λ * (-3μ^4 + 4μ^2 - 1)))
+
+
 """
     estimate_static_powder_pattern(q, N, μs, λs, isotope, ν₀)
 
@@ -193,27 +228,29 @@ quadrupolar interaction, vectors of the Euler angles, the isotope,
 and the Larmor frequency
 
 """
+
 function estimate_static_powder_pattern(
     q::Quadrupolar, 
     N::Int, 
-    μs::Vector{Float64}, 
-    λs::Vector{Float64},
-    ms::Vector{FPOT},
-    u0::Vector{Float64}, 
+    coefs,
+    _::Vector{Float64}, 
     u1::Vector{Float64},
     u5::Vector{Float64},
-    I₀::FPOT,
-    ν₀::typeof(1.0u"MHz"),
+    _::typeof(1.0u"MHz"),
     ν_step::typeof(1.0u"MHz"),
-    ν_start::typeof(1.0u"MHz")
 )
     cQ_m = q.Vzz .+ 2q.ρσ .* u1
-    νQ_c = 3e * 0.0845e-28u"m^2" / (h * Float64(2 * I₀ * (2 * I₀ - 1)))
-    νQs = abs.(cQ_m .* νQ_c) .|> u"MHz"
+    νQs = abs.(cQ_m)
     ηs = (q.η .* q.Vzz .- 2√3 .* q.ρσ .* u5) ./ cQ_m
-    return get_ν1.(νQs, ηs, μs, λs, ms, ν_step) .+ 
-           get_ν2.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step) .+
-           get_ν3.(νQs, ηs, μs, λs, ms, I₀, ν₀, ν_step)
+    
+    νQ2s, η2s = νQs .* νQs, ηs .* ηs
+    νQ3s, η3s = νQ2s .* νQs, η2s .* ηs
+
+    return νQs .* coefs[1, :] .+ νQs .* ηs .* coefs[2, :] .+ 
+        νQ2s .* coefs[3, :] .+ νQ2s .* ηs .* coefs[4, :] .+ 
+        νQ2s .* η2s .* coefs[5, :] .+ νQ3s .* coefs[6, :] .+ 
+        νQ3s .* ηs .* coefs[7, :] .+ νQ3s .* η2s .* coefs[8, :] .+ 
+        νQ3s .* η3s .* coefs[9, :]
 end
 
 function estimate_static_powder_pattern(

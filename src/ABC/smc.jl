@@ -23,6 +23,20 @@ function get_wasserstein(
     ν_step = exp.ν_step
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀)
+    
+    νQ_c = abs(3e * 0.0845e-28u"m^2" / (h * Float64(2 * I₀ * (2 * I₀ - 1))))
+    coefs = vcat(
+        coef_0_1.(νQ_c, ν_step, ms, μs)',
+        coef_1_1.(νQ_c, ν_step, ms, μs, λs)',
+        coef_0_2.(νQ_c, ν_step, ν₀, I₀, ms, μs)',
+        coef_1_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs)',
+        coef_2_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs)',
+        coef_0_3.(νQ_c, ν_step, ν₀, I₀, ms, μs)',
+        coef_1_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs)',
+        coef_2_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs)',
+        coef_3_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs)',
+    )
+
     u0 = randn(n)
     u1 = randn(n)
     u5 = randn(n)
@@ -42,8 +56,7 @@ function get_wasserstein(
         s = Spectrum(s₀, p)
         powder_pattern = filter(x -> 1 <= x <= N2, 
             ceil.(Int64, estimate_static_powder_pattern(
-                s.components[1], n, μs, λs, ms, u0, u1, u5, I₀, ν₀, ν_step, 
-                ν_start)))
+                s.components[1], n, coefs, u0, u1, u5, ν₀, ν_step, ν_start)))
         isempty(powder_pattern) && return 1.0
         th_cdf = get_ecdf(powder_pattern)
         return sum(abs.(th_cdf .- exp_ecdf)) / N2
