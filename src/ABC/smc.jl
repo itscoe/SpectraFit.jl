@@ -27,7 +27,7 @@ function get_wasserstein(
 
     c01 = coef_0_1.(νQ_c, ν_step, ms, μs) .|> (u"m^2*ZV^-1")
     c11 = coef_1_1.(νQ_c, ν_step, ms, μs, λs) .|> (u"m^2*ZV^-1")
-    c02 = coef_0_2(νQ_c, ν_step, ν₀, I₀, ms, μs) .|> (u"MHz^ m^2*ZV^-1")^2
+    c02 = coef_0_2.(νQ_c, ν_step, ν₀, I₀, ms, μs) .|> (u"MHz^ m^2*ZV^-1")^2
     c12 = coef_1_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> (u"m^2*ZV^-1")^2
     c22 = coef_2_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> (u"m^2*ZV^-1")^2
     c03 = coef_0_3.(νQ_c, ν_step, ν₀, I₀, ms, μs) .|> (u"m^2*ZV^-1")^3
