@@ -251,9 +251,10 @@ function estimate_static_powder_pattern(
     νQs = abs.(cQ_m)
     ηs = (q.η .* q.Vzz .- 2√3 .* q.ρσ .* u5) ./ cQ_m
 
-    return νQs .* (c01 .+ ηs .* c11 .+ 
-        νQs .* (c02 .+ ηs .* (c12 .+ ηs .* c22) .+ 
-        νQs .* (c03 .+ ηs .* (c13 .+ ηs .* (c23 .+ ηs .* c33)))))
+    @inbounds return map(i -> νQs[i] * (c01[i] + ηs[i] * c11[i] + 
+        νQs[i] * (c02[i] + ηs[i] * (c12[i] + ηs[i] * c22[i]) + 
+        νQs[i] * (c03[i] + ηs[i] * (c13[i] + ηs[i] * (c23[i] + ηs[i] * c33[i])))
+        )), 1:N)
 end
 
 function estimate_static_powder_pattern(
