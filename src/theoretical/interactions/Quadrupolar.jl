@@ -231,7 +231,7 @@ and the Larmor frequency
 
 function estimate_static_powder_pattern(
     q::Quadrupolar, 
-    _::Int, 
+    N::Int, 
     c01::Vector{typeof(Quantity(1.0, (u"m^2*ZV^-1")))},
     c11::Vector{typeof(Quantity(1.0, (u"m^2*ZV^-1")))},
     c02::Vector{typeof(Quantity(1.0, (u"m^2*ZV^-1")^2))},
