@@ -15,12 +15,13 @@ function get_wasserstein(
 ) where {N, M, C, N2}
     μs = μ(n)
     λs = λ(n)
-    I₀ = Float64(I(exp.isotope))
+    I₀ = I(exp.isotope)
     ν₀ = exp.ν₀
     ν_start = exp.ν_start
     ν_step = exp.ν_step
     m_vec = map(m -> I₀ * (I₀ + 1) - m * (m - 1), Int64(-I₀ + 1):Int64(I₀))
     ms = Float64.(get_m.(rand(1:Int64(sum(m_vec)), n), Ref(m_vec), I₀))
+    I₀ = Float64(I₀)
     
     νQ_c = abs(3e * 0.0845e-28u"m^2" / (h * Float64(2 * I₀ * (2 * I₀ - 1))))
 
