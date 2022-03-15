@@ -26,15 +26,15 @@ function get_wasserstein(
     
     νQ_c = abs(3e * 0.0845e-28u"m^2" / (h * Float64(2 * I₀ * (2 * I₀ - 1))))
 
-    c01 = coef_0_1.(νQ_c, ν_step, ms, μs) .|> (u"MHz m^2 ZV^-1")
-    c11 = coef_1_1.(νQ_c, ν_step, ms, μs, λs) .|> (u"MHz m^2 ZV^-1")
-    c02 = coef_0_2(νQ_c, ν_step, ν₀, I₀, ms, μs) .|> √(u"MHz^ m^2 ZV^-1")
-    c12 = coef_1_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> √(u"MHz m^2 ZV^-1")
-    c22 = coef_2_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> √(u"MHz m^2 ZV^-1")
-    c03 = coef_0_3.(νQ_c, ν_step, ν₀, I₀, ms, μs) .|> ∛(u"MHz m^2 ZV^-1")
-    c13 = coef_1_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> ∛(u"MHz m^2 ZV^-1")
-    c23 = coef_2_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> ∛(u"MHz m^2 ZV^-1")
-    c33 = coef_3_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> ∛(u"MHz m^2 ZV^-1")
+    c01 = coef_0_1.(νQ_c, ν_step, ms, μs) .|> (u"m^2*ZV^-1")
+    c11 = coef_1_1.(νQ_c, ν_step, ms, μs, λs) .|> (u"m^2*ZV^-1")
+    c02 = coef_0_2(νQ_c, ν_step, ν₀, I₀, ms, μs) .|> (u"MHz^ m^2 ZV^-1")^2
+    c12 = coef_1_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> (u"m^2*ZV^-1")^2
+    c22 = coef_2_2.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> (u"m^2*ZV^-1")^2
+    c03 = coef_0_3.(νQ_c, ν_step, ν₀, I₀, ms, μs) .|> (u"m^2*ZV^-1")^3
+    c13 = coef_1_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> (u"m^2*ZV^-1")^3
+    c23 = coef_2_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> (u"m^2*ZV^-1")^3
+    c33 = coef_3_3.(νQ_c, ν_step, ν₀, I₀, ms, μs, λs) .|> (u"m^2*ZV^-1")^3
 
     u0 = randn(n)
     u1 = randn(n)
