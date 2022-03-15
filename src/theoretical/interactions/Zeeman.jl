@@ -35,12 +35,18 @@ Zeeman interaction and the ExperimentalSpectrum
     exp::ExperimentalSpectrum) = 
     (exp.ν₀ / exp.ν_step) .* ones(N)
 
-    estimate_static_powder_pattern(i, N, coefs, u0, u1, u5, ν_step)
-
 @inline estimate_static_powder_pattern(
     _::Zeeman, 
     N::Int, 
-    _,
+    _::Vector{typeof(Quantity(1.0, (u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, (u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    _::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
     _::Vector{Float64}, 
     _::Vector{Float64},
     _::Vector{Float64},

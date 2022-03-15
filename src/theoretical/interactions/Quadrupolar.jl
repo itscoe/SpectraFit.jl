@@ -231,8 +231,16 @@ and the Larmor frequency
 
 function estimate_static_powder_pattern(
     q::Quadrupolar, 
-    N::Int, 
-    coefs,
+    _::Int, 
+    c01::Vector{typeof(Quantity(1.0, (u"MHz m^2 ZV^-1")))},
+    c11::Vector{typeof(Quantity(1.0, (u"MHz m^2 ZV^-1")))},
+    c02::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    c12::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    c22::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    c03::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    c13::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    c23::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    c33::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
     _::Vector{Float64}, 
     u1::Vector{Float64},
     u5::Vector{Float64},
@@ -246,11 +254,9 @@ function estimate_static_powder_pattern(
     νQ2s, η2s = νQs .* νQs, ηs .* ηs
     νQ3s, η3s = νQ2s .* νQs, η2s .* ηs
 
-    return νQs .* coefs[1, :] .+ νQs .* ηs .* coefs[2, :] .+ 
-        νQ2s .* coefs[3, :] .+ νQ2s .* ηs .* coefs[4, :] .+ 
-        νQ2s .* η2s .* coefs[5, :] .+ νQ3s .* coefs[6, :] .+ 
-        νQ3s .* ηs .* coefs[7, :] .+ νQ3s .* η2s .* coefs[8, :] .+ 
-        νQ3s .* η3s .* coefs[9, :]
+    return νQs .* (c01 .+ ηs .* c11) .+ 
+        νQ2s .* (c02 .+ ηs .* c12 .+ η2s .* c22) .+ 
+        νQ3s .* (c03 .+ ηs .* c13 .+ η2s .* c23 .+ η3s .* c33)
 end
 
 function estimate_static_powder_pattern(

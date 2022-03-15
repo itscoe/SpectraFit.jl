@@ -106,7 +106,15 @@ estimate_static_powder_pattern(
 estimate_static_powder_pattern(
     c::Tuple{Vararg{NMRInteraction}}, 
     N::Int, 
-    coefs, 
+    c01::Vector{typeof(Quantity(1.0, (u"MHz m^2 ZV^-1")))},
+    c11::Vector{typeof(Quantity(1.0, (u"MHz m^2 ZV^-1")))},
+    c02::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    c12::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    c22::Vector{typeof(Quantity(1.0, √(u"MHz m^2 ZV^-1")))},
+    c03::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    c13::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    c23::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
+    c33::Vector{typeof(Quantity(1.0, ∛(u"MHz m^2 ZV^-1")))},
     u0::Vector{Float64}, 
     u1::Vector{Float64},
     u5::Vector{Float64},
@@ -114,7 +122,8 @@ estimate_static_powder_pattern(
     ν_step::typeof(1.0u"MHz"),
     ν_start::typeof(1.0u"MHz")
 ) = mapreduce(i -> 
-    estimate_static_powder_pattern(i, N, coefs, u0, u1, u5, ν₀, 
+    estimate_static_powder_pattern(i, N, c01, c11, c02, c12, c22, c03, c13, 
+    c23, c33, u0, u1, u5, ν₀, 
     ν_step), .+, c) .- (ν_start / ν_step)
 
 estimate_mas_powder_pattern(
