@@ -250,13 +250,10 @@ function estimate_static_powder_pattern(
     cQ_m = q.Vzz .+ 2q.ρσ .* u1
     νQs = abs.(cQ_m)
     ηs = (q.η .* q.Vzz .- 2√3 .* q.ρσ .* u5) ./ cQ_m
-    
-    νQ2s, η2s = νQs .* νQs, ηs .* ηs
-    νQ3s, η3s = νQ2s .* νQs, η2s .* ηs
 
-    return νQs .* (c01 .+ ηs .* c11) .+ 
-        νQ2s .* (c02 .+ ηs .* c12 .+ η2s .* c22) .+ 
-        νQ3s .* (c03 .+ ηs .* c13 .+ η2s .* c23 .+ η3s .* c33)
+    return νQs .* (c01 .+ ηs .* c11 .+ 
+        νQs .* (c02 .+ ηs .* (c12 .+ ηs .* c22) .+ 
+        νQs .* (c03 .+ ηs .* (c13 .+ ηs .* (c23 .+ ηs .* c33)))))
 end
 
 function estimate_static_powder_pattern(
